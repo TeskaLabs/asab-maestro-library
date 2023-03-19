@@ -1,0 +1,16 @@
+define:
+  type: rc/descriptor
+  name: Web-based ZooKeeper UI
+  url: https://zoonavigator.elkozmon.com/
+
+descriptor:
+  image: elkozmon/zoonavigator
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/app/logs"
+
+  environment:
+    HTTP_PORT: "9000"
+    CONNECTION_ZK_NAME: Local ZooKeeper
+    CONNECTION_ZK_CONN: null  # Will be filled by the remote control
+    AUTO_CONNECT_CONNECTION_ID: ZK

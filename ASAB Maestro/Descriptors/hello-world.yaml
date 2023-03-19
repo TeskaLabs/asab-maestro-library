@@ -1,0 +1,7 @@
+define:
+  type: rc/descriptor
+  name: Hello world
+
+descriptor:
+  image: alpine
+  command: sh -c "echo 'Hello, world!'; tail -f /dev/null"

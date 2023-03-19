@@ -1,0 +1,11 @@
+define:
+  type: rc/version
+  product: ASAB Maestro
+  version: v23.08
+
+versions:
+  zookeeper: '3.8'
+  asab-remote-control: latest
+  asab-governator: stable
+  asab-library: latest
+  hello-world: "3.16"  # This is version of Alpine Linux, it must be aligned with asab-governator Dockerfile base image

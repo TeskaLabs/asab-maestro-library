@@ -1,0 +1,27 @@
+define:
+  type: rc/descriptor
+  name: ASAB Governator
+
+descriptor:
+  # The REST API is at tcp/8892
+
+  image: docker.teskalabs.com/asab/asab-governator
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"
+    # For unified access to the host docker
+    - "{{SITE}}/docker/conf:/root/.docker/"
+    # For a communication with a docker
+    - /var/run/docker.sock:/var/run/docker.sock
+    # For a manipulation with the site directory (/opt/site:/opt/site)
+    - "{{SITE}}:/opt/site"
+
+  environment:
+    ASAB_ZOOKEEPER_SERVERS: null  # Will be added by Zookeeper cluster service
+
+  # This is critical service
+  restart: always
+
+files:
+  - asab-governator  # This folder will be copied from library `Files/` into {{SITE}}/asab-governator_{{INSTANCE_NO}}

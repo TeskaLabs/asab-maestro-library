@@ -1,0 +1,15 @@
+define:
+  type: rc/commons
+  name: ASAB Maestro common provisions for docker-compose.yaml
+
+commons:
+  # Everything is exposed on the host network
+  network_mode: host
+
+  # Limit logging size
+  logging:
+    options:
+      max-size: 50m
+
+  # We do restarts
+  restart: on-failure:3

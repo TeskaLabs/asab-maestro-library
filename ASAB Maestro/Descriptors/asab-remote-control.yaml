@@ -1,0 +1,18 @@
+define:
+  type: rc/descriptor
+  name: ASAB Remote Control
+
+descriptor:
+  # The REST API is at tcp/8891
+
+  image: docker.teskalabs.com/asab/asab-remote-control
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"
+
+  # This is critical service
+  restart: always
+
+files:
+  - asab-remote-control  # This folder will be copied from library `Files/` into {{SITE}}/asab-remote-control_{{INSTANCE_NO}}
