@@ -15,7 +15,6 @@ descriptor:
   restart: always
 
 files:
-  - asab-remote-control  # This folder will be copied from library `Files/` into {{SITE}}/asab-remote-control_{{INSTANCE_NO}}
   - "conf/asab-remote-control.conf": |
     [library]
     providers=
