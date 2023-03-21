@@ -25,5 +25,5 @@ descriptor:
 
 files:
   - "conf/asab-governator.conf": |
-    [web]
-    listen=8892
+      [web]
+      listen=8892

@@ -16,7 +16,7 @@ descriptor:
 
 files:
   - "conf/asab-remote-control.conf": |
-    [library]
-    providers=
-      zk:///library
-      git+https://github.com/TeskaLabs/asab-maestro-library.git
+      [library]
+      providers=
+        zk:///library
+        git+https://github.com/TeskaLabs/asab-maestro-library.git
