@@ -16,3 +16,8 @@ descriptor:
 
 files:
   - asab-remote-control  # This folder will be copied from library `Files/` into {{SITE}}/asab-remote-control_{{INSTANCE_NO}}
+  - "conf/asab-remote-control.conf": |
+    [library]
+    providers=
+      zk:///library
+      git+https://github.com/TeskaLabs/asab-maestro-library.git

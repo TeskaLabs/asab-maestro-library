@@ -18,4 +18,8 @@ descriptor:
   restart: always
 
 files:
-  - asab-library  # This folder will be copied from library `Files/` into {{SITE}}/asab-governator_{{INSTANCE_NO}}
+  - "conf/asab-library.conf": |
+    [library] 
+    providers=
+      zk:///library
+      git+https://github.com/TeskaLabs/asab-maestro-library.git
