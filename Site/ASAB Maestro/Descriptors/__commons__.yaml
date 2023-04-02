@@ -9,7 +9,7 @@ commons:
   # Limit logging size
   logging:
     options:
-      max-size: 50m
+      max-size: 10m
 
   # We do restarts
-  restart: on-failure:3
+  restart: unless-stopped
