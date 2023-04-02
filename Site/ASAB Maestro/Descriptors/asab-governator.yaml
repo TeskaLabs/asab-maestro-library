@@ -9,7 +9,7 @@ descriptor:
 
   volumes:
     # For a persistency of the configuration
-    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     # For unified access to the host docker
     - "{{SITE}}/docker/conf:/root/.docker/"
     # For a communication with a docker
