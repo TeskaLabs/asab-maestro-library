@@ -13,6 +13,13 @@ descriptor:
     - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/acme.sh:/acme.sh
     - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx
 
+  healthcheck:
+    test: ["CMD", "service", "nginx", "status"]
+    interval: 60s
+    timeout: 10s
+    retries: 5
+    start_period: 10s
+
 files:
     - "conf.d/default.conf": |
       include conf.d/api/*.upstream.conf;
