@@ -20,81 +20,113 @@ descriptor:
     retries: 5
     start_period: 10s
 
+
+secrets:
+  - "private-key.pem": |
+      -----BEGIN PRIVATE KEY-----
+      MIG6AgEAMBQGByqGSM49AgEGCSskAwMCCAEBCwSBnjCBmwIBAQQwOtWN1PzVvbdi
+      Q4vdeaiP9fIS2rqDwG2cTZg1ULJ7PpR6+TpBMnVJKqr+TDqjan/5oWQDYgAEcsC5
+      1VxsEKxBIPTHUdKZU14RFmbdL+UfOqO+laGMmtfuX3ABTfHLAyNaDUrgpTD7cjqj
+      wLNtZYt3rC19B07mz8lFcR1pA9p0+dZ1+KCO667OGOI87/jim8P85tfjae3R
+      -----END PRIVATE KEY-----
+
+  - "certificate.pem": |
+      -----BEGIN CERTIFICATE-----
+      MIIB2DCCAV+gAwIBAgIBATAKBggqhkjOPQQDAjAsMRUwEwYDVQQKEwxhc2FiLW1h
+      ZXN0cm8xEzARBgNVBAMTCmFzYWIubG9jYWwwIBcNMjMwNDAxMDAwMDAwWhgPMjA1
+      MzAzMzEyMzU5NTlaMCwxFTATBgNVBAoTDGFzYWItbWFlc3RybzETMBEGA1UEAxMK
+      YXNhYi5sb2NhbDB6MBQGByqGSM49AgEGCSskAwMCCAEBCwNiAARywLnVXGwQrEEg
+      9MdR0plTXhEWZt0v5R86o76VoYya1+5fcAFN8csDI1oNSuClMPtyOqPAs21li3es
+      LX0HTubPyUVxHWkD2nT51nX4oI7rrs4Y4jzv+OKbw/zm1+Np7dGjTzBNMAwGA1Ud
+      EwEB/wQCMAAwHQYDVR0OBBYEFMCHb+tdt8wIVQ7pncstqXoKrDSNMAsGA1UdDwQE
+      AwIF4DARBglghkgBhvhCAQEEBAMCBkAwCgYIKoZIzj0EAwIDZwAwZAIwI37fe8tt
+      50QEOftub4H6iCS5t5UCgg9FFTnQI+dRq3Rf/UOE9t/TAncc0ytqcO5EAjAQG1Qk
+      HLY3LQJosmKPpseeU5O5Xsw67GRdaSxL7enu8CDkIolY3d3Hu5D814z+3IU=
+      -----END CERTIFICATE-----
+
 files:
-    - "conf.d/default.conf": |
-        include conf.d/api/*.upstream.conf;
+  - "conf.d/default.conf": |
+      include conf.d/api/*.upstream.conf;
 
-    - "conf.d/http_default.conf": |
-        server {
-            listen 80 default_server;
-            # TODO: listen [::]:80 default_server;
+  - "conf.d/http_default.conf": |
+      server {
+          listen 80 default_server;
+          # TODO: listen [::]:80 default_server;
 
-            server_name _;
-            server_tokens off;
+          server_name _;
+          server_tokens off;
 
-            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-            add_header X-Frame-Options DENY;
-            add_header X-Content-Type-Options nosniff;
+          add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+          add_header X-Frame-Options DENY;
+          add_header X-Content-Type-Options nosniff;
 
-            # ACME challenge is handled by a ASAB Remote Control
-            location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
-              proxy_pass  http://asab-remote-control;
-            }
+          # ACME challenge is handled by a ASAB Remote Control
+          location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
+            proxy_pass  http://asab-remote-control;
+          }
 
-            # Redirect everything to HTTPS
-            return 301 https://$host$request_uri;
-        }
+          # Redirect everything to HTTPS
+          return 301 https://$host$request_uri;
+      }
 
-    - "conf.d/https_default.conf": |
-        server {
-            listen 443;
-            
-            server_name _;
-            server_tokens off;
+  - "conf.d/https_default.conf": |
+      server {
+          listen 443 ssl http2 default_server;
+          
+          server_name _;
+          server_tokens off;
 
-            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-            add_header X-Frame-Options DENY;
-            add_header X-Content-Type-Options nosniff;
+          ssl_certificate           /run/secrets/certificate.pem;
+          ssl_certificate_key       /run/secrets/private-key.pem;
 
-            location / {
-              root /webroot/lmio-webui/dist;
-            }
+          ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+          ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+          ssl_session_timeout 1d;
+          ssl_prefer_server_ciphers on;
 
-            location /auth {
-              alias /webroot/seacat-auth-webui/dist;
-            }
-        }
+          add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+          add_header X-Frame-Options DENY;
+          add_header X-Content-Type-Options nosniff;
 
-    # The internal API Gateway
-    - "conf.d/http_api.conf": |
-        server {
-            listen 8890;
+          location / {
+            root /webroot/lmio-webui/dist;
+          }
 
-            server_name _;
-            server_tokens off;
+          location /auth {
+            alias /webroot/seacat-auth-webui/dist;
+          }
+      }
 
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "Upgrade";
+  # The internal API Gateway
+  - "conf.d/http_api.conf": |
+      server {
+          listen 8890;
 
-            include conf.d/api/*.location.conf;
-        }
+          server_name _;
+          server_tokens off;
 
-    - "conf.d/api/asab-governator.location.conf": |
-        location /api/asab-governator-1 {
-          rewrite   ^/api/asab-governator-1/(.*) /$1 break;
-          proxy_pass  http://asab-governator-1:8891;
-          proxy_set_header X-ASAB-BaseURI /api/asab-governator-1;
-        }
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "Upgrade";
 
-    - "conf.d/api/asab-library.location.conf": |
-        location /api/asab-library-1 {
-          rewrite   ^/api/asab-library-1/(.*) /$1 break;
-          proxy_pass  http://asab-library-1:8893;
-          proxy_set_header X-ASAB-BaseURI /api/asab-library-1;
-        }
+          include conf.d/api/*.location.conf;
+      }
 
-    - "conf.d/api/asab-remote-control.upstream.conf": |
-        upstream asab-remote-control {
-          server asab-remote-control-1:8890;
-        }
+  - "conf.d/api/asab-governator.location.conf": |
+      location /api/asab-governator-1 {
+        rewrite   ^/api/asab-governator-1/(.*) /$1 break;
+        proxy_pass  http://asab-governator-1:8891;
+        proxy_set_header X-ASAB-BaseURI /api/asab-governator-1;
+      }
+
+  - "conf.d/api/asab-library.location.conf": |
+      location /api/asab-library-1 {
+        rewrite   ^/api/asab-library-1/(.*) /$1 break;
+        proxy_pass  http://asab-library-1:8893;
+        proxy_set_header X-ASAB-BaseURI /api/asab-library-1;
+      }
+
+  - "conf.d/api/asab-remote-control.upstream.conf": |
+      upstream asab-remote-control {
+        server asab-remote-control-1:8890;
+      }
