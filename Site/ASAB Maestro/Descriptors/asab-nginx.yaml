@@ -22,7 +22,7 @@ descriptor:
 
 files:
     - "conf.d/default.conf": |
-      include conf.d/api/*.upstream.conf;
+        include conf.d/api/*.upstream.conf;
 
     - "conf.d/http_default.conf": |
         server {
