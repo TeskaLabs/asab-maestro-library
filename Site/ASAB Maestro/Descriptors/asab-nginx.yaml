@@ -1,0 +1,88 @@
+define:
+  type: rc/descriptor
+  name: NGINX with ASAB Web UI distribution script
+  url: https://nginx.org
+
+descriptor:
+  image: docker.teskalabs.com/lmio/distribution-nginx
+
+  volumes:
+    - {{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/acme.sh:/acme.sh
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx
+
+files:
+    - "conf.d/default.conf": |
+        # Nothing here
+
+    - "conf.d/http_default.conf": |
+        server {
+            listen 80 default_server;
+            # TODO: listen [::]:80 default_server;
+
+            server_name _;
+            server_tokens off;
+
+            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+            add_header X-Frame-Options DENY;
+            add_header X-Content-Type-Options nosniff;
+
+            # ACME challenge is handled by a Remote Control
+            location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
+              proxy_pass  http://asab-remote-control-1:8890;
+            }
+
+            # Redirect everything to HTTPS
+            return 301 https://$host$request_uri;
+        }
+
+    - "conf.d/https_default.conf": |
+        server {
+            listen 443;
+            
+            server_name _;
+            server_tokens off;
+
+            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+            add_header X-Frame-Options DENY;
+            add_header X-Content-Type-Options nosniff;
+
+            location / {
+              root /webroot/lmio-webui/dist;
+            }
+
+            location /auth {
+              alias /webroot/seacat-auth-webui/dist;
+            }
+        }
+
+    # The internal API Gateway
+    - "conf.d/http_api.conf": |
+        server {
+            listen 8890;
+
+            server_name _;
+            server_tokens off;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+
+            include conf.d/api/*.conf;
+        }
+
+    - "conf.d/api/asab-governator-1.conf": |
+        location /api/asab-governator-1 {
+          rewrite   ^/api/asab-governator-1/(.*) /$1 break;
+          proxy_pass  http://asab-governator-1:8891;
+          proxy_set_header X-ASAB-BaseURI /api/asab-governator-1;
+        }
+
+    - "conf.d/api/asab-library-1.conf": |
+        location /api/asab-library-1 {
+          rewrite   ^/api/asab-library-1/(.*) /$1 break;
+          proxy_pass  http://asab-library-1:8893;
+          proxy_set_header X-ASAB-BaseURI /api/asab-library-1;
+        }
