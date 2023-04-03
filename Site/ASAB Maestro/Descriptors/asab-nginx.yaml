@@ -15,9 +15,7 @@ descriptor:
 
 files:
     - "conf.d/default.conf": |
-        upstream asab-remote-control {
-          server asab-remote-control-1:8890;
-        }
+      include conf.d/api/*.upstream.conf;
 
     - "conf.d/http_default.conf": |
         server {
@@ -72,19 +70,24 @@ files:
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "Upgrade";
 
-            include conf.d/api/*.conf;
+            include conf.d/api/*.location.conf;
         }
 
-    - "conf.d/api/asab-governator-1.conf": |
+    - "conf.d/api/asab-governator.location.conf": |
         location /api/asab-governator-1 {
           rewrite   ^/api/asab-governator-1/(.*) /$1 break;
           proxy_pass  http://asab-governator-1:8891;
           proxy_set_header X-ASAB-BaseURI /api/asab-governator-1;
         }
 
-    - "conf.d/api/asab-library-1.conf": |
+    - "conf.d/api/asab-library.location.conf": |
         location /api/asab-library-1 {
           rewrite   ^/api/asab-library-1/(.*) /$1 break;
           proxy_pass  http://asab-library-1:8893;
           proxy_set_header X-ASAB-BaseURI /api/asab-library-1;
+        }
+
+    - "conf.d/api/asab-remote-control.upstream.conf": |
+        upstream asab-remote-control {
+          server asab-remote-control-1:8890;
         }
