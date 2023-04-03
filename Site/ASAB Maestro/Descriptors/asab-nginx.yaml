@@ -15,7 +15,9 @@ descriptor:
 
 files:
     - "conf.d/default.conf": |
-        # Nothing here
+        upstream asab-remote-control {
+          server asab-remote-control-1:8890;
+        }
 
     - "conf.d/http_default.conf": |
         server {
@@ -29,9 +31,9 @@ files:
             add_header X-Frame-Options DENY;
             add_header X-Content-Type-Options nosniff;
 
-            # ACME challenge is handled by a Remote Control
+            # ACME challenge is handled by a ASAB Remote Control
             location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
-              proxy_pass  http://asab-remote-control-1:8890;
+              proxy_pass  http://asab-remote-control;
             }
 
             # Redirect everything to HTTPS
