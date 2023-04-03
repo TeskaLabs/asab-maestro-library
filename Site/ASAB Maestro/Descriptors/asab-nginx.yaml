@@ -79,6 +79,7 @@ files:
 
           ssl_certificate           /run/secrets/asab-nginx-1__certificate.pem;
           ssl_certificate_key       /run/secrets/asab-nginx-1__private-key.pem;
+          ssl_trusted_certificate   /run/secrets/asab-nginx-1__certificate.pem;
 
           ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
           ssl_session_timeout 1d;
