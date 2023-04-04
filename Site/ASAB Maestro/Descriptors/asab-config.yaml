@@ -11,6 +11,9 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
+  environment:
+    ASAB_ZOOKEEPER_SERVERS: null  # Will be added by Zookeeper cluster service
+
   # This is critical service
   restart: always
 
