@@ -1,0 +1,21 @@
+define:
+  type: rc/descriptor
+  name: ASAB Config
+
+descriptor:
+  # The REST API is at tcp/8893
+
+  image: docker.teskalabs.com/asab/asab-config
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+  environment:
+    ASAB_ZOOKEEPER_SERVERS: null  # Will be added by Zookeeper cluster service
+
+  # This is critical service
+  restart: always
+
+files:
+  - "conf/asab-config.conf": ""

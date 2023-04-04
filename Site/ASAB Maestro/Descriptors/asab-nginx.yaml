@@ -1,0 +1,131 @@
+define:
+  type: rc/descriptor
+  name: NGINX with ASAB Web UI distribution script
+  url: https://nginx.org
+
+descriptor:
+  image: docker.teskalabs.com/lmio/distribution-nginx
+
+  volumes:
+    - {{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/acme.sh:/acme.sh
+    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx
+
+  healthcheck:
+    test: ["CMD", "service", "nginx", "status"]
+    interval: 60s
+    timeout: 10s
+    retries: 5
+    start_period: 10s
+
+
+secrets:
+  - "private-key.pem": |
+      -----BEGIN PRIVATE KEY-----
+      MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgETy5uFJPK8ZClk62
+      HjbMiV5ro+pFdhpJTwMofmg4KhmhRANCAAR3MzURFyzy7ijgxy1AXeT/oBUNcnmK
+      20TgSv4cilW323rt6H5M9thHELQ3vjVqGbiDd1K0JhqTExVaRV44ILB9
+      -----END PRIVATE KEY-----
+
+  - "certificate.pem": |
+      -----BEGIN CERTIFICATE-----
+      MIIBvjCCAWSgAwIBAgIBATAKBggqhkjOPQQDAjBAMRIwEAYDVQQKEwlUZXNrYUxh
+      YnMxFTATBgNVBAsTDEFTQUIgTWFlc3RybzETMBEGA1UEAxMKYXNhYi5sb2NhbDAe
+      Fw0yMzA0MDEwMDAwMDBaFw0zMzAzMzEyMzU5NTlaMEAxEjAQBgNVBAoTCVRlc2th
+      TGFiczEVMBMGA1UECxMMQVNBQiBNYWVzdHJvMRMwEQYDVQQDEwphc2FiLmxvY2Fs
+      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdzM1ERcs8u4o4MctQF3k/6AVDXJ5
+      ittE4Er+HIpVt9t67eh+TPbYRxC0N741ahm4g3dStCYakxMVWkVeOCCwfaNPME0w
+      DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUqOmt5fIuoz88i4iulJeaNdLtVGkwCwYD
+      VR0PBAQDAgXgMBEGCWCGSAGG+EIBAQQEAwIGQDAKBggqhkjOPQQDAgNIADBFAiBB
+      OtwSRVWsvZqwQIYCOvLa69yv4LVf3Wjoncaj2eG29wIhAIMmNzN48z3SdMPwZZ8p
+      2e2VTuKrBUYiG61tPeF3oW6s
+      -----END CERTIFICATE-----
+
+files:
+  - "conf.d/default.conf": |
+      include conf.d/api/*.upstream.conf;
+
+  - "conf.d/http_default.conf": |
+      server {
+          listen 80 default_server;
+          # TODO: listen [::]:80 default_server;
+
+          server_name _;
+          server_tokens off;
+
+          add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+          add_header X-Frame-Options DENY;
+          add_header X-Content-Type-Options nosniff;
+
+          # ACME challenge is handled by a ASAB Remote Control
+          location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
+            proxy_pass  http://asab-remote-control;
+          }
+
+          # Redirect everything to HTTPS
+          return 301 https://$host$request_uri;
+      }
+
+  - "conf.d/https_default.conf": |
+      server {
+          listen 443 ssl http2 default_server;
+          # TODO: listen [::]:443 ssl http2 default_server;
+
+          server_name _;
+          server_tokens off;
+
+          ssl_certificate           /run/secrets/asab-nginx-1__certificate.pem;
+          ssl_certificate_key       /run/secrets/asab-nginx-1__private-key.pem;
+
+          ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+          ssl_session_timeout 1d;
+          ssl_prefer_server_ciphers on;
+
+          add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+          add_header X-Frame-Options DENY;
+          add_header X-Content-Type-Options nosniff;
+
+          location / {
+            root /webroot/lmio-webui/dist;
+          }
+
+          location /auth {
+            alias /webroot/seacat-auth-webui/dist;
+          }
+      }
+
+  # The internal API Gateway
+  - "conf.d/http_api.conf": |
+      server {
+          listen 8890;
+
+          server_name _;
+          server_tokens off;
+
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "Upgrade";
+
+          include conf.d/api/*.location.conf;
+      }
+
+  - "conf.d/api/asab-governator.location.conf": |
+      location /api/asab-governator-1 {
+        rewrite   ^/api/asab-governator-1/(.*) /$1 break;
+        proxy_pass  http://asab-governator-1:8891;
+        proxy_set_header X-ASAB-BaseURI /api/asab-governator-1;
+      }
+
+  - "conf.d/api/asab-library.location.conf": |
+      location /api/asab-library-1 {
+        rewrite   ^/api/asab-library-1/(.*) /$1 break;
+        proxy_pass  http://asab-library-1:8893;
+        proxy_set_header X-ASAB-BaseURI /api/asab-library-1;
+      }
+
+  - "conf.d/api/asab-remote-control.upstream.conf": |
+      upstream asab-remote-control {
+        server asab-remote-control-1:8890;
+      }
