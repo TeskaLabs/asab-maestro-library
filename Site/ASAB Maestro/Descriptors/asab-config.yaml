@@ -3,7 +3,7 @@ define:
   name: ASAB Config
 
 descriptor:
-  # The REST API is at tcp/8893
+  # The REST API is at tcp/8894
 
   image: docker.teskalabs.com/asab/asab-config
 
