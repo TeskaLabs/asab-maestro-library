@@ -20,30 +20,8 @@ descriptor:
     retries: 5
     start_period: 10s
 
-
-secrets:
-  - "private-key.pem": |
-      -----BEGIN PRIVATE KEY-----
-      MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgETy5uFJPK8ZClk62
-      HjbMiV5ro+pFdhpJTwMofmg4KhmhRANCAAR3MzURFyzy7ijgxy1AXeT/oBUNcnmK
-      20TgSv4cilW323rt6H5M9thHELQ3vjVqGbiDd1K0JhqTExVaRV44ILB9
-      -----END PRIVATE KEY-----
-
-  - "certificate.pem": |
-      -----BEGIN CERTIFICATE-----
-      MIIBvjCCAWSgAwIBAgIBATAKBggqhkjOPQQDAjBAMRIwEAYDVQQKEwlUZXNrYUxh
-      YnMxFTATBgNVBAsTDEFTQUIgTWFlc3RybzETMBEGA1UEAxMKYXNhYi5sb2NhbDAe
-      Fw0yMzA0MDEwMDAwMDBaFw0zMzAzMzEyMzU5NTlaMEAxEjAQBgNVBAoTCVRlc2th
-      TGFiczEVMBMGA1UECxMMQVNBQiBNYWVzdHJvMRMwEQYDVQQDEwphc2FiLmxvY2Fs
-      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdzM1ERcs8u4o4MctQF3k/6AVDXJ5
-      ittE4Er+HIpVt9t67eh+TPbYRxC0N741ahm4g3dStCYakxMVWkVeOCCwfaNPME0w
-      DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUqOmt5fIuoz88i4iulJeaNdLtVGkwCwYD
-      VR0PBAQDAgXgMBEGCWCGSAGG+EIBAQQEAwIGQDAKBggqhkjOPQQDAgNIADBFAiBB
-      OtwSRVWsvZqwQIYCOvLa69yv4LVf3Wjoncaj2eG29wIhAIMmNzN48z3SdMPwZZ8p
-      2e2VTuKrBUYiG61tPeF3oW6s
-      -----END CERTIFICATE-----
-
 files:
+
   - "conf.d/default.conf": |
       include conf.d/api/*.upstream.conf;
 
