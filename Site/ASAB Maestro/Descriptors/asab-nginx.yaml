@@ -86,7 +86,7 @@ files:
             alias /webroot/seacat-auth-webui/dist;
           }
 
-          include parts/instances.conf;
+          include conf.d/parts/instances.conf;
       }
 
   # The internal API Gateway
@@ -101,7 +101,7 @@ files:
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "Upgrade";
 
-          include parts/instances.conf;
+          include conf.d/parts/instances.conf;
       }
 
   - "conf.d/api/asab-remote-control.upstream.conf": |
