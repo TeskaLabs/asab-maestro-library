@@ -19,3 +19,7 @@ descriptor:
 
 files:
   - "conf/asab-config.conf": ""
+
+api:
+  web:
+    port: 8894

@@ -27,3 +27,7 @@ files:
   - "conf/asab-governator.conf": |
       [web]
       listen=8892
+
+api:
+  web:
+    port: 8892
