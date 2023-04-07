@@ -4,18 +4,18 @@ define:
   url: https://nginx.org
 
 descriptor:
+  # TODO: docker.teskalabs.com/asab/asab-nginx 
   image: docker.teskalabs.com/lmio/distribution-nginx
 
   volumes:
-    - {{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d
-    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache
-    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot
-    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/acme.sh:/acme.sh
-    - {{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx
+    - "{{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d:ro"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx"
 
   secrets:
-    - {{INSTANCE_ID}}--certificate.pem
-    - {{INSTANCE_ID}}--private-key.pem
+    - "{{INSTANCE_ID}}--certificate.pem"
+    - "{{INSTANCE_ID}}--private-key.pem"
 
   healthcheck:
     test: ["CMD", "service", "nginx", "status"]
