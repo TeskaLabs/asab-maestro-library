@@ -23,3 +23,4 @@ files:
 api:
   web:
     port: 8894
+    upstream: true
