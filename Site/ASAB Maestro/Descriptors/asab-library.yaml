@@ -3,8 +3,6 @@ define:
   name: ASAB Library
 
 descriptor:
-  # The REST API is at tcp/8893
-
   image: docker.teskalabs.com/asab/asab-library
 
   volumes:
@@ -26,4 +24,5 @@ files:
 
 api:
   web:
-    port: 8893
+    port: 8893  # The REST API is at tcp/8893
+    upstream: true  
