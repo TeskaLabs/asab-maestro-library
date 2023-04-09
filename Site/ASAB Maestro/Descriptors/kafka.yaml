@@ -1,0 +1,16 @@
+define:
+  type: rc/descriptor
+  name: Apache Kafka
+  url: https://kafka.apache.org
+
+descriptor:
+
+  image: confluentinc/cp-kafka
+
+  environment:
+    - "KAFKA_BROKER_ID={{INSTANCE_NO}}"
+    - "KAFKA_ZOOKEEPER_CONNECT=null"  # Will be filled by the remote control
+    - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{INSTANCE_ID}}:9092"
+
+  volumes:
+      - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/kafka/data"
