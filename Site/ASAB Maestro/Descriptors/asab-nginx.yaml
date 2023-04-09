@@ -7,6 +7,9 @@ descriptor:
   # TODO: docker.teskalabs.com/asab/asab-nginx 
   image: docker.teskalabs.com/lmio/distribution-nginx
 
+  environments:
+    ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.08-beta seacat-auth:v23.4  # TODO: This should be read from the library Site
+
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d:ro"
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
