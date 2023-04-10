@@ -6,11 +6,13 @@ define:
 descriptor:
 
   image: confluentinc/cp-kafka
+  user: 0:0
 
   environment:
-    - "KAFKA_BROKER_ID={{INSTANCE_NO}}"
-    - "KAFKA_ZOOKEEPER_CONNECT=null"  # Will be filled by the remote control
-    - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{INSTANCE_ID}}:9092"
+    - KAFKA_BROKER_ID: "{{INSTANCE_NO}}"
+    - KAFKA_ZOOKEEPER_CONNECT: null  # Will be filled by the remote control
+    - KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://{{INSTANCE_ID}}:9092"
 
   volumes:
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/kafka/data"
+      - "{{SITE}}/{{INSTANCE_ID}}/secrets:/etc/kafka/secrets"
