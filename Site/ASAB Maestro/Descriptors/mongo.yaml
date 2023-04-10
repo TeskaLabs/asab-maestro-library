@@ -1,0 +1,34 @@
+define:
+  type: rc/descriptor
+  name: MongoDB document database
+  url: https://github.com/mongodb/mongo
+
+descriptor:
+  image: library/mongo
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+
+  command: mongod --config /etc/mongo/mongod.conf
+
+files:
+  - "conf/mongod.conf": |
+      net:
+        bindIp: 0.0.0.0
+        port: 27017
+      replication:
+        replSetName: asabrs
+
+  - "script/replica.sh": |
+      #!/bin/bash
+      mongosh --quiet --eval "rs.status()" | grep -q "MongoServerError: no replset config has been received"
+      NO_REPLSET=$?
+
+      if [ $IS_MEMBER -ne 0 ]; then
+        echo "MongoDB instance is not part of the replica set. Initializing and joining..."
+        mongosh --quiet --eval "rs.initiate({ _id: 'asabrs', members: [{ _id: 0, host: '{{INSTANCE_ID}}:27017' }] })"
+
+        sleep 5
+      fi
