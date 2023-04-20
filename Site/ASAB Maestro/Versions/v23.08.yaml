@@ -9,5 +9,5 @@ versions:
   asab-governator: stable
   asab-library: latest
   asab-config: latest
-  hello-world: "3.16"  # This is version of Alpine Linux, it must be aligned with asab-governator Dockerfile base image
-  elasticsearch: 7.12.2
+  hello-world: '3.16'  # This is version of Alpine Linux, it must be aligned with asab-governator Dockerfile base image
+  elasticsearch: '7.12.2'
