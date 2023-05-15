@@ -9,26 +9,19 @@ descriptor:
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
-    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/mongo:/script:ro"
 
   command: mongod --config /etc/mongo/mongod.conf
 
 files:
+# This is confusing - I can EITHER specify FOLDER in /Files/... dir OR a write a FILE directly, I was trying to specify unique files from /Files
   - "conf/mongod.conf": |
       net:
         bindIp: 0.0.0.0
         port: 27017
       replication:
-        replSetName: asabrs
+        replSetName: rs0
 
-  - "script/replica.sh": |
-      #!/bin/bash
-      mongosh --quiet --eval "rs.status()" | grep -q "MongoServerError: no replset config has been received"
-      NO_REPLSET=$?
+  - "mongo"
 
-      if [ $IS_MEMBER -ne 0 ]; then
-        echo "MongoDB instance is not part of the replica set. Initializing and joining..."
-        mongosh --quiet --eval "rs.initiate({ _id: 'asabrs', members: [{ _id: 0, host: '{{INSTANCE_ID}}:27017' }] })"
-
-        sleep 5
-      fi
+  # mongo/newConfig.json is added by ASAB Remote Control
