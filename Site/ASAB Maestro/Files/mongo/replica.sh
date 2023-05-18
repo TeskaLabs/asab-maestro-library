@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Get hostnames from environment variable
-IFS=',' read -r -a hostnames <<< "$HOSTNAMES"
+IFS=',' read -r -a hostnames <<< "$MONGO_HOSTNAMES"
 
 port=27017
 
 # The JavaScript file to execute
-script=/script/reconfigureReplicaSet.js
+script=/script/reconfigure_replica_set.js
 
 # Read the JSON file
-newConfig=$(cat /script/newConfig.json)
+newConfig=$(cat /script/new_config.json)
 
 for hostname in "${hostnames[@]}"; do
 echo "Trying hostname $hostname"
