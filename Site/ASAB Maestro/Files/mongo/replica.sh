@@ -9,7 +9,7 @@ port=27017
 script=/script/reconfigure_replica_set.js
 
 # Read the JSON file
-newConfig=$(cat /script/new_config.json)
+newConfig=$(cat /script/new-config.json)
 
 for hostname in "${hostnames[@]}"; do
 echo "Trying hostname $hostname"
@@ -18,7 +18,7 @@ echo "Trying hostname $hostname"
 command="var newConfig = $newConfig; $(cat $script)"
 
 # Run the MongoDB shell command
-output=$(mongosh --host $hostname --port $port --eval "$command")
+output=$(mongosh --host "$hostname" --port $port --eval "$command")
 
 # Print the output
 echo "$output"
@@ -28,12 +28,13 @@ if [[ $output == *"ERROR_NOT_PRIMARY"* ]]; then
 	echo "Notice: Not a primary node. Trying another one..."
 elif [[ $output == *"ERROR_RECONFIG"* ]]; then
 	echo "Error: Failed to reconfigure the replica set."
-	break
+	exit 1
 elif [[ $output == *"SUCCESS_RECONFIG"* ]]; then
 	echo "Success: Replica set reconfigured."
-	break
+	exit 0
 elif [[ $output == *"SUCCESS_INITIATE"* ]]; then
 	echo "Success: New replica set initiated."
-	break
+	exit 0
 fi
+exit 1
 done

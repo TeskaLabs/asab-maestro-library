@@ -1,0 +1,27 @@
+define:
+  type: rc/descriptor
+  name: Init container for MongoDB document database handling replica sets
+
+descriptor:
+  image: library/mongo
+
+  volumes:
+    - "/temp/data:/data/db"  # init cotainer wont store data
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/mongo:/script:ro"
+
+  command: mongod --config /etc/mongo/mongod.conf
+
+files:
+# This is confusing - I can EITHER specify FOLDER in /Files/... dir OR write a FILE directly, I was trying to specify unique files from /Files
+# different port? - so it cannot conenct to another init container?
+# Why is it a list of dictionaries? it could just a dictionary, it would be much much much easier to handle
+  - "conf/mongod.conf": |
+      net:
+        bindIp: 0.0.0.0
+        port: 27018
+      replication:
+        replSetName: rs0
+
+  - "mongo"
+  - "mongo/new-config.json": ""  # mongo/new_config.json is added by ASAB Remote Control
