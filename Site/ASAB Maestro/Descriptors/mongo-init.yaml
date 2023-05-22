@@ -15,7 +15,6 @@ descriptor:
 files:
 # This is confusing - I can EITHER specify FOLDER in /Files/... dir OR write a FILE directly, I was trying to specify unique files from /Files
 # different port? - so it cannot conenct to another init container?
-# Why is it a list of dictionaries? it could just a dictionary, it would be much much much easier to handle
   - "conf/mongod.conf": |
       net:
         bindIp: 0.0.0.0

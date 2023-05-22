@@ -1,0 +1,54 @@
+define:
+  type: rc/descriptor
+  name: Seacat Auth
+  url: https://github.com/TeskaLabs/seacat-auth
+
+descriptor:
+  image: teskalabs/seacat-auth
+  environment:
+    - SEACAT_AUTH_PROVISIONING={{SEACAT_AUTH_PROVISIONING}}
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
+  files:
+  - "conf/asab-remote-control.conf": |
+    [general]
+    include=/conf/secret.conf
+    auth_webui_base_url=https://localhost/auth
+    public_api_base_url=https://localhost/auth/api
+
+    [asab:storage]
+    type=mongodb
+    mongodb_uri={{MONGODB_URI}}
+    mongodb_database=auth
+
+    [seacatauth:cookie]
+    domain=localhost
+
+    [seacatauth:credentials:mongodb:ext]
+    mongodb_uri={{MONGODB_URI}}
+    mongodb_database=auth
+    tenants=yes
+    registration=yes
+
+    [seacatauth:communication:email:smtp]
+    host=<mocked>
+
+    [web]
+    listen=0.0.0.0 8182
+    cors=*
+    preflightpaths=/*
+
+    [web:public]
+    listen=0.0.0.0 8181
+    cors=*
+    preflightpaths=/*
+
+    [seacatauth:session]
+    aes_key={{AES_KEY}}
+
+    [seacatauth:authentication]
+    descriptor_file=/conf/login-descriptors.json
+
+    [openidconnect]
+    private_key=/data/private-key.pem
