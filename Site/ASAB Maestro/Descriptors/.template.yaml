@@ -1,26 +1,19 @@
 define:
   type: rc/descriptor
-  name: MongoDB document database
-  url: https://github.com/mongodb/mongo
+  name: Hello world  # You can name the descriptor as you need. Just keep in mind the file name of the descriptor must be the same as service name used in the model.
 
 descriptor:
-  image: library/mongo
-
+  image: alpine
+  command: sh -c "echo 'Hello, world!'; tail -f /dev/null"
   volumes:
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"
-    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
-
-  command: mongod --config /etc/mongo/mongod.conf
+  - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"
+  # Here you can type anything that is allowed in docker-compose.yaml within the service specification.
 
 sherpas:
 # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
 # provide a name to your sherpa and a descriptor parts overwriting the main descriptor
   init:
-    entrypoint: ["/bin/bash", "/script/replica.sh"]
-    command: ["echo", "DONE"]
-    volumes:
-    - "{{SITE}}/{{INSTANCE_ID}}/mongo:/script:ro"
-
+    command: ["echo", "DONE"]  # i.e.
 
 files:
 # File paths are gonna be applied to /Site/<app_name>/Files/<your file as you declare it>
@@ -34,12 +27,6 @@ files:
 # - it becomes part of a site directory
 # - it get mounted into a container
 
-  - "conf/mongod.conf": |
+  - "conf/hello_world.conf": |
       net:
-        bindIp: 0.0.0.0
-        port: 27017
-      replication:
-        replSetName: rs0
-  - "mongo/replica.sh"
-  - "mongo/reconfigure_replica_set.js"
-  # "mongo/new_config.json" is added by ASAB Remote Control
+        port: 8888
