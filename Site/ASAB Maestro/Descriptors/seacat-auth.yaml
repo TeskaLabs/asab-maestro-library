@@ -6,49 +6,24 @@ define:
 descriptor:
   image: teskalabs/seacat-auth
   environment:
-    - SEACAT_AUTH_PROVISIONING={{SEACAT_AUTH_PROVISIONING}}
+  # you must use "dictionary" way of writing the env variables, not list
+    SEACAT_AUTH_PROVISIONING: {{SEACAT_AUTH_PROVISIONING}}
+    ASAB_ZOOKEEPER_SERVERS: {{ZOOKEEPER_SERVERS}}
   volumes:
-    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/seacat-auth/conf:/conf:ro"
     - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
-  files:
-  - "conf/asab-remote-control.conf": |
-    [general]
-    include=/conf/secret.conf
-    auth_webui_base_url=https://localhost/auth
-    public_api_base_url=https://localhost/auth/api
 
-    [asab:storage]
-    type=mongodb
-    mongodb_uri={{MONGODB_URI}}
-    mongodb_database=auth
+files:
+  - "seacat-auth/conf/login-descriptors.json"
 
-    [seacatauth:cookie]
-    domain=localhost
-
-    [seacatauth:credentials:mongodb:ext]
-    mongodb_uri={{MONGODB_URI}}
-    mongodb_database=auth
-    tenants=yes
-    registration=yes
-
-    [seacatauth:communication:email:smtp]
-    host=<mocked>
-
-    [web]
-    listen=0.0.0.0 8182
-    cors=*
-    preflightpaths=/*
-
-    [web:public]
-    listen=0.0.0.0 8181
-    cors=*
-    preflightpaths=/*
-
-    [seacatauth:session]
-    aes_key={{AES_KEY}}
-
-    [seacatauth:authentication]
-    descriptor_file=/conf/login-descriptors.json
-
-    [openidconnect]
-    private_key=/data/private-key.pem
+config:
+  # If you want to place a template for configuration into this repository, place it into: /Site/<app_name>/Files/<config.dir>/<config.asab>
+  # Mapping of configuration files of asab services MUST be into /conf directory of the resulting container
+  # dir: where configuration file lives inside the site directory and /Site/<app_name>/Files/ subfolder. You MUST map this directory to /conf dir in the container (see L13)
+  # source: zookeeper node managed by asab-config microservice (asab-config:///Services/{{SERVICE_ID}}.json)
+  # file: name of configuration file in "dir" - use it in case of non-asab services
+  # asab: name of configuration file expected by the command in the Dockerfile of this microservice
+  dir: "seacat-auth/conf"
+  source: asab-config:///Services/seacat-auth.json # it must be JSON - basically - there is nothing to choose - need to solve custom / instance-specific case
+  asab: seacatauth.conf
+  # file: seacatauth.conf
