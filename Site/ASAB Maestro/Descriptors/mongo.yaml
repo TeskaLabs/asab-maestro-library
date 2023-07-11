@@ -43,6 +43,6 @@ files:
         port: 27017
       replication:
         replSetName: rs0
-  - "replica.sh"
-  - "reconfigure_replica_set.js"
+  - "script/replica.sh"
+  - "script/reconfigure_replica_set.js"
   # "new_config.json" is added by ASAB Remote Control
