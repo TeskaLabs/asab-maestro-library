@@ -1,6 +1,7 @@
 define:
   type: rc/descriptor
   name: ASAB Governator
+  tech: asab
 
 descriptor:
   # The REST API is at tcp/8892
