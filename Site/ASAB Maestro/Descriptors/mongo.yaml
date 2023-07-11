@@ -10,7 +10,7 @@ descriptor:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
 
-  command: mongod --config /etc/mongo/mongod.conf --directoryperdb
+  command: mongod --config /etc/mongo/mongod.conf
 
 sherpas:
 # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
