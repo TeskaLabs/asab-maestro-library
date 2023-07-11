@@ -20,7 +20,7 @@ sherpas:
     entrypoint: ["/bin/bash", "/script/replica.sh"]
     command: ["echo", "DONE"]
     volumes:
-    - "{{SITE}}/{{INSTANCE_ID}}/mongo:/script:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
 
 
