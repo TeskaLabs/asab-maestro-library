@@ -45,4 +45,4 @@ files:
         replSetName: rs0
   - "script/replica.sh"
   - "script/reconfigure_replica_set.js"
-  # "new_config.json" is added by ASAB Remote Control
+  # "script/new_config.json" is added by ASAB Remote Control

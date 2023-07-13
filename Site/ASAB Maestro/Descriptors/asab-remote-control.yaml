@@ -16,11 +16,7 @@ descriptor:
   restart: always
 
 files:
-  - "conf/asab-remote-control.conf": |
-      [library]
-      providers=
-        zk:///library
-        git+https://github.com/TeskaLabs/asab-maestro-library.git
+  - "conf/asab-remote-control.conf": ""
 
 api:
   web:
