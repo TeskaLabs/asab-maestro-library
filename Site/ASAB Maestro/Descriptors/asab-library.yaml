@@ -1,6 +1,7 @@
 define:
   type: rc/descriptor
   name: ASAB Library
+  tech: asab
 
 descriptor:
   image: docker.teskalabs.com/asab/asab-library
@@ -16,11 +17,7 @@ descriptor:
   restart: always
 
 files:
-  - "conf/asab-library.conf": |
-      [library] 
-      providers=
-        zk:///library
-        git+https://github.com/TeskaLabs/asab-maestro-library.git
+  - "conf/asab-library.conf": ""
 
 api:
   web:

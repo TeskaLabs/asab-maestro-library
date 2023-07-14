@@ -1,6 +1,7 @@
 define:
   type: rc/descriptor
   name: ASAB Remote Control
+  tech: asab
 
 descriptor:
   # The REST API is at tcp/8891
@@ -15,11 +16,7 @@ descriptor:
   restart: always
 
 files:
-  - "conf/asab-remote-control.conf": |
-      [library]
-      providers=
-        zk:///library
-        git+https://github.com/TeskaLabs/asab-maestro-library.git
+  - "conf/asab-remote-control.conf": ""
 
 api:
   web:

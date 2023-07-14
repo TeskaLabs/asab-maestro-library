@@ -14,12 +14,15 @@ descriptor:
 
 sherpas:
 # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
-# provide a name to your sherpa and a descriptor parts overwriting the main descriptor
+# provide a name to your sherpa and a descriptor for its very own container.
   init:
+    image: library/mongo
     entrypoint: ["/bin/bash", "/script/replica.sh"]
     command: ["echo", "DONE"]
     volumes:
-    - "{{SITE}}/{{INSTANCE_ID}}/mongo:/script:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
+
 
 
 files:
@@ -27,8 +30,8 @@ files:
 # Being used in the docker-compose file as a volume, the /Site/<app_name>/Files/ part of path is substituted by {{SITE}}/{{INSTANCE_ID}}/
 # There are three ways of declaring files used as container volumes
 # - directly in this yaml declaration - keep it as key:value pait where value is the file content
-# - using a whole directory in /Site/<app_name>/Files - keep trailing slash in this case
-# - use specific file from /Site/<app_name>/Files directory
+# - using a whole directory as /Site/<app_name>/Files/<service_id>/some_directory/ - keep trailing slash in this case
+# - use specific file as /Site/<app_name>/Files/<service_id>/some_file.json
 # Please keep in mind you work in 3 stages:
 # - you specify the file here
 # - it becomes part of a site directory
@@ -40,6 +43,6 @@ files:
         port: 27017
       replication:
         replSetName: rs0
-  - "mongo/replica.sh"
-  - "mongo/reconfigure_replica_set.js"
-  # "mongo/new_config.json" is added by ASAB Remote Control
+  - "script/replica.sh"
+  - "script/reconfigure_replica_set.js"
+  # "script/new_config.json" is added by ASAB Remote Control

@@ -1,0 +1,21 @@
+define:
+  type: rc/descriptor
+  name: Seacat Auth
+  url: https://github.com/TeskaLabs/seacat-auth
+  tech: asab
+
+descriptor:
+  image: teskalabs/seacat-auth
+  environment:
+  # you must use "dictionary" way of writing the env variables, not list
+    SEACAT_AUTH_PROVISIONING: {{SEACAT_AUTH_PROVISIONING}}
+    ASAB_ZOOKEEPER_SERVERS: {{ZOOKEEPER_SERVERS}}
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
+
+files:
+  - "conf/login-descriptors.json"
+  - "conf/seacatauth.conf": "" # TODO: to be added - must be revised
+
+
