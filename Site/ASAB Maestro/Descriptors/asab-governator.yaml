@@ -19,7 +19,7 @@ descriptor:
     - "{{SITE}}:/opt/site"
 
   environment:
-    ASAB_ZOOKEEPER_SERVERS: null  # Will be added by Zookeeper cluster service
+    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
 
   # This is critical service
   restart: always
