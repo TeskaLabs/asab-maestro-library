@@ -22,10 +22,10 @@ sherpas:
     volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
-    depends_on: "{{INSTANCE_ID}}"
+    depends_on: ["{{INSTANCE_ID}}"]
     restart: "on-failure:10"  # TODO: it takes some time to the real mongo container to get ready for the configuration.
     environment:
-    - MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
+      MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
 
 files:
   - "conf/mongod.conf": |
