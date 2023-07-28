@@ -11,7 +11,7 @@ descriptor:
   environment:
     KAFKA_BROKER_ID: "{{INSTANCE_NO}}"  # `instance_no` must be an integer 
     KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://{{NODE_ID}}:9092"
-    KAFKA_ZOOKEEPER_CONNECT: null  # Will be filled by the remote control
+    KAFKA_ZOOKEEPER_CONNECT: "{{ZOOKEEPER_SERVERS}}/kafka"
 
   volumes:
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/kafka/data"

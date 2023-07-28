@@ -12,5 +12,5 @@ descriptor:
   environment:
     HTTP_PORT: "9000"
     CONNECTION_ZK_NAME: Local ZooKeeper
-    CONNECTION_ZK_CONN: null  # Will be filled by the remote control
+    CONNECTION_ZK_CONN: "{{ZOOKEEPER_SERVERS}}"
     AUTO_CONNECT_CONNECTION_ID: ZK
