@@ -16,16 +16,16 @@ sherpas:
     command: ["echo", "DONE"]  # i.e.
 
 files:
-# File paths are gonna be applied to /Site/<app_name>/Files/<your file as you declare it>
-# Being used in the docker-compose file as a volume, the /Site/<app_name>/Files/ part of path is substituted by {{SITE}}/{{INSTANCE_ID}}/
+# File paths are gonna be applied to /Site/<app_name>/Files/<service_id>/<your file as you declare it>
+# Being used in the docker-compose file as a volume, the /Site/<app_name>/Files/<service_id> part of path is substituted by {{SITE}}/{{INSTANCE_ID}}/
 # There are three ways of declaring files used as container volumes
-# - directly in this yaml declaration - keep it as key:value pait where value is the file content
-# - using a whole directory in /Site/<app_name>/Files - keep trailing slash in this case
-# - use specific file from /Site/<app_name>/Files directory
+# - directly in this yaml declaration - keep it as key:value pair where value is the file content
+# - using a whole directory as /Site/<app_name>/Files/<service_id>/some_directory/ - keep trailing slash in this case
+# - use specific file as /Site/<app_name>/Files/<service_id>/some_file.json
 # Please keep in mind you work in 3 stages:
 # - you specify the file here
 # - it becomes part of a site directory
-# - it get mounted into a container
+# - it gets mounted into a container
 
   - "conf/hello_world.conf": |
       net:
