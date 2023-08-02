@@ -1,0 +1,27 @@
+define:
+  type: rc/descriptor
+  name: ASAB Iris
+  tech: asab
+
+descriptor:
+
+  image: docker.teskalabs.com/asab/asab-iris
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+  restart: on-failure:3
+
+files:
+  - "conf/asab-iris.conf": ""
+
+    # [smtp] must be filled from general confguration (user)
+    # [slack] must be filled from general confguration (user)
+    # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
+    # [variables] must be filled from general confguration (user)
+
+api:
+  web:
+    port: 8896
+    upstream: true
