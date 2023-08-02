@@ -12,5 +12,5 @@ versions:
   hello-world: '3.16'  # This is version of Alpine Linux, it must be aligned with asab-governator Dockerfile base image
   elasticsearch: '7.17.9'
   seacat-auth: 'v23.18-beta'
-  asab-iris: latest
+  asab-iris: v23.31-alpha
 

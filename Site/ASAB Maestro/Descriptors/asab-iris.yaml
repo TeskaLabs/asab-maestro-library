@@ -14,9 +14,7 @@ descriptor:
   restart: on-failure:3
 
 files:
-  - "conf/asab-iris.conf": |
-      [web]
-      listen=8896
+  - "conf/asab-iris.conf": ""
 
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
