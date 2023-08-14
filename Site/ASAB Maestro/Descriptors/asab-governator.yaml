@@ -17,6 +17,8 @@ descriptor:
     - /var/run/docker.sock:/var/run/docker.sock
     # For a manipulation with the site directory (/opt/site:/opt/site)
     - "{{SITE}}:/opt/site"
+    # For governator bash scripts available on host machine
+    - /opt/scripts:/opt/scripts
 
   environment:
     ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
