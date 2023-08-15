@@ -19,6 +19,6 @@ files:
   - "conf/asab-remote-control.conf": ""
 
 api:
-  web:
+  private:
     port: 8891
     upstream: true

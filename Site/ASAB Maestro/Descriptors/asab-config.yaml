@@ -22,6 +22,6 @@ files:
   - "conf/asab-config.conf": ""
 
 api:
-  web:
+  private:
     port: 8894
     upstream: true
