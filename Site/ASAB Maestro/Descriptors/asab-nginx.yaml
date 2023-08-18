@@ -8,7 +8,7 @@ descriptor:
   image: docker.teskalabs.com/lmio/distribution-nginx
 
   environment:
-    ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.08-beta seacat-auth:v23.4  # TODO: This should be read from the library Site
+    ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.32-beta seacat-auth:v23.29-alpha  # TODO: This should be read from the library Site
 
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d:ro"
@@ -68,6 +68,15 @@ files:
           alias /webroot/seacat-auth-webui/dist;
         }
 
+        # SeaCat WebUI section
+        location /seacat {
+          alias /webroot/seacat-webui/dist;
+        }
+
+        location /config {
+          root /webroot;
+        }
+
         include conf.d/parts/instances.conf;
       }
 
@@ -86,7 +95,7 @@ files:
 
         # ACME challenge is handled by a ASAB Remote Control
         location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
-          proxy_pass  http://asab-remote-control;
+          proxy_pass  http://asab-remote-control-public;
         }
 
         # Redirect everything to HTTPS
