@@ -1,0 +1,16 @@
+[{
+	"_id": "asab-webui-auth",
+	"application_type": "web",
+	"client_name": "ASAB WebUI",
+	"code_challenge_method": "none",
+	"grant_types": [
+		"authorization_code"
+	],
+	"redirect_uri_validation_method": "none",
+	"redirect_uris": [],
+	"response_types": [
+		"code"
+	],
+	"token_endpoint_auth_method": "none"
+}]
+

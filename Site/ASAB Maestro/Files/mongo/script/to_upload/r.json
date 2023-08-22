@@ -1,0 +1,21 @@
+[{
+	"_id": "*/superuser",
+	"resources": [
+		"authz:superuser"
+	]
+},
+{
+	"_id": "system/admin",
+	"_v": 1,
+	"resources": [
+		"seacat:role:access",
+		"seacat:tenant:edit",
+		"seacat:tenant:access",
+		"seacat:tenant:delete",
+		"seacat:tenant:assign",
+		"seacat:role:assign",
+		"seacat:role:edit"
+	],
+	"tenant": "system"
+}]
+
