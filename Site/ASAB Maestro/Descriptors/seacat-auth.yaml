@@ -7,12 +7,16 @@ define:
 descriptor:
   image: teskalabs/seacat-auth
   environment:
+    # provisioning is skipped in automated deployments
     SEACAT_AUTH_PROVISIONING: 0
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
 
 files:
+  # By default, SMTP configuration is mocked - e-mails are printed into log of seacat-auth
+  # Configuration of SMTP server should be done in UI > Maintenance > Configuration > General
+  # TODO ^^ this is not possible now
   - "conf/seacatauth.conf": |
       [general]
       public_api_base_url={{LMIO_URL}}/auth/api
