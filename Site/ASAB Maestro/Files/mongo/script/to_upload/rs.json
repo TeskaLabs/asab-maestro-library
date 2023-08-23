@@ -1,0 +1,77 @@
+[{
+	"_id": "seacat:access",
+	"description": "Access to Seacat Admin API and UI."
+},
+{
+	"_id": "authz:superuser",
+	"description": "Grants superuser access, including the access to all tenants."
+},
+{
+	"_id": "authz:impersonate",
+	"description": "Open a session as a different user."
+},
+{
+	"_id": "authz:tenant:access",
+	"description": "Grants non-superuser access to all tenants."
+},
+{
+	"_id": "seacat:credentials:access",
+	"description": "List credentials and view credentials details."
+},
+{
+	"_id": "seacat:credentials:edit",
+	"description": "Edit and suspend credentials."
+},
+{
+	"_id": "seacat:session:access",
+	"description": "List sessions and view session details."
+},
+{
+	"_id": "seacat:session:terminate",
+	"description": "Terminate sessions."
+},
+{
+	"_id": "seacat:resource:access",
+	"description": "List resources and view resource details."
+},
+{
+	"_id": "seacat:resource:edit",
+	"description": "Edit and delete resources."
+},
+{
+	"_id": "seacat:client:access",
+	"description": "List clients and view client details."
+},
+{
+	"_id": "seacat:client:edit",
+	"description": "Edit and delete clients."
+},
+{
+	"_id": "seacat:tenant:access",
+	"description": "List tenants, view tenant detail and see tenant members."
+},
+{
+	"_id": "seacat:tenant:edit",
+	"description": "Edit tenant data."
+},
+{
+	"_id": "seacat:tenant:delete",
+	"description": "Delete tenant."
+},
+{
+	"_id": "seacat:tenant:assign",
+	"description": "Assign and unassign tenant members."
+},
+{
+	"_id": "seacat:role:access",
+	"description": "Search tenant roles, view role detail and list role bearers."
+},
+{
+	"_id": "seacat:role:edit",
+	"description": "Create, edit and delete tenant roles. This does not enable the bearer to assign Seacat system resources."
+},
+{
+	"_id": "seacat:role:assign",
+	"description": "Assign and unassign tenant roles."
+}]
+

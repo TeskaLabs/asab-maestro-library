@@ -22,6 +22,6 @@ files:
     # [variables] must be filled from general confguration (user)
 
 api:
-  web:
+  private:
     port: 8896
     upstream: true

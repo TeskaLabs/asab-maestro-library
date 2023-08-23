@@ -5,8 +5,12 @@ define:
 descriptor:
   image: alpine
   command: sh -c "echo 'Hello, world!'; tail -f /dev/null"
+  environment:
+  # you must use "dictionary" way of writing the env variables, not list
+    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
   volumes:
   - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"
+
   # Here you can type anything that is allowed in docker-compose.yaml within the service specification.
 
 sherpas:
@@ -30,3 +34,16 @@ files:
   - "conf/hello_world.conf": |
       net:
         port: 8888
+
+api:
+  # this configuration part serves to create nginx configuration
+  # provide port on which the service listens to get a nginx location
+  # for ASAB services see https://docs.teskalabs.com/logman.io/reference/network-ports/
+  # there are two options:
+  # public - nginx location with open proxy pass
+  # private - location with oauth2 introspection if seacat-auth is present in the installation
+  private:
+    port: 8888
+    upstream: true
+  
+

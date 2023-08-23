@@ -17,13 +17,12 @@ sherpas:
 # provide a name to your sherpa and a descriptor for its very own container.
   init:
     image: library/mongo
-    entrypoint: ["/bin/bash", "/script/replica.sh"]
+    entrypoint: ["mongosh", "--nodb", "--file", "/script/mongo-init.js"]
     command: ["echo", "DONE"]
     volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
     depends_on: ["{{INSTANCE_ID}}"]
-    restart: "on-failure:10"  # TODO: it takes some time to the real mongo container to get ready for the configuration.
     environment:
       MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
 
@@ -34,6 +33,6 @@ files:
         port: 27017
       replication:
         replSetName: rs0
-  - "script/replica.sh"
-  - "script/reconfigure_replica_set.js"
+  - "script/mongo-init.js"
+  - "script/to_upload/"
   # "script/new_config.json" is added by ASAB Remote Control

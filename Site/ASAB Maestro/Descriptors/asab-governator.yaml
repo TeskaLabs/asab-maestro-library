@@ -30,6 +30,6 @@ files:
       listen=8892
 
 api:
-  web:
+  private:
     port: 8892
     upstream: true
