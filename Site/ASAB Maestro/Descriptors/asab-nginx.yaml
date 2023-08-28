@@ -37,6 +37,7 @@ secrets:
     file: "{{SITE}}/{{INSTANCE_ID}}/secrets/private-key.pem"
 
 files:
+  # Top level nginx configuration common for all servers
   - "conf.d/default.conf": |
       include conf.d/parts/upstreams.conf;
 
