@@ -93,6 +93,10 @@ files:
       }
 
   # HTTP
+  # The HTTP server exists for following reasons:
+  # - redirect user browsers to HTTPS
+  # - facilitate ACME challenge (ie Let's Encrypt SSL certificate provisioning)
+  # IMPORTANT: There is no API provided by this server.
   - "conf.d/http_default.conf": |
       server {
         listen 80 default_server;
