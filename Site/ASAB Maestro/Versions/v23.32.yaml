@@ -1,10 +1,10 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v23.21
+  version: v23.32
 
 versions:
-  zookeeper: '3.8'
+  zookeeper: '3.9'
   asab-remote-control: latest
   asab-governator: stable
   asab-library: v23.15-beta
