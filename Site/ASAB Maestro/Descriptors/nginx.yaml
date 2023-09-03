@@ -126,12 +126,5 @@ files:
         include conf.d/parts/instances.conf;
       }
 
-sherpas:
-  init:
-    image: library/nginx
-    environment:
-      ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.32-beta seacat-auth:v23.29-alpha  # TODO: This should be read from the library Site
-    command: ["echo", "DONE"]
-    volumes:
-      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
-    depends_on: ["{{INSTANCE_ID}}"]
+  # The script that deals with the web ui application distribution
+  - /webui-dist.sh
