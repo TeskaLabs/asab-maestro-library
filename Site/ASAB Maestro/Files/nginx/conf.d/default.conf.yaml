@@ -1,0 +1,2 @@
+# Top level nginx configuration common for all servers
+include conf.d/parts/upstreams.conf;
