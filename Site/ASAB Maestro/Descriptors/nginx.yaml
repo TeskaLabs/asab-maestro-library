@@ -42,8 +42,13 @@ files:
 
 sherpas:
   webui-dist:
-    image: docker.teskalabs.com/asab/asab-governator:stable  # We use ASAB Governator image as a sherpa image
-    command: ["sh", "/sherpa/webui-dist.sh"]
+    image: library/nginx
+
+    environment:
+      ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.32-beta seacat-auth:v23.29-alpha
+
+    command: ["bash", "-e", "/sherpa/webui-dist.sh"]
+
     volumes:
       # This is where web ui archives are cached to prevent unnecessary downloads
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
