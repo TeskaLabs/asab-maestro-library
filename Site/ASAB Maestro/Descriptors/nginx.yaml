@@ -42,8 +42,10 @@ files:
   # HTTPS
   - "conf.d/https_default.conf": |
       server {
-        listen 443 ssl http2 default_server;
-        # TODO: listen [::]:443 ssl http2 default_server;
+        listen 443 ssl default_server;
+        # TODO: listen [::]:443 ssl default_server;
+
+        http2 on;
 
         server_name _;
         server_tokens off;
@@ -106,11 +108,6 @@ files:
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header X-Frame-Options DENY;
         add_header X-Content-Type-Options nosniff;
-
-        # ACME challenge is handled by a ASAB Remote Control
-        location ~ ^/\.well-known/acme-challenge/([-_a-zA-Z0-9]+)$ {
-          proxy_pass  http://asab-remote-control-public;
-        }
 
         # Redirect everything to HTTPS
         return 301 https://$host$request_uri;
