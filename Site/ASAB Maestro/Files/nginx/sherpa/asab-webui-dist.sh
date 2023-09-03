@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 # Test by:
-# $ ./gov.sh compose up nginx-1-webui-dist
+# $ ./gov.sh compose up nginx-1-asab-webui-dist
 
 TEMPFILE=/tmp/dist.tar.lzma
 ASAB_WEBUI_DISTRIBUTION_BASEURL=${ASAB_WEBUI_DISTRIBUTION_BASEURL:-https://asabwebui.z16.web.core.windows.net/}
@@ -16,7 +16,7 @@ cleanup() {
 
 
 install() {
-	echo "Web UI Distribution: Installing $1 $2 ..."
+	echo "ASAB Web UI Distribution: Installing $1 $2 ..."
 
 	# Download the distribution file
 	rm -f ${TEMPFILE}
@@ -29,13 +29,13 @@ install() {
 
 	if [ $? -ne 0 ]
 	then
-		echo "Web UI Distribution: Failed to download the $1."
+		echo "ASAB Web UI Distribution: Failed to download the $1."
 		exit 1
 	fi
 
 	if [ ! -f ${TEMPFILE} ]; then
 		# This happens then ETag check indicates no change in of the previously downloaded distribution
-		echo "Web UI Distribution: $1 already installed and up-to-date."
+		echo "ASAB Web UI Distribution: $1 already installed and up-to-date."
 		rm /cache/$1.etag-new
 		return
 	fi
@@ -45,7 +45,7 @@ install() {
 	lzcat ${TEMPFILE} | tar x -C /webroot/$1-new
 	if [ $? -ne 0 ]
 	then
-		echo "Web UI Distribution: Failed to untar the $1."
+		echo "ASAB Web UI Distribution: Failed to untar the $1."
 		exit 2
 	fi
 
@@ -57,7 +57,7 @@ install() {
 }
 
 
-echo "Web UI Distribution: Started ..."
+echo "ASAB Web UI Distribution: Started ..."
 trap cleanup EXIT
 
 for app in $ASAB_WEBUI_DISTRIBUTION_APP
@@ -65,4 +65,4 @@ do
 	install ${app/:/ }
 done
 
-echo "Web UI Distribution: Completed."
+echo "ASAB Web UI Distribution: Completed."
