@@ -15,7 +15,7 @@ descriptor:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx"
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
     # The script that deals with the Web UI distribution
-    - "{{SITE}}/{{INSTANCE_ID}}/asab-webui-dist.sh:/docker-entrypoint.d/40-asab-webui-dist.sh:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/webui-dist.sh:/docker-entrypoint.d/40-webui-dist.sh:ro"
 
   secrets:
     - "{{INSTANCE_ID}}--certificate.pem"
