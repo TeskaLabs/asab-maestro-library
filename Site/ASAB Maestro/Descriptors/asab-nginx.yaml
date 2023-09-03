@@ -1,3 +1,5 @@
+# OBSOLETED, USE nginx.yaml instead.
+
 define:
   type: rc/descriptor
   name: NGINX with ASAB Web UI distribution script
