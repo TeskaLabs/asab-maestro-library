@@ -47,8 +47,8 @@ sherpas:
     volumes:
       # This is where web ui archives are cached to prevent unnecessary downloads
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
-    # Webroot directory
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
-    # Read-only NGINX configuration
-    - "{{SITE}}/{{INSTANCE_ID}}/sherpa:/sherpa:ro"
+      # Webroot directory
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
+      # Read-only NGINX configuration
+      - "{{SITE}}/{{INSTANCE_ID}}/sherpa:/sherpa:ro"
     depends_on: ["{{INSTANCE_ID}}"]
