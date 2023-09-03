@@ -127,4 +127,4 @@ files:
       }
 
   # The script that deals with the web ui application distribution
-  - /webui-dist.sh
+  - webui-dist.sh
