@@ -42,7 +42,7 @@ files:
 
 sherpas:
   webui-dist:
-    image: library/nginx
+    image: docker.teskalabs.com/asab/asab-governator:stable  # We use ASAB Governator image as a sherpa
 
     environment:
       ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.32-beta seacat-auth:v23.29-alpha
