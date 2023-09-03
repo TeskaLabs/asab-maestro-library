@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+# Test by:
+# $ ./gov.sh compose up nginx-1-webui-dist
 
 TEMPFILE=/tmp/dist.tar.lzma
 ASAB_WEBUI_DISTRIBUTION_BASEURL=${ASAB_WEBUI_DISTRIBUTION_BASEURL:-https://asabwebui.z16.web.core.windows.net/}
