@@ -1,0 +1,17 @@
+define:
+  type: rc/descriptor
+  name: InfluxDB
+  url: //docs.influxdata.com/
+
+descriptor:
+  image: influxdb
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+  environment:
+    DOCKER_INFLUXDB_INIT_MODE: setup
+    DOCKER_INFLUXDB_INIT_USERNAME: admin
+    DOCKER_INFLUXDB_INIT_PASSWORD: adminadmin
+    DOCKER_INFLUXDB_INIT_ORG: asab-maestro
+    DOCKER_INFLUXDB_INIT_BUCKET: asab-maestro
+    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_ADMIN_TOKEN}}'
