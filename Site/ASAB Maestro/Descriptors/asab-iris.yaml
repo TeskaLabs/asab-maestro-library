@@ -13,9 +13,9 @@ descriptor:
 
   restart: on-failure:3
 
-files:
-  - "conf/asab-iris.conf": ""
-
+asab:
+  configname: conf/asab-iris.conf
+  config: {}
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
     # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
