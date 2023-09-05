@@ -26,6 +26,6 @@ api:
 
 nginx:
   https:
-    api:
+  - api:
       port: 8893  # The REST API is at tcp/8893
       upstream: true
