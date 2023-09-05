@@ -23,3 +23,9 @@ api:
   private:
     port: 8893  # The REST API is at tcp/8893
     upstream: true
+
+nginx:
+  https:
+    api:
+      port: 8893  # The REST API is at tcp/8893
+      upstream: true
