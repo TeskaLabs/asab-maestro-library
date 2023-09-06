@@ -29,70 +29,6 @@ function reconfigureReplicaSet() {
 }
 
 /**
- * The function `load_data` reads JSON files from a specified directory, transforms the data, and
- * returns it as an object.
- */
-function load_data() {
-	const data = {}
-
-	const files = fs.readdirSync("/script/to_upload");
-
-	files.forEach(file => {
-		const filePath = path.join("/script/to_upload", file);
-		const collectionName = file.slice(0,-5)
-		data[collectionName] = transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))
-	});
-
-	return data
-}
-
-/**
- * The function "transform_collection" takes a collection name and data as input, and adds additional
- * fields to each record in the data to satisfy seacat auth requirements
- * @returns the modified data array.
- */
-function transform_collection(collectionName, data) {
-	data.forEach((record) => {
-		if (collectionName === "c") {
-			record["_id"] = ObjectId(record._id)  // IDs of users are stored as ObjectId
-		}
-		record["_c"] = new Date()
-		record["_m"] = new Date()
-		record["_v"] = 1
-	});
-
-	return data
-}
-
-/**
- * The function upsertSeaCatAuthCollections inserts or updates multiple collections in the "auth"
- * database using the provided data, and handles duplicate key errors.
- * @param data - The `data` parameter is an object that contains collections and their corresponding
- * data to be upserted into the "auth" database. Each key in the `data` object represents a collection
- * name, and the corresponding value is an array of documents to be inserted or updated in that
- * collection.
- */
-function insertSeaCatAuthCollections(data) {
-	// seacat auth uses "auth" database
-	authDb = db.getSiblingDB( "auth" );
-	Object.keys(data).forEach(function(collectionName) {
-		const collection = authDb.getCollection(collectionName)
-		try {
-			res = collection.insertMany(data[collectionName], {ordered: false})
-			print(`Insterted ${Object.keys(res.insertedIds).length} into ${collectionName} collection.`)
-		} catch (MongoBulkWriteError) {
-			if (MongoBulkWriteError.code === 11000) {
-				res = MongoBulkWriteError.result
-				print(`Insterted ${res.insertedCount} into ${collectionName} collection.`)
-			} else {
-				throw MongoBulkWriteError
-			}
-		}
-	});
-}
-
-
-/**
  * The main function reads JSON files from a directory, connects to multiple MongoDB instances,
  * reconfigures the replica set, and inserts data into collections, with a maximum of 5 attempts.
  */
@@ -125,21 +61,6 @@ function main() {
 				break
 			}
 
-			try {
-				data = load_data()
-			} catch (err) {
-				print('Error reading directory "/script/to_upload":', err);
-				quit(1);
-			}
-			
-	
-			try {
-				insertSeaCatAuthCollections(data);
-			} catch (err) {
-				print("UNSUCCESSFUL_DATA_INSERT", err);
-				quit(1)
-			}
-			
 			print("SUCCESS!")
 			quit(0)  // SUCCESS!
 		};

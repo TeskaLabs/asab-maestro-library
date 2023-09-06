@@ -34,5 +34,4 @@ files:
       replication:
         replSetName: rs0
   - "script/mongo-init.js"
-  - "script/to_upload/"
   # "script/new_config.json" is added by ASAB Remote Control
