@@ -18,8 +18,9 @@ descriptor:
   # This is critical service
   restart: always
 
-files:
-  - "conf/asab-config.conf": ""
+asab:
+  configname: conf/asab-config.conf
+  config: {}
 
 api:
   private:
