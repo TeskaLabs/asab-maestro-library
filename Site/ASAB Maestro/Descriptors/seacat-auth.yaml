@@ -13,6 +13,18 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
 
+sherpas:
+# Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
+# provide a name to your sherpa and a descriptor for its very own container.
+  mongo:
+    image: library/mongo
+    entrypoint: ["mongosh", "--nodb", "--file", "/script/mongo-insert.js"]
+    command: ["echo", "DONE"]
+    volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script"
+    environment:
+      MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
+
 asab:
   configname: conf/seacatauth.conf
   config:
