@@ -13,3 +13,16 @@ commons:
 
   # We do restarts
   restart: unless-stopped
+
+# Common descriptor for sherpas
+sherpa:
+  # Everything is exposed on the host network
+  network_mode: host
+
+  labels:
+    com.teskalabs.asab.maestro: sherpa
+
+  # Limit logging size
+  logging:
+    options:
+      max-size: 10m
