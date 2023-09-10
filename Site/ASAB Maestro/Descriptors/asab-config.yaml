@@ -29,13 +29,13 @@ nginx:
       upstream: true
       port: 8894  # The REST API is at tcp/8893
 
-    location /api/{{INSTANCE_ID}}:
+    "location /api/{{INSTANCE_ID}}":
       - {{AUTH_INTROSPECTION}}
       - {{WEBSOCKET}}
       - rewrite ^/api/{{INSTANCE_ID}}/(.*) /$1 break
       - "proxy_pass http://{{NODE_ID}}:{{PORT}}"
 
-    location /api/{{SERVICE_ID}}:
+    "location /api/{{SERVICE_ID}}":
       - {{AUTH_INTROSPECTION}}
       - {{WEBSOCKET}}
       - rewrite ^/api/{{SERVICE_ID}}/(.*) /$1 break
