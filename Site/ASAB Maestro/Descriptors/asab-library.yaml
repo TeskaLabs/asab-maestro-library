@@ -18,11 +18,10 @@ asab:
 
 api:
   private:
-    port: &apiport 8893  # The REST API is at tcp/8893
+    port: 8893  # The REST API is at tcp/8893
     upstream: true
-
 
 nginx:
   https:
     upstream: true
-    api: *apiport
+    port: 8893  # The REST API is at tcp/8893

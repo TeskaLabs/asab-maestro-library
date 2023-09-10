@@ -24,12 +24,12 @@ asab:
   configname: conf/asab-governator.conf
   config:
     web:
-      listen: &apiport 8892
+      listen: *apiport
 
 nginx:
   https:
     upstream: true
-    api: *apiport
+    api: &apiport 8892
 
 api:
   private:
