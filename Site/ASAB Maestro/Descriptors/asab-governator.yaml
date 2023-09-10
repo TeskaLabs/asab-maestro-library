@@ -23,7 +23,7 @@ descriptor:
 nginx:
   https:
     upstream: true
-    api: &apiport 8892
+    port: &apiport 8892
 
 asab:
   configname: conf/asab-governator.conf
