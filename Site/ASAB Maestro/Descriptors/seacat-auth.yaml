@@ -1,3 +1,4 @@
+
 define:
   type: rc/descriptor
   name: Seacat Auth
@@ -59,3 +60,15 @@ api:
     port: 8900
     upstream: true
 
+nginx:
+  https:
+    upstream: true
+    port: 8894  # The REST API is at tcp/8893
+
+    "location = /_oauth2_introspect":
+      - internal
+      - proxy_method POST
+      - proxy_set_body "$http_authorization"
+      - proxy_set_header X-Request-URI "$request_uri"
+      - proxy_pass {{UPSTREAM}}/openidconnect/introspect/nginx
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
