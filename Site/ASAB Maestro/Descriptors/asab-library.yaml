@@ -1,7 +1,6 @@
 define:
   type: rc/descriptor
   name: ASAB Library
-  tech: asab
 
 descriptor:
   image: docker.teskalabs.com/asab/asab-library

@@ -2,7 +2,6 @@ define:
   type: rc/descriptor
   name: Seacat Auth
   url: https://github.com/TeskaLabs/seacat-auth
-  tech: asab
 
 descriptor:
   image: teskalabs/seacat-auth

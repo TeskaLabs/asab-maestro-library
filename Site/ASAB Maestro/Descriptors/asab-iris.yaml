@@ -1,7 +1,6 @@
 define:
   type: rc/descriptor
   name: ASAB Iris
-  tech: asab
 
 descriptor:
 
