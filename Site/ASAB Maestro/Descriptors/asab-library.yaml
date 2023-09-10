@@ -9,9 +9,6 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
-  environment:
-    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
-
   # This is critical service
   restart: always
 

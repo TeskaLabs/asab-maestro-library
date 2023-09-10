@@ -17,9 +17,6 @@ descriptor:
     # For a manipulation with the site directory (/opt/site:/opt/site)
     - "{{SITE}}:/opt/site"
 
-  environment:
-    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
-
   # This is critical service
   restart: always
 
@@ -27,7 +24,12 @@ asab:
   configname: conf/asab-governator.conf
   config:
     web:
-      listen: 8892
+      listen: &apiport 8892
+
+nginx:
+  https:
+    upstream: true
+    api: *apiport
 
 api:
   private:

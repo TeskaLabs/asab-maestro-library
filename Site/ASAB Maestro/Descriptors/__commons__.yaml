@@ -2,7 +2,7 @@ define:
   type: rc/commons
   name: ASAB Maestro common provisions for docker-compose.yaml
 
-commons:
+descriptor:
   hostname: null  # Will be filled by the instance_id
   container_name: null  # Will be filled by the instance_id
 
