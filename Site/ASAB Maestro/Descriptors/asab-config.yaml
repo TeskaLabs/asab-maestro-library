@@ -33,10 +33,10 @@ nginx:
       - {{AUTH_INTROSPECTION}}
       - {{WEBSOCKET}}
       - rewrite ^/api/{{INSTANCE_ID}}/(.*) /$1 break
-      - proxy_pass http://{{NODE_ID}}:{{PORT}}
+      - "proxy_pass http://{{NODE_ID}}:{{PORT}}"
 
     location /api/{{SERVICE_ID}}:
       - {{AUTH_INTROSPECTION}}
       - {{WEBSOCKET}}
       - rewrite ^/api/{{SERVICE_ID}}/(.*) /$1 break
-      - proxy_pass http://upstream-{{SERVICE_ID}}-{{PORT}}
+      - "proxy_pass http://upstream-{{SERVICE_ID}}-{{PORT}}"
