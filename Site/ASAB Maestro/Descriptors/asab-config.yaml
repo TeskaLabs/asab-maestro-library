@@ -22,3 +22,21 @@ api:
   private:
     port: 8894
     upstream: true
+
+nginx:
+  https:
+    api:
+      upstream: true
+      port: 8894  # The REST API is at tcp/8893
+
+    location /api/{{INSTANCE_ID}}:
+		  - {{AUTH_INTROSPECTION}}
+      - {{WEBSOCKET}}
+		  - rewrite ^/api/{{INSTANCE_ID}}/(.*) /$1 break
+		  - proxy_pass {{NODE_ID}}:{{PORT}}
+
+    location /api/{{SERVICE_ID}}:
+		  - {{AUTH_INTROSPECTION}}
+      - {{WEBSOCKET}}
+		  - rewrite ^/api/{{SERVICE_ID}}/(.*) /$1 break
+		  - proxy_pass http://upstream-{{SERVICE_ID}}-{{PORT}}
