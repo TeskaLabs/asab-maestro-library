@@ -20,16 +20,16 @@ descriptor:
   # This is critical service
   restart: always
 
+nginx:
+  https:
+    upstream: true
+    api: &apiport 8892
+
 asab:
   configname: conf/asab-governator.conf
   config:
     web:
       listen: *apiport
-
-nginx:
-  https:
-    upstream: true
-    api: &apiport 8892
 
 api:
   private:
