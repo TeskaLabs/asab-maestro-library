@@ -30,21 +30,21 @@ nginx:
       port: 8894  # The REST API is at tcp/8893
 
     location /api/{{INSTANCE_ID}}:
-      - "{{AUTH_INTROSPECTION}}"
-      - "proxy_http_version 1.1"
-		  - proxy_set_header Upgrade $http_upgrade
+      - '{{AUTH_INTROSPECTION}}''
+      - 'proxy_http_version 1.1'
+		  - 'proxy_set_header Upgrade $http_upgrade'
 		  - 'proxy_set_header Connection "Upgrade"'
       - rewrite ^/api/{{INSTANCE_ID}}/(.*) /$1 break
-      - "proxy_pass http://{{NODE_ID}}:{{API_PORT}}"
+      - 'proxy_pass http://{{NODE_ID}}:{{API_PORT}}'
 
     location /api/{{SERVICE_ID}}:
-      - "{{AUTH_INTROSPECTION}}"
-      - "proxy_http_version 1.1"
-		  - proxy_set_header Upgrade $http_upgrade
+      - '{{AUTH_INTROSPECTION}}'
+      - 'proxy_http_version 1.1'
+		  - 'proxy_set_header Upgrade $http_upgrade'
 		  - 'proxy_set_header Connection "Upgrade"'
       - rewrite ^/api/{{SERVICE_ID}}/(.*) /$1 break
-      - "proxy_pass http://upstream-{{SERVICE_ID}}-{{API_PORT}}"
-    
+      - 'proxy_pass http://upstream-{{SERVICE_ID}}-{{API_PORT}}'
+
     location /:
       - gzip_static on
       - alias /webroot/lmio-webui/dist
