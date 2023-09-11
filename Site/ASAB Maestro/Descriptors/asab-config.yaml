@@ -30,7 +30,7 @@ nginx:
       port: 8894  # The REST API is at tcp/8893
 
     location /api/{{INSTANCE_ID}}:
-      - '{{AUTH_INTROSPECTION}}''
+      - '{{AUTH_INTROSPECTION}}'
       - 'proxy_http_version 1.1'
 		  - 'proxy_set_header Upgrade $http_upgrade'
 		  - 'proxy_set_header Connection "Upgrade"'
