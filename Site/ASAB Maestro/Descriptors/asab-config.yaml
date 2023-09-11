@@ -31,15 +31,27 @@ nginx:
 
     location /api/{{INSTANCE_ID}}:
       - "{{AUTH_INTROSPECTION}}"
-      - "{{WEBSOCKET}}"
+
+      # Web socket
+      - proxy_http_version 1.1
+		  - proxy_set_header Upgrade $http_upgrade
+		  - proxy_set_header Connection "Upgrade"
+
+      # The proxy to the API
       - rewrite ^/api/{{INSTANCE_ID}}/(.*) /$1 break
-      - "proxy_pass http://{{NODE_ID}}:{{PORT}}"
+      - "proxy_pass http://{{NODE_ID}}:{{API_PORT}}"
 
     location /api/{{SERVICE_ID}}:
       - "{{AUTH_INTROSPECTION}}"
-      - "{{WEBSOCKET}}"
+      
+      # Web socket
+      - proxy_http_version 1.1
+		  - proxy_set_header Upgrade $http_upgrade
+		  - proxy_set_header Connection "Upgrade"
+      
+      # The proxy to the API
       - rewrite ^/api/{{SERVICE_ID}}/(.*) /$1 break
-      - "proxy_pass http://upstream-{{SERVICE_ID}}-{{PORT}}"
+      - "proxy_pass http://upstream-{{SERVICE_ID}}-{{API_PORT}}"
     
     location /:
       - gzip_static on
