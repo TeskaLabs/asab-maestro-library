@@ -22,16 +22,11 @@ descriptor:
 
 nginx:
   https:
-    upstream: true
-    port: &apiport 8892
+    api:
+      port: &apiport 8892
 
 asab:
   configname: conf/asab-governator.conf
   config:
     web:
       listen: *apiport
-
-api:
-  private:
-    port: 8892
-    upstream: true

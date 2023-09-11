@@ -20,7 +20,7 @@ asab:
     # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
     # [variables] must be filled from general confguration (user)
 
-api:
-  private:
-    port: 8896
-    upstream: true
+nginx:
+  https:
+    api:
+      port: 8896

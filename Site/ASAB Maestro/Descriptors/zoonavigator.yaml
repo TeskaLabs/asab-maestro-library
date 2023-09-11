@@ -14,3 +14,9 @@ descriptor:
     CONNECTION_ZK_NAME: Local ZooKeeper
     CONNECTION_ZK_CONN: "{{ZOOKEEPER_SERVERS}}"
     AUTO_CONNECT_CONNECTION_ID: ZK
+
+
+nginx:
+  https:
+    location = /zoonavigator:
+      - proxy_pass http://{NODE_ID}:9000

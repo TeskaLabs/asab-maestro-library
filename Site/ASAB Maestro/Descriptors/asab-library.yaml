@@ -16,12 +16,8 @@ asab:
   configname: conf/asab-library.conf
   config: {}
 
-api:
-  private:
-    port: 8893  # The REST API is at tcp/8893
-    upstream: true
-
 nginx:
   https:
-    upstream: true
-    port: 8893  # The REST API is at tcp/8893
+    api:
+      port: 8893
+

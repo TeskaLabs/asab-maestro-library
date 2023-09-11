@@ -18,7 +18,7 @@ asab:
   configname: conf/asab-remote-control.conf
   config: {}
 
-api:
-  public:
-    port: 8891
-    upstream: true
+nginx:
+  https:
+    api:
+      port: 8891

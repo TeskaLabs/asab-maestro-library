@@ -18,17 +18,7 @@ asab:
   configname: conf/asab-config.conf
   config: {}
 
-api:
-  private:
-    port: 8894
-    upstream: true
-
 nginx:
   https:
     api:
-      upstream: true
-      port: 8894  # The REST API is at tcp/8893
-
-    location /:
-      - gzip_static on
-      - alias /webroot/lmio-webui/dist
+      port: 8894

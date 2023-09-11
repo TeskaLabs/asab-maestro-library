@@ -62,10 +62,10 @@ api:
 
 nginx:
   https:
-    upstream: true
-    port: 8894  # The REST API is at tcp/8893
+    api:
+      port: 8900  # The REST API is at tcp/8893
 
-    "location = /_oauth2_introspect":
+    location = /_oauth2_introspect:
       - internal
       - proxy_method POST
       - proxy_set_body "$http_authorization"
