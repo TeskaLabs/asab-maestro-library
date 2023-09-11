@@ -19,4 +19,4 @@ descriptor:
 nginx:
   https:
     location = /zoonavigator:
-      - proxy_pass http://{NODE_ID}:9000
+      - proxy_pass http://{{NODE_ID}}:9000
