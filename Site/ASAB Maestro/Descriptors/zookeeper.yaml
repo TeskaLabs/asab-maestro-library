@@ -9,14 +9,15 @@ descriptor:
   image: library/zookeeper
 
   volumes:
-      - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"  # This must be writable b/c of zoo.cfg.dynamic.tmp is stored there by Zookeeper
+      - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/logs"
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/datalog:/datalog"
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/siteconf/logback.xml"  # This is to enable multiaddress assingment in the Zookeeper
+    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"  # This is to enable multiaddress assingment in the Zookeeper
 
   healthcheck:
     test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 || exit -1"]
@@ -26,5 +27,13 @@ descriptor:
     start_period: 30s
 
 files:
-  - conf/
-  - conf/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
+  - confro/
+  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
+  - confo/zkstart.sh: |
+      #!/bin/bash
+      set -e
+      if [[ ! -f "$ZOO_DATA_DIR/myid" ]]; then
+        echo "${ZOO_MY_ID:-1}" > "$ZOO_DATA_DIR/myid"
+      fi
+
+      exec "$@"
