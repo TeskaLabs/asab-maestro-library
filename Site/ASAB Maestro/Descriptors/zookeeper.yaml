@@ -8,6 +8,8 @@ descriptor:
 
   image: library/zookeeper
 
+  entrypoint: bash /confro/zkstart.sh
+
   volumes:
       - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"
@@ -28,12 +30,5 @@ descriptor:
 
 files:
   - confro/
-  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
-  - confro/zkstart.sh: |
-      #!/bin/bash
-      set -e
-      if [[ ! -f "$ZOO_DATA_DIR/myid" ]]; then
-        echo "${ZOO_MY_ID:-1}" > "$ZOO_DATA_DIR/myid"
-      fi
 
-      exec "$@"
+  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
