@@ -19,7 +19,7 @@ descriptor:
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"  # This is to enable multiaddress assingment in the Zookeeper
+    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
 
   healthcheck:
     test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 || exit -1"]
