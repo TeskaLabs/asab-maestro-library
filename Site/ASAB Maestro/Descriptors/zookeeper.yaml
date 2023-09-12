@@ -31,5 +31,4 @@ descriptor:
 
 files:
   - confro/
-
   - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
