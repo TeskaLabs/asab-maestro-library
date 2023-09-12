@@ -8,7 +8,8 @@ descriptor:
 
   image: library/zookeeper
 
-  entrypoint: ["/bin/bash", "/confro/zkstart.sh"]
+  entrypoint: ["/bin/bash", "-e", "/confro/zkstart.sh"]
+  command: ["zkServer.sh", "start-foreground"]
 
   volumes:
       - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"  # Read-only (ro) configuration from the site directory
