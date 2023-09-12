@@ -16,7 +16,6 @@ descriptor:
     AUTO_CONNECT_CONNECTION_ID: ZK
     BASE_HREF: /zoonavigator
 
-
 nginx:
   https:
     location /zoonavigator:
