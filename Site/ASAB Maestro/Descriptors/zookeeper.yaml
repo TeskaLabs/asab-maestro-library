@@ -10,13 +10,14 @@ descriptor:
 
   volumes:
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"  # Configuration is created during bootstrap process
+      - "{{SITE}}/{{INSTANCE_ID}}/conf:/siteconf:ro"  # The site configuration directory is mapped also
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/logs"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/datalog:/datalog"
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true"  # This is to enable multiaddress assingment in the Zookeeper
+    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/siteconf/logback.xml"  # This is to enable multiaddress assingment in the Zookeeper
 
   healthcheck:
     test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 || exit -1"]
