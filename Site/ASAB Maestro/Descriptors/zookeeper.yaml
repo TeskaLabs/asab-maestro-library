@@ -27,4 +27,4 @@ descriptor:
     start_period: 30s
 
 files:
-  - logback.xml
+  - conf/logback.xml
