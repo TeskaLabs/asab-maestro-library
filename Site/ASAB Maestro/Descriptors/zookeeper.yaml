@@ -8,11 +8,11 @@ descriptor:
 
   image: library/zookeeper
 
-  entrypoint: bash /confro/zkstart.sh
+  entrypoint: ["/bin/bash", "/confro/zkstart.sh"]
 
   volumes:
-      - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"
-      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"
+      - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"  # Read-only (ro) configuration from the site directory
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"  # Writeable directory with zoo.cfg and dynamic parts managed by Zookeeper
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/logs"
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/datalog:/datalog"
