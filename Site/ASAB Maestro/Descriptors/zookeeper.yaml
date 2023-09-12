@@ -11,7 +11,7 @@ descriptor:
   volumes:
       - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf"  # This must be writable b/c of zoo.cfg.dynamic.tmp is stored there by Zookeeper
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/logs"
-      - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/datalog:/datalog"
 
   environment:
