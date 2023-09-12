@@ -29,7 +29,7 @@ descriptor:
 files:
   - confro/
   - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
-  - confo/zkstart.sh: |
+  - confro/zkstart.sh: |
       #!/bin/bash
       set -e
       if [[ ! -f "$ZOO_DATA_DIR/myid" ]]; then
