@@ -24,10 +24,11 @@ descriptor:
   # This is critical service
   restart: always
 
-files:
-  - "conf/asab-governator.conf": |
-      [web]
-      listen=8892
+asab:
+  configname: conf/asab-governator.conf
+  config:
+    web:
+      listen: 8892
 
 api:
   private:
