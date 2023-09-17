@@ -34,6 +34,9 @@ asab:
       public_api_base_url: "{{PUBLIC_URL}}/auth/api"
       auth_webui_base_url: "{{PUBLIC_URL}}/auth"
 
+    seacatauth:
+      private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
+
     asab:storage:
       type: mongodb
       mongodb_uri: "{{MONGODB_URI}}"
