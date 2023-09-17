@@ -13,7 +13,7 @@ descriptor:
   command: mongod --config /etc/mongo/mongod.conf --directoryperdb
 
   healthcheck:
-    test: ["CMD-SHELL", "echo 'db.runCommand("ping").ok' | mongosh 127.0.0.1:27017/rs0 --quiet"]
+    test: ["CMD-SHELL", "echo db.runCommand("ping").ok | mongosh 127.0.0.1:27017/rs0 --quiet"]
     interval: 60s
     timeout: 10s
     retries: 5
