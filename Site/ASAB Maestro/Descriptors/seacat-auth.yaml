@@ -39,12 +39,12 @@ asab:
 
     asab:storage:
       type: mongodb
-      mongodb_uri: "{{MONGODB_URI}}"
+      mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
       aes_key: null  # Will be filled by ASAB Remote Control
 
     seacatauth:credentials:mongodb:default:
-      mongodb_uri: "{{MONGODB_URI}}"
+      mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
       tenants: yes
       register: no
