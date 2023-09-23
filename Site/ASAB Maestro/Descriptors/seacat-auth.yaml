@@ -59,7 +59,7 @@ nginx:
 
   upstreams:
     # Public Auth API at tcp/3081
-    upstream-seacat-auth-public: 3081
+    upstream-seacat-auth-3081: 3081
 
   https:
     api:
@@ -75,4 +75,4 @@ nginx:
 
     location /api/openidconnect:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
-      - proxy_pass http://upstream-seacat-auth-public
+      - proxy_pass http://upstream-seacat-auth-3081
