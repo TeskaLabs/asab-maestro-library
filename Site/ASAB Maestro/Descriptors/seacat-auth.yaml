@@ -57,9 +57,9 @@ asab:
 
 nginx:
 
-  # Public Auth API at tcp/3081
-  upstream upstream-seacat-auth-public:
-    - port 3081
+  upstreams:
+    # Public Auth API at tcp/3081
+    upstream-seacat-auth-public: 3081
 
   https:
     api:
