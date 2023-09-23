@@ -67,3 +67,7 @@ nginx:
       - proxy_set_header X-Request-URI "$request_uri"
       - proxy_pass http://{{UPSTREAM}}/openidconnect/introspect/nginx
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
+
+    location = /api/openidconnect:
+      - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break;
+      - proxy_pass http://{{UPSTREAM}};
