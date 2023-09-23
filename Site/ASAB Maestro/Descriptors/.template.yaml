@@ -35,15 +35,11 @@ files:
       net:
         port: 8888
 
-api:
+nginx:
   # this configuration part serves to create nginx configuration
   # provide port on which the service listens to get a nginx location
   # for ASAB services see https://docs.teskalabs.com/logman.io/reference/network-ports/
-  # there are two options:
-  # public - nginx location with open proxy pass
-  # private - location with oauth2 introspection if seacat-auth is present in the installation
-  private:
-    port: 8888
-    upstream: true
-  
+  https:
+    api:
+      port: 8896
 

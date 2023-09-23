@@ -55,14 +55,6 @@ asab:
       # TODO ^^ this is not possible now
       host: <mocked>
 
-api:
-  public:
-    port: 3081
-    upstream: true
-  private:
-    port: 8900
-    upstream: true
-
 nginx:
   https:
     api:
