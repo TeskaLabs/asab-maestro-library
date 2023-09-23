@@ -1,0 +1,34 @@
+define:
+  type: rc/descriptor
+  name: Elasticsearch
+  url: https://www.elastic.co/products/elasticsearch
+
+descriptor:
+
+  image: elasticsearch/elasticsearch
+
+  volumes:
+    - null:/usr/share/elasticsearch/data  # This will be replaced by Elasticsearch tech
+    # A directory with certificate 
+    - "{{SITE}}/{{INSTANCE_ID}}/certs:/usr/share/elasticsearch/config/certs:ro"
+
+  environment:
+    network.host: {{NODE_ID}}
+    # TODO: Rack awareness - node.attr.rack_id=lm11
+    node.name: {{INSTANCE_ID}}
+    node.roles: master,ingest  # TODO: Based on the phase
+    cluster.name: asab-es  # TODO: Eventually from the model / global configuration
+    discovery.seed_hosts: null # TODO: Fill with all other nodes excluding me (ie "lm11:9300")
+    cluster.initial_master_nodes: null # TODO: Fill with all master nodes excluding me (ie "lm11-es-master")
+    http.port: null  # TODO: Assign from the Elasticsearch tech (ie 9200)
+    transport.port: null     # TODO: Assign from the Elasticsearch tech (ie 9300); meant for internal cluster communication
+
+    ES_JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"  # TODO: Append "-Xms2g -Xmx2g" by Elasticsearch tech
+    ELASTIC_PASSWORD: null  # Will be filled by the Elasticsearch tech
+
+    pack.security.enabled: true
+    xpack.security.transport.ssl.enabled: true
+    xpack.security.transport.ssl.verification_mode: certificate
+    xpack.security.transport.ssl.certificate_authorities: certs/ca.pem
+    xpack.security.transport.ssl.certificate: certs/certificate.pem
+    xpack.security.transport.ssl.key: certs/key.pem
