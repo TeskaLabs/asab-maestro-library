@@ -56,6 +56,11 @@ asab:
       host: <mocked>
 
 nginx:
+
+  # Public Auth API at tcp/3081
+  upstream upstream-seacat-auth-public:
+    - port 3081
+
   https:
     api:
       port: 8900  # The REST API is at tcp/8893
@@ -70,4 +75,4 @@ nginx:
 
     location /api/openidconnect:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
-      - proxy_pass http://{{UPSTREAM}}
+      - proxy_pass http://upstream-seacat-auth-public
