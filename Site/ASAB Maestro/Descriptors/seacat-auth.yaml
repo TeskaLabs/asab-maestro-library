@@ -1,14 +1,16 @@
+
 define:
   type: rc/descriptor
   name: Seacat Auth
   url: https://github.com/TeskaLabs/seacat-auth
-  tech: asab
 
 descriptor:
   image: teskalabs/seacat-auth
+  
   environment:
     # provisioning is skipped in automated deployments
     SEACAT_AUTH_PROVISIONING: 0
+
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
@@ -28,30 +30,60 @@ sherpas:
 asab:
   configname: conf/seacatauth.conf
   config:
-  # By default, SMTP configuration is mocked - e-mails are printed into log of seacat-auth
-  # Configuration of SMTP server should be done in UI > Maintenance > Configuration > General
-  # TODO ^^ this is not possible now
     general:
-      public_api_base_url: "{{LMIO_URL}}/auth/api"
-      auth_webui_base_url: "{{LMIO_URL}}/auth"
+      public_api_base_url: "{{PUBLIC_URL}}/auth/api"
+      auth_webui_base_url: "{{PUBLIC_URL}}/auth"
+
+    seacatauth:
+      private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
+
     asab:storage:
       type: mongodb
-      mongodb_uri: "{{MONGODB_URI}}"
+      mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
-      # aes_key: to_be_filled_in_by_remote_control
+      aes_key: null  # Will be filled by ASAB Remote Control
+
     seacatauth:credentials:mongodb:default:
-      mongodb_uri: "{{MONGODB_URI}}"
+      mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
       tenants: yes
       register: no
+
     seacatauth:communication:email:smtp:
+      # By default, SMTP configuration is mocked - e-mails are printed into log of seacat-auth
+      # Configuration of SMTP server should be done in UI > Maintenance > Configuration > General
+      # TODO ^^ this is not possible now
       host: <mocked>
 
-api:
-  public:
-    port: 3081
-    upstream: true
-  private:
-    port: 8900
-    upstream: true
+nginx:
 
+  upstreams:
+    # Public Auth API at tcp/3081
+    upstream-seacat-auth-3081: 3081
+
+  https:
+    api:
+      port: 8900  # The REST API is at tcp/8893
+
+    location = /_oauth2_introspect:
+      - internal
+      - proxy_method POST
+      - proxy_set_body "$http_authorization"
+      - proxy_set_header X-Request-URI "$request_uri"
+      - proxy_pass http://{{UPSTREAM}}/openidconnect/introspect/nginx
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
+
+    location /api/openidconnect:
+      - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
+      - proxy_pass http://upstream-seacat-auth-3081
+
+    location /auth/api/seacat-auth/public:
+      - rewrite ^/auth/api/seacat-auth/(.*) /$1 break
+      - proxy_pass http://upstream-seacat-auth-3081
+
+    location /auth/api/openidconnect:
+      - rewrite ^/auth/api/(.*) /$1 break
+      - proxy_pass http://upstream-seacat-auth-3081
+
+files:
+  - "script/"

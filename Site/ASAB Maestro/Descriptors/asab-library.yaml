@@ -1,7 +1,6 @@
 define:
   type: rc/descriptor
   name: ASAB Library
-  tech: asab
 
 descriptor:
   image: docker.teskalabs.com/asab/asab-library
@@ -10,9 +9,6 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
-  environment:
-    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
-
   # This is critical service
   restart: always
 
@@ -20,13 +16,8 @@ asab:
   configname: conf/asab-library.conf
   config: {}
 
-api:
-  private:
-    port: 8893  # The REST API is at tcp/8893
-    upstream: true
-
 nginx:
   https:
-  - api:
-      port: 8893  # The REST API is at tcp/8893
-      upstream: true
+    api:
+      port: 8893
+

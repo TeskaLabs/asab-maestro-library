@@ -8,15 +8,19 @@ descriptor:
 
   image: library/zookeeper
 
+  entrypoint: ["/bin/bash", "-e", "/confro/zkstart.sh"]
+  command: ["zkServer.sh", "start-foreground"]
+
   volumes:
-      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"  # Configuration is created during bootstrap process
+      - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"  # Read-only (ro) configuration from the site directory
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/conf"  # Writeable directory with zoo.cfg and dynamic parts managed by Zookeeper
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/logs"
-      - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/data:/data"
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data"
       - "{{FAST_STORAGE}}/{{INSTANCE_ID}}/datalog:/datalog"
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true"  # This is to enable multiaddress assingment in the Zookeeper
+    JVMFLAGS: "-Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
 
   healthcheck:
     test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 || exit -1"]
@@ -24,3 +28,7 @@ descriptor:
     timeout: 10s
     retries: 5
     start_period: 30s
+
+files:
+  - confro/
+  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
