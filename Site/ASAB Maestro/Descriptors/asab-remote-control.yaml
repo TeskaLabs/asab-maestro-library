@@ -1,7 +1,6 @@
 define:
   type: rc/descriptor
   name: ASAB Remote Control
-  tech: asab
 
 descriptor:
   # The REST API is at tcp/8891
@@ -19,7 +18,7 @@ asab:
   configname: conf/asab-remote-control.conf
   config: {}
 
-api:
-  public:
-    port: 8891
-    upstream: true
+nginx:
+  https:
+    api:
+      port: 8891
