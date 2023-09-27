@@ -10,8 +10,6 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
-  restart: on-failure:3
-
 asab:
   configname: conf/asab-iris.conf
   config: {}
