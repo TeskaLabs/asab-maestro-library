@@ -10,11 +10,12 @@ descriptor:
     # Read-only NGINX configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d:ro"
     # Webroot directory
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot:ro"
     # Logs
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx"
-    # This is where web ui archives are cached to prevent unnecessary downloads
+    # NGINX writes into /var/cache/nginx
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/var/cache/nginx"
+    # NGINX writes into /var/run
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/run:/var/run"
 
   healthcheck:
@@ -39,7 +40,7 @@ sherpas:
 
     volumes:
       # This is where web ui archives are cached to prevent unnecessary downloads
-      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/cache"
+      - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/var/cache/nginx"
       # Webroot directory
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
       # Read-only NGINX configuration
