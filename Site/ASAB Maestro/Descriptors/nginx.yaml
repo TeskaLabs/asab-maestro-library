@@ -6,6 +6,8 @@ define:
 descriptor:
   image: library/nginx
 
+  user: 10101:10101
+
   volumes:
     # Read-only NGINX configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf.d:/etc/nginx/conf.d:ro"
