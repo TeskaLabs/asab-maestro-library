@@ -15,6 +15,7 @@ descriptor:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/nginx"
     # This is where web ui archives are cached to prevent unnecessary downloads
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/cache:/var/cache/nginx"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/run:/var/run"
 
   healthcheck:
     test: ["CMD", "service", "nginx", "status"]
