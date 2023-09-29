@@ -16,6 +16,8 @@ descriptor:
     - /var/run/docker.sock:/var/run/docker.sock
     # For a manipulation with the site directory (/opt/site:/opt/site)
     - "{{SITE}}:/opt/site"
+    # To change ownership of data structures if needed
+    - /data:/data
 
   # This is critical service
   restart: always

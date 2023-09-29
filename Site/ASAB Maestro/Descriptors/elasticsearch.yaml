@@ -6,6 +6,8 @@ define:
 descriptor:
 
   image: library/elasticsearch
+  user:
+    1000:1000
 
   volumes:
     # - null:/usr/share/elasticsearch/data  # This will be added by Elasticsearch tech
