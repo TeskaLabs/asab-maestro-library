@@ -6,7 +6,8 @@ define:
 descriptor:
   image: library/nginx
 
-  user: 10101:10101
+  # Aligned with "container user" in NGINX container
+  user: 10001:10001
 
   volumes:
     # Read-only NGINX configuration
