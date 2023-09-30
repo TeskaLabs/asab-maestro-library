@@ -33,7 +33,7 @@ files:
   - "sherpa/"
 
 depends_on:
-  {{INSTANCE_ID}}-asab-webui-dist: {condition: service_completed_successfully}
+  '{{INSTANCE_ID}}-asab-webui-dist': {condition: service_completed_successfully}
 
 sherpas:
   asab-webui-dist:
