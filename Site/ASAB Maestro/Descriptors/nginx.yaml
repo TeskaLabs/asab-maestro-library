@@ -32,6 +32,9 @@ files:
   - "conf.d/"
   - "sherpa/"
 
+depends_on:
+  {{INSTANCE_ID}}-asab-webui-dist: {condition: service_completed_successfully}
+
 sherpas:
   asab-webui-dist:
     image: docker.teskalabs.com/asab/asab-governator:stable  # We use ASAB Governator image as a sherpa
