@@ -28,12 +28,13 @@ descriptor:
     retries: 5
     start_period: 10s
 
+  depends_on:
+    # NGINX is started only after the sherpa has successfully completed
+    '{{INSTANCE_ID}}-asab-webui-dist': {condition: service_completed_successfully}
+
 files:
   - "conf.d/"
   - "sherpa/"
-
-depends_on:
-  '{{INSTANCE_ID}}-asab-webui-dist': {condition: service_completed_successfully}
 
 sherpas:
   asab-webui-dist:
