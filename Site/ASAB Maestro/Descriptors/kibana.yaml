@@ -1,0 +1,62 @@
+define:
+  type: rc/descriptor
+  name: Kibana
+  url: https://www.elastic.co/kibana
+
+descriptor:
+  image: docker.elastic.co/kibana/kibana
+  environment:
+    SERVER_BASEPATH: /kibana
+    SERVER_HOST: "{{NODE_ID}}"
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/config:/usr/share/kibana/config"
+
+
+files:
+  - "config/kibana.yml": |
+      elasticsearch.hosts: {{ELASTIC_HOSTS}}
+      elasticsearch.username: "elastic"
+      elasticsearch.password: "{{ELASTIC_PASSWORD}}"
+      xpack.monitoring.ui.container.elasticsearch.enabled: true
+      server.publicBaseUrl: "{{PUBLIC_URL}}/kibana"
+      server.basePath: "/kibana"
+      server.rewriteBasePath: true
+
+# server.publicBaseUrl: "{{PUBLIC_URL}}/kibana" -> kibana is directly dependent on nginx tech - on nginx present in the model
+# nginx locations are dependent on seacat auth presence
+
+nginx:
+  https:
+    location /kibana:
+      # auth_request /_kibana_introspect;
+      # auth_request_set $batman $upstream_http_authorization;
+      # proxy_set_header Authorization $batman;
+
+      # auth_request_set $cookie $upstream_http_cookie;
+      # proxy_set_header Cookie $cookie;
+
+      - proxy_pass http://{{NODE_ID}}:5601
+      - proxy_redirect off
+      - proxy_buffering off
+
+      - proxy_http_version 1.1
+      - proxy_set_header Connection "Keep-Alive"
+      - proxy_set_header Proxy-Connection "Keep-Alive"
+
+      - proxy_cache_bypass $http_upgrade
+
+      # ??? error_page 401
+      # error_page 403 /auth;
+
+
+    # location /_kibana_introspect:
+      # internal;
+      # proxy_method POST;
+      # proxy_set_body "";
+      # proxy_set_header X-Request-URI "request_uri";
+      # proxy_cache batman_responses;
+      # proxy_pass http://{{SCA_NODE}}:3081/batman/nginx?client_id=batman-kibana;
+      # # ??? proxy_cache_key $cookie_SeaCatSCI_XXX;
+      # proxy_cache_lock on;
+      # proxy_cache_valid 200 10s;
+      # proxy_ignore_headers Cache-Control Expires Set-Cookie;

@@ -14,3 +14,4 @@ versions:
   nginx: '1.25.2'
   elasticsearch: '7.17.12'
   mongo: '7.0.1'
+  kibana: '7.17.2'
