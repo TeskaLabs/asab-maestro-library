@@ -1,0 +1,40 @@
+define:
+  type: rc/descriptor
+  name: Elasticsearch
+  url: https://www.elastic.co/products/elasticsearch
+
+descriptor:
+
+  image: library/elasticsearch
+
+  # Elasticsearch changes owner to 1000 by default. ASAB Governator creates folders to be mounted as volumes and chowns them to 1000 as well.
+  # TODO: There is a collision with user 1000 - ubuntu user, zookeeper
+  user:
+    1000:1000
+
+  volumes:
+    # - null:/usr/share/elasticsearch/data  # This will be added by Elasticsearch tech
+    - "{{SLOW_STORAGE}}/elasticsearch/{{INSTANCE_ID}}/logs:/usr/share/elasticsearch/logs"
+    # A directory with certificate 
+    - "{{SITE}}/{{INSTANCE_ID}}/certs:/usr/share/elasticsearch/config/certs:ro"
+
+  environment:
+    network.host: {{NODE_ID}}
+    # TODO: Rack awareness - node.attr.rack_id=lm11
+    node.name: {{INSTANCE_ID}}
+    node.roles: null  # Filled in by the remote control basted on the elasticsearch/role specificied in the model
+    cluster.name: asab-es  # TODO: Eventually from the model / global configuration
+    discovery.seed_hosts: null # Filled in by the Remote Control (ie "lm11:9300,lm12:9300")
+    cluster.initial_master_nodes: null # Filled in by the Remote Control (ie elasticsearch-master-1,elasticsearch-master-2)
+    http.port: null  # Filled in by the Remote Control (ie 9200)
+    transport.port: null  # Filled in by the Remote Control (ie 9300); 
+
+    ES_JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"  # Remote Control sets by default "-Xms2g -Xmx2g" for master node and "-Xms28g -Xmx28g" for data nodes
+    ELASTIC_PASSWORD: null  # Will be filled by the Elasticsearch tech
+
+    xpack.security.enabled: true
+    xpack.security.transport.ssl.enabled: true
+    xpack.security.transport.ssl.verification_mode: certificate
+    xpack.security.transport.ssl.certificate_authorities: certs/ca.pem
+    xpack.security.transport.ssl.certificate: certs/certificate.pem
+    xpack.security.transport.ssl.key: certs/key.pem

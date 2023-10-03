@@ -10,7 +10,7 @@ ASAB_WEBUI_DISTRIBUTION_MAXSIZE=${ASAB_WEBUI_DISTRIBUTION_MAXSIZE:-100M}
 
 # This is the cleanup function that is executed at the exit time
 cleanup() {
-	rm -f ${TEMPFILE} /cache/*.etag-new
+	rm -f ${TEMPFILE} /var/cache/nginx/*.etag-new
 	rm -rf /webroot/*-new
 }
 
@@ -23,8 +23,8 @@ install() {
 	curl --silent --show-error \
 		-o ${TEMPFILE} \
 		--max-filesize ${ASAB_WEBUI_DISTRIBUTION_MAXSIZE} \
-		--etag-save /cache/$1.etag-new \
-		--etag-compare /cache/$1.etag \
+		--etag-save /var/cache/nginx/$1.etag-new \
+		--etag-compare /var/cache/nginx/$1.etag \
 		${ASAB_WEBUI_DISTRIBUTION_BASEURL}$1/$2/$1-webui.tar.lzma
 
 	if [ $? -ne 0 ]
@@ -36,7 +36,7 @@ install() {
 	if [ ! -f ${TEMPFILE} ]; then
 		# This happens then ETag check indicates no change in of the previously downloaded distribution
 		echo "ASAB Web UI Distribution: $1 already installed and up-to-date."
-		rm /cache/$1.etag-new
+		rm /var/cache/nginx/$1.etag-new
 		return
 	fi
 
@@ -50,7 +50,7 @@ install() {
 	fi
 
 	# Everything looks alright, so move the new installation in place
-	mv /cache/$1.etag-new /cache/$1.etag
+	mv /var/cache/nginx/$1.etag-new /var/cache/nginx/$1.etag
 	rm -rf /webroot/$1-webui
 	mv /webroot/$1-new /webroot/$1-webui
 

@@ -2,7 +2,20 @@ define:
   type: rc/commons
   name: ASAB Maestro common provisions for docker-compose.yaml
 
-commons:
+descriptor:
+  hostname: null  # Will be filled by the instance_id
+  container_name: null  # Will be filled by the instance_id
+
+  labels:
+    com.teskalabs.asab.maestro: managed
+
+  environment:
+    NODE_ID: null  # Will be expanded to a node_id
+    SERVICE_ID: null  # Will be expanded to a service_id
+    INSTANCE_ID: null  # Will be expanded to a instance_id
+
+  volumes: []
+
   # Everything is exposed on the host network
   network_mode: host
 
@@ -13,3 +26,26 @@ commons:
 
   # We do restarts
   restart: unless-stopped
+
+# Common descriptor for sherpas
+sherpa:
+  hostname: null  # Will be filled by the sherpa_id
+  container_name: null  # Will be filled by the sherpa_id
+
+  labels:
+    com.teskalabs.asab.maestro: sherpa
+
+  environment:
+    NODE_ID: null  # Will be expanded to a node_id
+    SERVICE_ID: null  # Will be expanded to a service_id
+    INSTANCE_ID: null  # Will be expanded to a instance_id
+
+  volumes: []
+
+  # Everything is exposed on the host network
+  network_mode: host
+
+  # Limit logging size
+  logging:
+    options:
+      max-size: 10m

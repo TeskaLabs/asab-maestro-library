@@ -1,7 +1,6 @@
 define:
   type: rc/descriptor
   name: ASAB Config
-  tech: asab
 
 descriptor:
   # The REST API is at tcp/8894
@@ -12,9 +11,6 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
-  environment:
-    ASAB_ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
-
   # This is critical service
   restart: always
 
@@ -22,7 +18,7 @@ asab:
   configname: conf/asab-config.conf
   config: {}
 
-api:
-  private:
-    port: 8894
-    upstream: true
+nginx:
+  https:
+    api:
+      port: 8894
