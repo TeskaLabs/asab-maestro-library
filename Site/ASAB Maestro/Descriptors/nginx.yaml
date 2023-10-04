@@ -30,20 +30,17 @@ descriptor:
 
   depends_on:
     # NGINX is started only after the sherpa has successfully completed
-    '{{INSTANCE_ID}}-asab-webui-dist': {condition: service_completed_successfully}
+    '{{INSTANCE_ID}}-webapp-dist': {condition: service_completed_successfully}
 
 files:
   - "conf.d/"
   - "sherpa/"
 
 sherpas:
-  asab-webui-dist:
+  webapp-dist:
     image: docker.teskalabs.com/asab/asab-governator:stable  # We use ASAB Governator image as a sherpa
 
-    environment:
-      ASAB_WEBUI_DISTRIBUTION_APP: lmio:v23.32-beta seacat-auth:v23.29-alpha
-
-    command: sh -e /sherpa/asab-webui-dist.sh
+    command: sh -e /sherpa/webapp-dist.sh
 
     volumes:
       # This is where web ui archives are cached to prevent unnecessary downloads
