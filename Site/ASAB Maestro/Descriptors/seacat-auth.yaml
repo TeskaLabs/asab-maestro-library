@@ -77,7 +77,7 @@ nginx:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-3081
 
-    location /auth/api/seacat-auth/public:
+    location /auth/api/seacat_auth/public:
       - rewrite ^/auth/api/seacat-auth/(.*) /$1 break
       - proxy_pass http://upstream-seacat-auth-3081
 
