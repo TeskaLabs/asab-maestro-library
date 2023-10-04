@@ -19,9 +19,9 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/certs:/usr/share/elasticsearch/config/certs:ro"
 
   environment:
-    network.host: {{NODE_ID}}
+    network.host: "{{NODE_ID}}"
     # TODO: Rack awareness - node.attr.rack_id=lm11
-    node.name: {{INSTANCE_ID}}
+    node.name: "{{INSTANCE_ID}}"
     node.roles: null  # Filled in by the remote control basted on the elasticsearch/role specificied in the model
     cluster.name: asab-es  # TODO: Eventually from the model / global configuration
     discovery.seed_hosts: null # Filled in by the Remote Control (ie "lm11:9300,lm12:9300")

@@ -12,6 +12,6 @@ descriptor:
     DOCKER_INFLUXDB_INIT_MODE: setup
     DOCKER_INFLUXDB_INIT_USERNAME: null # will be provided by the Remote Control
     DOCKER_INFLUXDB_INIT_PASSWORD: null # will be provided by the Remote Control
-    DOCKER_INFLUXDB_INIT_ORG: default
+    DOCKER_INFLUXDB_INIT_ORG: system
     DOCKER_INFLUXDB_INIT_BUCKET: metrics
-    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_ADMIN_TOKEN}}'
+    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
