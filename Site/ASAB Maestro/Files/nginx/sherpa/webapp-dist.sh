@@ -4,7 +4,7 @@
 # $ ./gov.sh compose up nginx-1-webapp-dist
 
 CACHE_DIR=/var/cache/nginx
-WEBROOT_DIR=/webroot/
+WEBROOT_DIR=/webroot
 TMP_DIR=/tmp
 
 MAXSIZE=100M
