@@ -40,6 +40,9 @@ sherpas:
   webapp-dist:
     image: docker.teskalabs.com/asab/asab-governator:stable  # We use ASAB Governator image as a sherpa
 
+    # Aligned with "container user" in NGINX container
+    user: 10001:10001
+
     command: sh -e /sherpa/webapp-dist.sh
 
     volumes:
