@@ -118,4 +118,4 @@ while read -r line; do
 			;;
 	esac
 
-done < "webapps.dist"
+done < "/sherpa/webapps.dist"
