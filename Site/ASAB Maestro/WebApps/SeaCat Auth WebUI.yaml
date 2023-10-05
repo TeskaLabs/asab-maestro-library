@@ -1,6 +1,6 @@
 define:
   type: rc/webapp
-  name: TeskaLabs SeaCat Auth
+  name: TeskaLabs SeaCat Auth WebUI
   url: https://teskalabs.com
 
 webapp:
