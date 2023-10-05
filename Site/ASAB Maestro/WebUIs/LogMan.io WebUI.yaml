@@ -1,0 +1,19 @@
+define:
+  type: rc/webapp
+  name: TeskaLabs LogMan.io WebUI
+  url: https://teskalabs.com
+
+webapp:
+  distribution: https://asabwebui.z16.web.core.windows.net/
+
+webui-mfe:
+  https:
+    /: lmio_webui
+    /asab_config_webui: asab_config_webui
+    /asab_maestro_webui: asab_maestro_webui
+    /asab_tools_webui: asab_tools_webui
+    /bs_query_webui: bs_query_webui
+    /lmio_analysis_webui: lmio_analysis_webui
+    /lmio_lookup_webui: lmio_lookup_webui
+    /lmio_observability_webui: lmio_observability_webui
+    /lmio_parser_builder_webui: lmio_parser_builder_webui

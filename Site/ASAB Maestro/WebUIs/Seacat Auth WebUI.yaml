@@ -1,0 +1,10 @@
+define:
+  type: rc/webapp
+  name: TeskaLabs SeaCat Auth
+  url: https://teskalabs.com
+
+webapp:
+  distribution: https://asabwebui.z16.web.core.windows.net/
+
+webui-spa:
+  https: seacat-auth
