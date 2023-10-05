@@ -63,7 +63,7 @@ nginx:
 
   https:
     api:
-      port: 8900  # The REST API is at tcp/8893
+      port: 8900  # The REST API (private) is at tcp/8900
 
     location = /_oauth2_introspect:
       - internal
