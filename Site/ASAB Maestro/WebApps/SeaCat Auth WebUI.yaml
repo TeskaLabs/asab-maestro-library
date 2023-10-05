@@ -6,5 +6,5 @@ define:
 webapp:
   distribution: https://asabwebui.z16.web.core.windows.net/
 
-webui-spa:
+spa:
   https: seacat-auth

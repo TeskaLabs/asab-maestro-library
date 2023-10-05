@@ -6,7 +6,7 @@ define:
 webapp:
   distribution: https://asabwebui.z16.web.core.windows.net/
 
-webui-mfe:
+mfe:
   https:
     /: lmio_webui
     /asab_config_webui: asab_config_webui
