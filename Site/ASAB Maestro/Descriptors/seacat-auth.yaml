@@ -70,7 +70,7 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "$request_uri"
-      - proxy_pass http://{{UPSTREAM}}/openidconnect/introspect/nginx
+      - proxy_pass http://upstream-seacat-auth-3081/openidconnect/introspect/nginx
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
     location /api/openidconnect:
