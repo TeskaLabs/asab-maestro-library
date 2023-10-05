@@ -63,7 +63,7 @@ nginx:
 
   https:
     api:
-      port: 8900  # The REST API is at tcp/8893
+      port: 8900  # The REST API is at tcp/8900
 
     location = /_oauth2_introspect:
       - internal
@@ -84,6 +84,10 @@ nginx:
     location /auth/api/openidconnect:
       - rewrite ^/auth/api/(.*) /$1 break
       - proxy_pass http://upstream-seacat-auth-3081
+
+    location = /api/cookie-entry:
+      - proxy_pass http://upstream-seacat-auth-3081/cookie/entry
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
 files:
   - "script/"
