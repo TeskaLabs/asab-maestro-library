@@ -24,4 +24,4 @@ nginx:
   https:
      location /influxdb:
       - rewrite ^/influxdb/(.*) /$1 break
-      - proxy_pass http:// upstream-influxdb
+      - proxy_pass http://upstream-influxdb
