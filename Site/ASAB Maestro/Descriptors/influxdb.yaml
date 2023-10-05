@@ -8,6 +8,7 @@ descriptor:
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+
   environment:
     DOCKER_INFLUXDB_INIT_MODE: setup
     DOCKER_INFLUXDB_INIT_USERNAME: null # will be provided by the Remote Control
@@ -15,3 +16,12 @@ descriptor:
     DOCKER_INFLUXDB_INIT_ORG: system
     DOCKER_INFLUXDB_INIT_BUCKET: metrics
     DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
+
+nginx:
+  upstreams:
+    upstream-influxdb: 8086
+
+  https:
+     location /influxdb:
+      - rewrite ^/influxdb/(.*) /$1 break
+      - proxy_pass http:// upstream-influxdb
