@@ -59,7 +59,7 @@ nginx:
 
   upstreams:
     # Public Auth API at tcp/3081
-    upstream-seacat-auth-3081: 3081
+    upstream-seacat-auth-public: 3081
 
   https:
     api:
@@ -70,20 +70,20 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "$request_uri"
-      - proxy_pass http://upstream-seacat-auth-3081/openidconnect/introspect/nginx
+      - proxy_pass http://upstream-seacat-auth-public/openidconnect/introspect/nginx
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
     location /api/openidconnect:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
-      - proxy_pass http://upstream-seacat-auth-3081
+      - proxy_pass http://upstream-seacat-auth-public
 
     location /auth/api/seacat_auth/public:
       - rewrite ^/auth/api/seacat_auth/(.*) /$1 break
-      - proxy_pass http://upstream-seacat-auth-3081
+      - proxy_pass http://upstream-seacat-auth-public
 
     location /auth/api/openidconnect:
-      - rewrite ^/auth/api/(.*) /$1 break
-      - proxy_pass http://upstream-seacat-auth-3081
+      - rewrite ^/auth/api/openidconnect/(.*) /openidconnect/$1 break
+      - proxy_pass http://upstream-seacat-auth-public
 
 files:
   - "script/"
