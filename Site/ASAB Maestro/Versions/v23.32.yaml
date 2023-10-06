@@ -17,4 +17,4 @@ versions:
   influxdb: '2.7.1'
 
   webapp seacat-auth: 'v23.13-beta'
-  webapp influxdb: 'v2.7.1'
+  webapp influxdbx: 'v2.7.1'
