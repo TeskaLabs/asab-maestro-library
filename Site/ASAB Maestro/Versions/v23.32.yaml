@@ -14,5 +14,6 @@ versions:
   nginx: '1.25.2'
   elasticsearch: '7.17.12'
   mongo: '7.0.1'
+  influxdb: '2.7.1'
 
   webapp seacat-auth: 'v23.13-beta'
