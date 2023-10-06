@@ -72,7 +72,13 @@ files:
 
       # https://github.com/influxdata/telegraf/blob/master/plugins/inputs/net/README.md
       [[inputs.net]]
+        ignore_protocol_stats = true
         [inputs.net.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/nstat/README.md
+      [[inputs.nstat]]
+        [inputs.nstat.tags]
           node_id = "{{NODE_ID}}"
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
