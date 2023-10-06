@@ -70,12 +70,12 @@ files:
         [inputs.mem.tags]
           node_id = "{{NODE_ID}}"
 
-      https://github.com/influxdata/telegraf/blob/master/plugins/inputs/net/README.md
+      # https://github.com/influxdata/telegraf/blob/master/plugins/inputs/net/README.md
       [[inputs.net]]
         [inputs.net.tags]
           node_id = "{{NODE_ID}}"
 
-      https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
       [[inputs.system]]
         [inputs.system.tags]
           node_id = "{{NODE_ID}}"
