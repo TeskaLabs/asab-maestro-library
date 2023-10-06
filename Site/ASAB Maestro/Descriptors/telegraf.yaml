@@ -16,8 +16,8 @@ descriptor:
     HOST_MOUNT_PREFIX: /hostfs
     HOST_PROC: /hostfs/proc
     HOST_SYS: /hostfs/sys
-    # HOST_ETC: /hostfs/etc
-    # HOST_VAR: /hostfs/var
+    HOST_ETC: /hostfs/etc
+    HOST_VAR: /hostfs/var
     HOST_RUN: /hostfs/run
 
   volumes:
