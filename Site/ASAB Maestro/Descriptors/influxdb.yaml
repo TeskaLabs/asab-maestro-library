@@ -1,7 +1,7 @@
 define:
   type: rc/descriptor
   name: InfluxDB
-  url: //docs.influxdata.com/
+  url: https://github.com/influxdata/influxdb
 
 descriptor:
   image: influxdb
