@@ -6,6 +6,7 @@ define:
 descriptor:
   image: telegraf
 
+  # The gid=0 is to enable communication with a Docker/Podman for metrics extraction
   user: "10002:0"
 
   volumes:
@@ -88,7 +89,7 @@ files:
         [inputs.system.tags]
           node_id = "{{NODE_ID}}"
 
-      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/docker/README.md
       [[inputs.docker]]
         gather_services = false
         perdevice_include = []
