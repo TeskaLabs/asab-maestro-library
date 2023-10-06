@@ -57,20 +57,20 @@ files:
       
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel/README.md
       [[inputs.kernel]]
-        [inputs.cpu.tags]
+        [inputs.kernel.tags]
           node_id = "{{NODE_ID}}"
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
       [[inputs.kernel_vmstat]]
-        [inputs.cpu.tags]
+        [inputs.kernel_vmstat.tags]
           node_id = "{{NODE_ID}}"
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
       [[inputs.linux_cpu]]
-        [inputs.cpu.tags]
+        [inputs.linux_cpu.tags]
           node_id = "{{NODE_ID}}"
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
       [[inputs.mem]]
-        [inputs.cpu.tags]
+        [inputs.mem.tags]
           node_id = "{{NODE_ID}}"
