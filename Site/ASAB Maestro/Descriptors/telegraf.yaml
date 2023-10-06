@@ -6,7 +6,7 @@ define:
 descriptor:
   image: telegraf
 
-  user: 10002:0
+  user: "10002:0"
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
