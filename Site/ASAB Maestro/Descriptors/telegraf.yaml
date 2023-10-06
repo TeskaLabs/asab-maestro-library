@@ -91,10 +91,12 @@ files:
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
       [[inputs.docker]]
         gather_services = false
+        perdevice_include = []
+        docker_label_include = ["node_id", "service_id", "instance_id"]
+        total_include = ["cpu", "blkio", "network"]
         [inputs.docker.tags]
           node_id = "{{NODE_ID}}"
       
-
 # TODO: Disk
 # TODO: diskio
 # TODO: sensors
