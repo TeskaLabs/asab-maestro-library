@@ -1,0 +1,28 @@
+define:
+  type: rc/descriptor
+  name: Telegraf
+  url: https://github.com/influxdata/telegraf
+
+descriptor:
+  image: telegraf
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+
+  environment:
+    HOST_MOUNT_PREFIX: /hostfs
+    HOST_PROC: /hostfs/proc
+    HOST_SYS: /hostfs/sys
+    # HOST_ETC: /hostfs/etc
+    # HOST_VAR: /hostfs/var
+    HOST_RUN: /hostfs/run
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/telegraf:ro"
+    # Logs
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/telegraf"
+    # Mounting importang bits from the host
+    - /proc:/hostfs/proc:ro
+    - /sys:/hostfs/sys:ro
+    - /run:/hostfs/run:ro
