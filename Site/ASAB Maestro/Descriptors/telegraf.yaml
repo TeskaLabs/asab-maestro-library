@@ -66,12 +66,6 @@ files:
           node_id = "{{NODE_ID}}"
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
-      [[inputs.linux_cpu]]
-        host_sys = "/hostfs/sys"
-        [inputs.linux_cpu.tags]
-          node_id = "{{NODE_ID}}"
-
-      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
       [[inputs.mem]]
         [inputs.mem.tags]
           node_id = "{{NODE_ID}}"
