@@ -32,8 +32,7 @@ descriptor:
 files:
   - "conf/telegraf.conf": |
       [global_tags]
-      node_id = "{{NODE_ID}}"
-
+      
       [agent]
         interval = "60s"
         round_interval = true
@@ -53,3 +52,25 @@ files:
         totalcpu = true
         collect_cpu_time = true
         report_active = true
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
+      
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel/README.md
+      [[inputs.kernel]]
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
+      [[inputs.kernel_vmstat]]
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
+      [[inputs.linux_cpu]]
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
+      [[inputs.mem]]
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
