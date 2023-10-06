@@ -15,6 +15,7 @@ versions:
   elasticsearch: '7.17.12'
   mongo: '7.0.1'
   influxdb: '2.7.1'
+  telegraf: '1.28.2'
 
   webapp seacat-auth: v23.13-beta
   webapp influxdb: v2.7.1
