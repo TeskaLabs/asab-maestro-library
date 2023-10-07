@@ -100,6 +100,7 @@ files:
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/diskio/README.md
       [[inputs.diskio]]
+        devices = ["sd*", "vd*", "hd*", "nvme*", "md*"]
         [inputs.diskio.tags]
           node_id = "{{NODE_ID}}"
       
