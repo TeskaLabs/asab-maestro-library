@@ -26,6 +26,9 @@ descriptor:
     # Logs
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/telegraf"
     # Mounting importang bits from the host
+    - /:/hostfs/:ro
+    - /data/hdd:/hostfs/data/hdd:ro
+    - /data/ssd:/hostfs/data/ssd:ro
     - /proc:/hostfs/proc:ro
     - /sys:/hostfs/sys:ro
     - /run:/hostfs/run:ro
@@ -98,6 +101,11 @@ files:
         [inputs.docker.tags]
           node_id = "{{NODE_ID}}"
 
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/disk/README.md
+      [[inputs.disk]]
+        [inputs.disk.tags]
+          node_id = "{{NODE_ID}}"
+
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/diskio/README.md
       [[inputs.diskio]]
         devices = ["sd*", "vd*", "hd*", "nvme*", "md*"]
@@ -118,7 +126,8 @@ files:
       [[inputs.temp]]
         [inputs.temp.tags]
           node_id = "{{NODE_ID}}"
+      # TODO: More testing of how this input collects temperature measurements will be needed
 
-# TODO: Disk
-# TODO: Smart for disks
-# TODO: sensors
+# TODO: Smart for disks: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/smart/README.md
+# TODO: hddtemp: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/hddtemp/README.md
+# TODO: sensors: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/sensors/README.md
