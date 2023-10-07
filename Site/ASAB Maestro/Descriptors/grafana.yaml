@@ -1,0 +1,30 @@
+define:
+  type: rc/descriptor
+  name: Grafana
+  url: https://github.com/grafana/grafana
+
+descriptor:
+  image: grafana
+
+  user: "10003:10003"
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data::/var/lib/grafana"
+
+  environment:
+    GF_SERVER_ROOT_URL: %(protocol)s://%(domain)s:%(http_port)s/grafana/
+    GF_SERVER_FROM_SUB_PATH: true
+    GF_ALLOW_EMBEDDING: true
+    GF_SECURITY_ALLOW_EMBEDDING: true
+    GF_COOKIE_SAMESITE: true
+    GF_SECURITY_COOKIE_SAMESITE: true
+
+nginx:
+  upstreams:
+    upstream-grafana: 3000
+
+  https:
+     location /grafana:
+      - rewrite ^/grafana/(.*) /$1 break
+      - proxy_pass http://upstream-grafana
+      - proxy_set_header Host $host
