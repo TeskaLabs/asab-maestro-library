@@ -12,7 +12,7 @@ descriptor:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data::/var/lib/grafana"
 
   environment:
-    GF_SERVER_ROOT_URL: %(protocol)s://%(domain)s:%(http_port)s/grafana/
+    GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
     GF_SERVER_FROM_SUB_PATH: true
     GF_ALLOW_EMBEDDING: true
     GF_SECURITY_ALLOW_EMBEDDING: true
