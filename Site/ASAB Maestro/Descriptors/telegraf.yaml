@@ -104,6 +104,21 @@ files:
         [inputs.diskio.tags]
           node_id = "{{NODE_ID}}"
       
+      https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/mdstat/README.md
+      [[inputs.mdstat]]
+        [inputs.mdstat.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/processes/README.md
+      [[inputs.processes]]
+        [inputs.processes.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/temp/README.md
+      [[inputs.temp]]
+        [inputs.temp.tags]
+          node_id = "{{NODE_ID}}"
+
 # TODO: Disk
 # TODO: Smart for disks
 # TODO: sensors
