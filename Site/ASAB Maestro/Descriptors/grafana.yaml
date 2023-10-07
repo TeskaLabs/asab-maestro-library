@@ -9,7 +9,7 @@ descriptor:
   user: "10003:10003"
 
   volumes:
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data::/var/lib/grafana"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/grafana"
 
   environment:
     GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
