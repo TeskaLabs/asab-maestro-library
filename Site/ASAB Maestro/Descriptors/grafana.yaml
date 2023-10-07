@@ -28,3 +28,6 @@ nginx:
       - rewrite ^/grafana/(.*) /$1 break
       - proxy_pass http://upstream-grafana
       - proxy_set_header Host $host
+
+    # TODO: Authorization using SeaCat Auth & Batman
+    # TODO: Automated InfluxDB connector configuration
