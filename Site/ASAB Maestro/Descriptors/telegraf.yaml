@@ -97,7 +97,12 @@ files:
         total_include = ["cpu", "blkio", "network"]
         [inputs.docker.tags]
           node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/diskio/README.md
+      [[inputs.diskio]]
+        [inputs.diskio.tags]
+          node_id = "{{NODE_ID}}"
       
 # TODO: Disk
-# TODO: diskio
+# TODO: Smart for disks
 # TODO: sensors
