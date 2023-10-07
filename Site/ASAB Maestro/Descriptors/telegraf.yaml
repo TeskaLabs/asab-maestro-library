@@ -104,7 +104,7 @@ files:
         [inputs.diskio.tags]
           node_id = "{{NODE_ID}}"
       
-      https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/mdstat/README.md
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/mdstat/README.md
       [[inputs.mdstat]]
         [inputs.mdstat.tags]
           node_id = "{{NODE_ID}}"
