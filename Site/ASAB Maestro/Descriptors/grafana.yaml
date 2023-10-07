@@ -4,7 +4,7 @@ define:
   url: https://github.com/grafana/grafana
 
 descriptor:
-  image: grafana
+  image: grafana/grafana
 
   user: "10003:10003"
 
