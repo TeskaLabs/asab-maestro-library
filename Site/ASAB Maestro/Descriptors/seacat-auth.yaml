@@ -57,8 +57,7 @@ asab:
 
 nginx:
 
-  api:
-    port: 8900  # The REST API (private) is at tcp/8900
+  api: 8900  # The REST API (private) is at tcp/8900
 
   upstreams:
     # Public Auth API at tcp/3081

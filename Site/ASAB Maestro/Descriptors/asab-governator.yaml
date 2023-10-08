@@ -23,8 +23,7 @@ descriptor:
   restart: always
 
 nginx:
-  api:
-    port: &apiport 8892
+  api: &apiport 8892
 
 asab:
   configname: conf/asab-governator.conf

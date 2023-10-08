@@ -19,5 +19,4 @@ asab:
   config: {}
 
 nginx:
-  api:
-    port: 8891
+  api: 8891

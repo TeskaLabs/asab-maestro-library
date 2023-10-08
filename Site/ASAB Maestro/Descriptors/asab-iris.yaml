@@ -19,5 +19,4 @@ asab:
     # [variables] must be filled from general confguration (user)
 
 nginx:
-  api:
-    port: 8896
+  api: 8896
