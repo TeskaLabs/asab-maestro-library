@@ -64,6 +64,9 @@ nginx:
     # Public Auth API at tcp/3081
     upstream-seacat-auth-public: 3081
 
+  proxy_cache_paths:
+    oauth2_introspect: keys_zone=oauth2_introspect:1m max_size=2m
+
   https:
 
     location = /_oauth2_introspect:
@@ -73,6 +76,12 @@ nginx:
       - proxy_set_header X-Request-URI "$request_uri"
       - proxy_pass http://upstream-seacat-auth-public/openidconnect/introspect/nginx
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
+
+      # The cache for introspection requests, reduces the load on the SeaCat Auth API
+      - proxy_cache oauth2_introspect
+      - proxy_cache_key $http_authorization
+      - proxy_cache_lock on
+      - proxy_cache_valid 200 10s
 
     location /api/openidconnect:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
