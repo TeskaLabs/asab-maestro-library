@@ -28,7 +28,7 @@ nginx:
       - rewrite ^/influxdb/(.*) /$1 break
       - proxy_pass http://upstream-influxdb
 
-  # Exposure of InfluxDB on the public HTTPS is disabled b/c there is no introspection available
+  # Exposure of InfluxDB on the public HTTPS is disabled b/c there is no authorization introspection available
   # https:
   #    location /influxdb:
   #     - rewrite ^/influxdb$ /influxdb/ permanent
