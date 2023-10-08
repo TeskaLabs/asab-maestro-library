@@ -24,6 +24,7 @@ nginx:
     upstream-influxdb: 8086
 
   internal:
+    location /influxdb:
       - rewrite ^/influxdb$ /influxdb/ permanent
       - rewrite ^/influxdb/(.*) /$1 break
       - proxy_pass http://upstream-influxdb
