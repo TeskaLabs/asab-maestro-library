@@ -6,6 +6,8 @@ define:
 descriptor:
   image: influxdb
 
+  user: "10003:10003"
+
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
 
