@@ -57,13 +57,14 @@ asab:
 
 nginx:
 
+  api:
+    port: 8900  # The REST API (private) is at tcp/8900
+
   upstreams:
     # Public Auth API at tcp/3081
     upstream-seacat-auth-public: 3081
 
   https:
-    api:
-      port: 8900  # The REST API (private) is at tcp/8900
 
     location = /_oauth2_introspect:
       - internal
