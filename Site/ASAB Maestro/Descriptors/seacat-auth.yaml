@@ -64,7 +64,7 @@ nginx:
     # Public Auth API at tcp/3081
     upstream-seacat-auth-public: 3081
 
-  proxy_cache_paths:
+  proxy_caches:
     oauth2_introspect: keys_zone=oauth2_introspect:1m max_size=2m
 
   https:
