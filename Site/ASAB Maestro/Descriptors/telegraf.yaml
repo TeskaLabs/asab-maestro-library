@@ -1,0 +1,134 @@
+define:
+  type: rc/descriptor
+  name: Telegraf
+  url: https://github.com/influxdata/telegraf
+
+descriptor:
+  image: telegraf
+
+  # The gid=0 is to enable communication with a Docker/Podman for metrics extraction
+  user: "10002:0"
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+
+  environment:
+    HOST_MOUNT_PREFIX: /hostfs
+    HOST_PROC: /hostfs/proc
+    HOST_SYS: /hostfs/sys
+    HOST_ETC: /hostfs/etc
+    HOST_VAR: /hostfs/var
+    HOST_RUN: /hostfs/run
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/telegraf:ro"
+    # Logs
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/telegraf"
+    # Mounting importang bits from the host
+    - /:/hostfs/:ro
+    - /data/hdd:/hostfs/data/hdd:ro
+    - /data/ssd:/hostfs/data/ssd:ro
+    - /proc:/hostfs/proc:ro
+    - /sys:/hostfs/sys:ro
+    - /run:/hostfs/run:ro
+    # For a communication with a docker
+    - /var/run/docker.sock:/var/run/docker.sock
+
+files:
+  - "conf/telegraf.conf": |
+      [global_tags]
+      
+      [agent]
+        interval = "60s"
+        round_interval = true
+        logfile_rotation_max_size=1000000
+        logfile_rotation_max_archives=10
+        hostname = "{{NODE_ID}}"
+        omit_hostname = true
+
+      [[outputs.influxdb_v2]]
+        urls = ["{{INFLUXDB_URL}}"]
+        token = "{{INFLUXDB_TOKEN}}"
+        organization = "{{INFLUXDB_ORG}}"
+        bucket = "{{INFLUXDB_BUCKET}}"
+
+      [[inputs.cpu]]
+        percpu = true
+        totalcpu = true
+        collect_cpu_time = true
+        report_active = true
+        [inputs.cpu.tags]
+          node_id = "{{NODE_ID}}"
+      
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel/README.md
+      [[inputs.kernel]]
+        [inputs.kernel.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
+      [[inputs.kernel_vmstat]]
+        [inputs.kernel_vmstat.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/kernel_vmstat/README.md
+      [[inputs.mem]]
+        [inputs.mem.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/master/plugins/inputs/net/README.md
+      [[inputs.net]]
+        ignore_protocol_stats = true
+        [inputs.net.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/nstat/README.md
+      [[inputs.nstat]]
+        [inputs.nstat.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/system/README.md
+      [[inputs.system]]
+        [inputs.system.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/docker/README.md
+      [[inputs.docker]]
+        gather_services = false
+        perdevice_include = []
+        docker_label_include = ["node_id", "service_id", "instance_id"]
+        total_include = ["cpu", "blkio", "network"]
+        [inputs.docker.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/disk/README.md
+      [[inputs.disk]]
+        ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "nsfs", "fuse.sshfs"]
+        [inputs.disk.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/diskio/README.md
+      [[inputs.diskio]]
+        devices = ["sd*", "vd*", "hd*", "nvme*", "md*"]
+        [inputs.diskio.tags]
+          node_id = "{{NODE_ID}}"
+      
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/mdstat/README.md
+      [[inputs.mdstat]]
+        [inputs.mdstat.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/processes/README.md
+      [[inputs.processes]]
+        [inputs.processes.tags]
+          node_id = "{{NODE_ID}}"
+
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/temp/README.md
+      [[inputs.temp]]
+        [inputs.temp.tags]
+          node_id = "{{NODE_ID}}"
+      # TODO: More testing of how this input collects temperature measurements will be needed
+
+# TODO: Smart for disks: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/smart/README.md
+# TODO: hddtemp: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/hddtemp/README.md
+# TODO: sensors: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/sensors/README.md

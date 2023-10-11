@@ -30,6 +30,4 @@ asab:
   config: {}
 
 nginx:
-  https:
-    api:
-      port: 8894
+  api: 8894

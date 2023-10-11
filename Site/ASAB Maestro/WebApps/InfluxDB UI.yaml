@@ -1,0 +1,12 @@
+define:
+  type: rc/webapp
+  name: UI for InfluxDB
+  url: https://github.com/influxdata/ui
+  IMPORTANT: Must be deployed to /influxdb/ui with InfluxDB providing the API on /influxdb
+
+
+webapp:
+  distribution: https://asabwebui.z16.web.core.windows.net/
+
+spa:
+  https: influxdb

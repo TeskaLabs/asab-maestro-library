@@ -39,7 +39,4 @@ nginx:
   # this configuration part serves to create nginx configuration
   # provide port on which the service listens to get a nginx location
   # for ASAB services see https://docs.teskalabs.com/logman.io/reference/network-ports/
-  https:
-    api:
-      port: 8896
-
+  api: 8896

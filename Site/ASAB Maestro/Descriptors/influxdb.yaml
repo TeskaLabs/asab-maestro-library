@@ -1,0 +1,45 @@
+define:
+  type: rc/descriptor
+  name: InfluxDB
+  url: https://github.com/influxdata/influxdb
+
+descriptor:
+  image: influxdb
+
+  user: "10003:10003"
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+
+  environment:
+    DOCKER_INFLUXDB_INIT_MODE: setup
+    DOCKER_INFLUXDB_INIT_USERNAME: null # will be provided by the Remote Control
+    DOCKER_INFLUXDB_INIT_PASSWORD: null # will be provided by the Remote Control
+    DOCKER_INFLUXDB_INIT_ORG: system
+    DOCKER_INFLUXDB_INIT_BUCKET: metrics
+    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
+
+nginx:
+  upstreams:
+    upstream-influxdb: 8086
+
+  internal:
+    location /influxdb:
+      - rewrite ^/influxdb$ /influxdb/ permanent
+      - rewrite ^/influxdb/(.*) /$1 break
+      - proxy_pass http://upstream-influxdb
+
+  # Exposure of InfluxDB on the public HTTPS is disabled b/c there is no authorization introspection available
+  # https:
+  #    location /influxdb:
+  #     - rewrite ^/influxdb$ /influxdb/ permanent
+  #     - rewrite ^/influxdb/(.*) /$1 break
+  #     - proxy_pass http://upstream-influxdb
+
+  #     - proxy_cookie_path ~*^/api /influxdb/api
+  #     - proxy_set_header Authorization $http_authorization
+  #     - proxy_set_header Host $http_host
+
+  #     - proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for
+  #     - proxy_set_header X-Forwarded-Proto https
+  #     - proxy_set_header X-Real-IP $remote_addr
