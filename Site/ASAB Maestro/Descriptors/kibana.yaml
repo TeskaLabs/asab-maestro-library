@@ -24,6 +24,20 @@ files:
 # server.publicBaseUrl: "{{PUBLIC_URL}}/kibana" -> kibana is directly dependent on nginx tech - on nginx present in the model
 # nginx locations are dependent on seacat auth presence
 
+asab-config:
+  # add files in this structure:
+  #   <name of the schema>:
+  #      _schema
+  #      <name of the config>:
+  #        file: ....
+  #        if_exists: boolean
+  Tools:
+    # _schema: will be added by nginx descriptor
+    Kibana:
+      if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
+      file:
+        
+
 seacat-auth:
   config:
     "batman:elk":
