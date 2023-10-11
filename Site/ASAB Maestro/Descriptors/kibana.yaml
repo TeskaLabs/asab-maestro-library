@@ -5,19 +5,19 @@ define:
 
 descriptor:
   image: docker.elastic.co/kibana/kibana
-  environment:
-    SERVER_HOST: "{{NODE_ID}}"
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/config:/usr/share/kibana/config"
 
 
 files:
   - "config/kibana.yml": |
+      # https://github.com/elastic/kibana/blob/main/config/kibana.yml
+      server.host: {{NODE_ID}}
       elasticsearch.hosts: {{ELASTIC_HOSTS_KIBANA}}
       elasticsearch.username: "elastic"
-      elasticsearch.password: "{{ELASTIC_PASSWORD}}"
+      elasticsearch.password: {{ELASTIC_PASSWORD}}
       xpack.monitoring.ui.container.elasticsearch.enabled: true
-      server.publicBaseUrl: "{{PUBLIC_URL}}/kibana"
+      server.publicBaseUrl: {{PUBLIC_URL}}/kibana
       server.basePath: "/kibana"
       server.rewriteBasePath: true
 
