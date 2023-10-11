@@ -1,0 +1,91 @@
+{
+	"$id": "Tool schema",
+	"type": "object",
+	"description": "Configure Tools screen",
+	"default": {},
+	"examples": [
+		{
+			"Tool": {
+				"name": "MyTool",
+				"url": "https://logman.io/my-tool",
+				"image": "tools/my-tool.svg"
+			}
+		}
+	],
+	"required": [
+	],
+	"properties": {
+		"Tool": {
+			"type": "object",
+			"title": "Tool configuration",
+			"description": "Tool source",
+			"default": {},
+			"examples": [
+				{
+					"name": "MyTool",
+					"url": "https://logman.io/my-tool",
+					"image": "tools/my-tool.svg"
+				}
+			],
+			"required": [
+				"name",
+				"url",
+				"image"
+			],
+			"properties": {
+				"name": {
+					"type": "string",
+					"title": "Name",
+					"description": "Fill the name of the Tool",
+					"default": "",
+					"examples": [
+						"MyTool"
+					]
+				},
+				"url": {
+					"type": "string",
+					"title": "URL",
+					"description": "Fill the redirect URL of the Tool",
+					"default": "",
+					"examples": [
+						"https://logman.io/my-tool"
+					]
+				},
+				"image": {
+					"type": "string",
+					"title": "Image",
+					"description": "Fill the path to the tool image in public folder or add base64 image string",
+					"default": "",
+					"$defs": {
+						"textarea": {
+							"type": "textarea"
+						}
+					},
+					"examples": [
+						"tools/my-tool.svg"
+					]
+				}
+			}
+		},
+	"Authorization": {
+	  "type": "object",
+	  "title": "Tool authorization",
+	  "description": "Limit access to Tool button by tenant settings",
+	  "default": {},
+	  "examples": [],
+	  "required": [],
+	  "properties": {
+		"tenants": {
+		  "type": "string",
+		  "title": "Tenants",
+		  "description": "Specify the tenant(s) separated by comma to restrict the usage of this configuration (optional)",
+		  "default": "",
+		  "examples": [
+			"tenant1, tenant2"
+		  ]
+		}
+	  }
+	}
+	},
+	"additionalProperties": false
+}

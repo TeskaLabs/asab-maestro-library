@@ -35,7 +35,7 @@ asab-config:
     # _schema: will be added by nginx descriptor
     Kibana:
       if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
-      file:
+      file: {"Tool": {"image": "tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
         
 
 seacat-auth:
@@ -97,7 +97,7 @@ nginx:
     - proxy_set_body ""
     - proxy_set_header X-Request-URI "request_uri"
       # proxy_cache batman_responses;
-    - proxy_pass http://upstream-seacat-auth-3081/batman/nginx?client_id=kibana
+    - proxy_pass http://upstream-seacat-auth-public/batman/nginx?client_id=kibana
       # ??? proxy_cache_key $cookie_SeaCatSCI_XXX;
       # proxy_cache_lock on;
       # proxy_cache_valid 200 10s;

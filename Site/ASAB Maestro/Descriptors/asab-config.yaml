@@ -21,6 +21,7 @@ sherpas:
     volumes:
       - "{{SITE}}/{{INSTANCE_ID}}/sherpa:/sherpa"
     command: python3 /sherpa/script.py
+    depends_on: ["{{INSTANCE_ID}}"]
     
 files:
   - sherpa/

@@ -52,3 +52,10 @@ sherpas:
       - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/webroot:/webroot"
       # Read-only NGINX configuration
       - "{{SITE}}/{{INSTANCE_ID}}/sherpa:/sherpa:ro"
+
+
+asab-config:
+  Tools:
+     _schema: 
+        file: asab-config/Tools/_schema.json
+        if_not_exists: False # Write config only if it does not exist, yet. (true/false, false is default)

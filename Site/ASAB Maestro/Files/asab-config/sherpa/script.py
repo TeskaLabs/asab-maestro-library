@@ -1,32 +1,47 @@
 import aiohttp
+import aiohttp.client_exceptions
 import asyncio
 import json
+import sys
+import os
+import time
 
 
-async def upload_config(session, config_type, config_file_name, config_file_data):
+async def upload_config(session, node_id, config_type, config_file_name, config_file_data):
 	file = config_file_data["file"]
-	try:
-		async with session.put("http://asab-config:8894/config/{}/{}".format(config_type, config_file_name), params={"if_not_exists": config_file_data.get("if_not_exists"), "validate": False}, json=file) as response:
-			if response.status == 200:
-				print("Config '{}' of type '{}' uploaded to asab-config".format(config_file_name, config_type))
-			else:
-				print("Upload of config '{}/{}' was not successful. Status: {}. Reason: {}".format(config_type, config_file_name, response.status, await response.json()))
-	except Exception as e:
-		print("Upload of config '{}/{}' was not successful. Error: {}".format(config_type, config_file_name, str(e)))
+	params = {"validate": "false"}
+	if config_file_data.get("if_not_exists"):
+		params["if_not_exists"] = "true"
 
-async def upload_config_type(session, config_type, config_file_data):
+	async with session.put("/config/{}/{}".format(config_type, config_file_name), params=params, json=file) as response:
+		if response.status == 200:
+			print("Config '{}' of type '{}' uploaded to asab-config".format(config_file_name, config_type))
+			return 0
+		else:
+			print("Upload of config '{}/{}' was not successful. Status: {}. Reason: {}".format(config_type, config_file_name, response.status, await response.json()))
+			return 1
+
+
+async def upload_config_type(session, node_id, config_type, config_file_data):
 	file = config_file_data["file"]
-	try:
-		async with session.put("http://asab-config:8894/type/{}".format(config_type), params={"if_not_exists": config_file_data.get("if_not_exists")}, json=file) as response:
-			if response.status == 200:
-				print("Config type '{}' uploaded to asab-config".format(config_type))
-			else:
-				print("Upload of config type '{}' was not successful. Status: {}. Reason: {}".format(config_type, response.status, await response.json()))
-	except Exception as e:
-		print("Upload of config type '{}' was not successful. Error: {}".format(config_type, str(e)))
+	params = {}
+	if config_file_data.get("if_not_exists"):
+		params["if_not_exists"] = "true"
+
+	async with session.put("/type/{}".format(config_type), params=params, json=file) as response:
+		if response.status == 200:
+			print("Config type '{}' uploaded to asab-config".format(config_type))
+			return 0
+		else:
+			print("Upload of config type '{}' was not successful. Status: {}. Reason: {}".format(config_type, response.status, await response.json()))
+			return 1
 
 
 async def main():
+	node_id = os.getenv("NODE_ID")
+	if node_id is None:
+		print("Could not find NODE_ID environment variable")
+		sys.exit(1)
 	# Load data from file
 	try:
 		with open("/sherpa/content.json", "r") as file:
@@ -38,16 +53,29 @@ async def main():
 		print("Error decoding JSON data from /sherpa/content.json file")
 		return
 	
-	# Initialize aiohttp session and send requests
-	tasks = []
-	async with aiohttp.ClientSession() as session:
-		for config_type, config_type_data in content.items():
-			for config_file_name, config_file_data in config_type_data.items():
-				if config_file_name == "_schema":
-					tasks.append(upload_config_type(session, config_type, config_file_data))
-				else:
-					tasks.append(upload_config(session, config_type, config_file_name, config_file_data))
-		await asyncio.gather(*tasks)
+	i = 5
+	while i > 0:
+		try:
+			# Initialize aiohttp session and send requests
+			res = 0
+			async with aiohttp.ClientSession(base_url="http://{}:8894".format(node_id)) as session:
+				for config_type, config_type_data in content.items():
+					if config_type_data.get("_schema") is not None:
+						res += await upload_config_type(session, node_id, config_type, config_type_data["_schema"])
+
+					for config_file_name, config_file_data in config_type_data.items():
+						if config_file_name == "_schema":
+							continue
+						res += await upload_config(session, node_id, config_type, config_file_name, config_file_data)
+
+				if res > 0:
+					sys.exit(1)
+			sys.exit(0)
+		except aiohttp.client_exceptions.ClientConnectorError:
+			print("Cannot reach asab-config. Retrying in 5 seconds...")
+			time.sleep(5)
+		i -= 1
+
 
 if __name__ == "__main__":
 	asyncio.run(main())
