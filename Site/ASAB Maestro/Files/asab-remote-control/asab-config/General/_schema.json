@@ -12,7 +12,7 @@
 		}
 	],
 	"required": [],
-	"patternProperties": {
+	"properties": {
 		"library": {
 			"type": "object",
 			"title": "Library",
@@ -28,7 +28,7 @@
 				"providers": {
 					"type": "array",
 					"title": "Providers",
-					"description": "Sidebar item name",
+					"description": "Add custom library providers. See https://docs.teskalabs.com/asab/reference/library/#providers",
 					"default": "",
 					"examples": [
 						"Some library provider"
