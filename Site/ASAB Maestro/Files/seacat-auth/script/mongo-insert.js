@@ -6,15 +6,18 @@ const fs = require("fs")
  * returns it as an object.
  */
 function load_data() {
-	const data = {}
+	const data = [] // array of arrays - each object has just one key/value pair
 
-	const files = fs.readdirSync("/script/to_upload");
+	const subpaths = fs.readdirSync("/script/to_upload");
 
-	files.forEach(file => {
-		const filePath = path.join("/script/to_upload", file);
-		const collectionName = file.slice(0,-5)
-		data[collectionName] = transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))
-	});
+	subpaths.forEach(subpath => {
+		const files = fs.readdirSync(path.join("/script/to_upload", subpath));
+		files.forEach(file => {
+			const filePath = path.join("/script/to_upload", subpath, file);
+			const collectionName = file.slice(0,-5)
+			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))])
+		});
+	})
 
 	return data
 }
@@ -48,10 +51,11 @@ function transform_collection(collectionName, data) {
 function insertSeaCatAuthCollections(data) {
 	// seacat auth uses "auth" database
 	authDb = db.getSiblingDB( "auth" );
-	Object.keys(data).forEach(function(collectionName) {
+	data.forEach(line => {
+		let collectionName = line[0]
 		const collection = authDb.getCollection(collectionName)
 		try {
-			res = collection.insertMany(data[collectionName], {ordered: false})
+			res = collection.insertMany(line[1], {ordered: false})
 			print(`Insterted ${Object.keys(res.insertedIds).length} into ${collectionName} collection.`)
 		} catch (MongoBulkWriteError) {
 			if (MongoBulkWriteError.code === 11000) {

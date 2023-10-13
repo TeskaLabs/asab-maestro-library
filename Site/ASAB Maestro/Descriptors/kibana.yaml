@@ -1,0 +1,106 @@
+define:
+  type: rc/descriptor
+  name: Kibana
+  url: https://www.elastic.co/kibana
+
+descriptor:
+  image: docker.elastic.co/kibana/kibana
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/config:/usr/share/kibana/config"
+
+
+files:
+  - "config/kibana.yml": |
+      # https://github.com/elastic/kibana/blob/main/config/kibana.yml
+      server.host: {{NODE_ID}}
+      elasticsearch.hosts: {{ELASTIC_HOSTS_KIBANA}}
+      elasticsearch.username: "elastic"
+      elasticsearch.password: {{ELASTIC_PASSWORD}}
+      xpack.monitoring.ui.container.elasticsearch.enabled: true
+      server.publicBaseUrl: {{PUBLIC_URL}}/kibana
+      server.basePath: "/kibana"
+      server.rewriteBasePath: true
+
+# server.publicBaseUrl: "{{PUBLIC_URL}}/kibana" -> kibana is directly dependent on nginx tech - on nginx present in the model
+# nginx locations are dependent on seacat auth presence
+
+asab-config:
+  # add files in this structure:
+  #   <name of the schema>:
+  #      _schema
+  #      <name of the config>:
+  #        file: ....
+  #        if_exists: boolean
+  Tools:
+    # _schema: will be added by nginx descriptor
+    Kibana:
+      if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
+      file: {"Tool": {"image": "tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
+        
+
+seacat-auth:
+  config:
+    "batman:elk":
+      url: "http://{{NODE_ID}}:9200" # <- this is not general enough
+      username: elastic
+      password: "{{ELASTIC_PASSWORD}}"
+  content:
+  - "cl.json": |
+      [{
+        "_id": "kibana",
+        "application_type": "web",
+        "authorize_anonymous_users": false,
+        "client_name": "Kibana",
+        "code_challenge_method": "none",
+        "grant_types": [
+          "authorization_code"
+        ],
+        "redirect_uri_validation_method": "prefix_match",
+        "redirect_uris": [
+          "{{PUBLIC_URL}}/kibana"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
+        "client_uri": "{{PUBLIC_URL}}/kibana"
+      }]
+
+nginx:
+  proxy_caches:
+    kibana: keys_zone=kibana:1m max_size=2m
+  https:
+    location /kibana:
+    - auth_request /_kibana_introspect
+    - auth_request_set $batman $upstream_http_authorization
+    - proxy_set_header Authorization $batman
+
+    - auth_request_set $cookie $upstream_http_cookie
+    - proxy_set_header Cookie $cookie
+
+    - proxy_pass http://{{NODE_ID}}:5601
+    - proxy_redirect off
+    - proxy_buffering off
+
+    - proxy_http_version 1.1
+    - proxy_set_header Connection "Keep-Alive"
+    - proxy_set_header Proxy-Connection "Keep-Alive"
+
+    - proxy_cache_bypass $http_upgrade
+
+    - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie%20batman&client_id=kibana&redirect_uri={{PUBLIC_URL}}$request_uri
+    - error_page 403 /auth
+
+
+    location /_kibana_introspect:
+    - internal
+    - proxy_method POST
+    - proxy_set_body ""
+    - proxy_set_header X-Request-URI "request_uri"
+    - proxy_cache kibana
+    - proxy_pass http://upstream-seacat-auth-public/batman/nginx?client_id=kibana
+    - proxy_cache_key $cookie_SeaCatSCI_QBOAFDNWZ52WDP22  # This is a cookie paired to the kibana client - it contains hashed client_id - this is based on SeaCat Auth requirements.
+    - proxy_cache_lock on
+    - proxy_cache_valid 200 10s
+    - proxy_ignore_headers Cache-Control Expires Set-Cookie

@@ -14,6 +14,18 @@ descriptor:
   # This is critical service
   restart: always
 
+# Other services can assign content through asab-config section in the descriptors. This sherpa uploads all content to asab-config.
+sherpas:
+  content:
+    image: docker.teskalabs.com/asab/asab-governator:stable
+    volumes:
+      - "{{SITE}}/{{INSTANCE_ID}}/content:/content"
+    command: python3 /content/script.py
+    depends_on: ["{{INSTANCE_ID}}"]
+    
+files:
+  - content/
+
 asab:
   configname: conf/asab-config.conf
   config: {}
