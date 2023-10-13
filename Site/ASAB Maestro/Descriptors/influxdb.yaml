@@ -10,6 +10,7 @@ descriptor:
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/conf:/etc/influxdb2"
 
   environment:
     DOCKER_INFLUXDB_INIT_MODE: setup
