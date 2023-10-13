@@ -44,13 +44,13 @@ async def main():
 		sys.exit(1)
 	# Load data from file
 	try:
-		with open("/sherpa/content.json", "r") as file:
+		with open("/content/content.json", "r") as file:
 			content = json.load(file)
 	except FileNotFoundError:
-		print("/sherpa/content.json was not found.")
+		print("/content/content.json was not found.")
 		return
 	except json.JSONDecodeError:
-		print("Error decoding JSON data from /sherpa/content.json file")
+		print("Error decoding JSON data from /content/content.json file")
 		return
 	
 	i = 5
