@@ -86,6 +86,11 @@ nginx:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
 
+    # This is an landing point for a cookie-based authorization
+    location = /api/cookie-entry:
+      - proxy_pass http://upstream-seacat-auth-public/cookie/entry
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
+
     location /auth/api/seacat_auth/public:
       - rewrite ^/auth/api/seacat_auth/(.*) /$1 break
       - proxy_pass http://upstream-seacat-auth-public
@@ -93,10 +98,6 @@ nginx:
     location /auth/api/openidconnect:
       - rewrite ^/auth/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
-
-    location = /api/cookie-entry: # This API endpoint is a landing zone for cookie-based authorization, used for Kibana / Grafana
-      - proxy_pass http://upstream-seacat-auth-public/cookie/entry
-      - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
 files:
   - "script/"
