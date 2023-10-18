@@ -6,9 +6,9 @@ define:
 descriptor:
   image: obsidiandynamics/kafdrop
   environment:
-    - SERVER_PORT=9000  # this is the only working setting
-    - SERVER_SERVLET_CONTEXTPATH=/kafdrop
-    - KAFKA_BROKERCONNECT={{KAFKA_BOOTSTRAP_SERVERS}}
+    SERVER_PORT: 9000  # this is the only working setting
+    SERVER_SERVLET_CONTEXTPATH: /kafdrop
+    KAFKA_BROKERCONNECT: '{{KAFKA_BOOTSTRAP_SERVERS}}'
 
 nginx:
   https:
