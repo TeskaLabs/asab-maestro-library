@@ -91,7 +91,7 @@ nginx:
       - proxy_pass http://upstream-seacat-auth-public/cookie/entry
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
-    location /auth/api/seacat_auth/public:
+    location /auth/api/seacat-auth/public:
       - rewrite ^/auth/api/seacat_auth/(.*) /$1 break
       - proxy_pass http://upstream-seacat-auth-public
 
