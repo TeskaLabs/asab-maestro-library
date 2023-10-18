@@ -1,0 +1,18 @@
+define:
+  type: rc/descriptor
+  name: Apache Kafka
+  url: https://github.com/obsidiandynamics/kafdrop
+
+descriptor:
+  image: obsidiandynamics/kafdrop
+  environment:
+    - SERVER_PORT=9000  # this is the only working setting
+    - SERVER_SERVLET_CONTEXTPATH=/kafdrop
+    - KAFKA_BROKERCONNECT={{KAFKA_BOOTSTRAP_SERVERS}}
+
+nginx:
+  https:
+    location /kafdrop:
+      - proxy_pass http://{{INSTANCE_ID}}:9000
+      - proxy_redirect off
+
