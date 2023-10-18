@@ -73,7 +73,7 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "$request_uri"
-      - proxy_pass http://upstream-seacat-auth-public/openidconnect/introspect/nginx
+      - proxy_pass http://upstream-seacat-auth-private/nginx/openidconnect/introspect
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
       # The cache for introspection requests, reduces the load on the SeaCat Auth API
