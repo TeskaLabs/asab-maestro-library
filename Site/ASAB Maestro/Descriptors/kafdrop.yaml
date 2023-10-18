@@ -15,4 +15,3 @@ nginx:
     location /kafdrop:
       - proxy_pass http://{{INSTANCE_ID}}:9000
       - proxy_redirect off
-
