@@ -93,7 +93,7 @@ nginx:
       - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
     location /auth/api/seacat-auth/public:
-      - rewrite ^/auth/api/seacat_auth/(.*) /$1 break
+      - rewrite ^/auth/api/seacat-auth/(.*) /$1 break
       - proxy_pass http://upstream-seacat-auth-public
 
     location /auth/api/openidconnect:
