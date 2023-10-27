@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v23.32
+  version: v23.42
 
 versions:
   zookeeper: '3.9'
@@ -9,7 +9,7 @@ versions:
   asab-governator: stable
   asab-library: v23.15-beta
   asab-config: v23.31-alpha
-  seacat-auth: v23.39-beta
+  seacat-auth: v23.42-beta2
   asab-iris: v23.31-alpha
   nginx: '1.25.2'
   elasticsearch: '7.17.12'
@@ -21,5 +21,5 @@ versions:
   kafdrop: '4.0.0'
   kafka: '7.5.1'
 
-  webapp seacat-auth: v23.13-beta
+  webapp seacat-auth: v23.29-beta
   webapp influxdb: v2.7.1
