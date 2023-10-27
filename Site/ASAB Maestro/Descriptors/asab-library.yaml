@@ -8,6 +8,8 @@ descriptor:
   volumes:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    # For persistency of fultext-search data
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/fulltext:/var/lib/asab-library/fulltext"
 
   # This is critical service
   restart: always
