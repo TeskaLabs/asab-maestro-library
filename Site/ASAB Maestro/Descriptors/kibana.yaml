@@ -35,7 +35,7 @@ asab-config:
     # _schema: will be added by nginx descriptor
     Kibana:
       if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
-      file: {"Tool": {"image": "tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
+      file: {"Tool": {"image": "media/tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
         
 
 seacat-auth:
