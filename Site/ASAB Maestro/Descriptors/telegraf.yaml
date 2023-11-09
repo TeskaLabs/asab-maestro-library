@@ -53,6 +53,7 @@ files:
         organization = "{{INFLUXDB_ORG}}"
         bucket = "{{INFLUXDB_BUCKET}}"
 
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/cpu/README.md
       [[inputs.cpu]]
         percpu = true
         totalcpu = true

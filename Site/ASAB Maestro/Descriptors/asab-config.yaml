@@ -19,12 +19,12 @@ sherpas:
   content:
     image: docker.teskalabs.com/asab/asab-governator:stable
     volumes:
-      - "{{SITE}}/{{INSTANCE_ID}}/sherpa:/sherpa"
-    command: python3 /sherpa/script.py
+      - "{{SITE}}/{{INSTANCE_ID}}/content:/content"
+    command: python3 /content/script.py
     depends_on: ["{{INSTANCE_ID}}"]
     
 files:
-  - sherpa/
+  - content/
 
 asab:
   configname: conf/asab-config.conf
