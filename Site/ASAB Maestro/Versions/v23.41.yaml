@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v23.32
+  version: v23.41
 
 versions:
   zookeeper: '3.9'

@@ -20,8 +20,8 @@ asab:
 
 asab-config:
   General:
-    _schema:
-      file: asab-config/General/_schema.json
+    __schema__:
+      file: asab-config/General/__schema__.json
     # config:
     #   if_not_exists: True  # Write config only if it does not exist, yet. (true/false, false is default)
     #   file: {}

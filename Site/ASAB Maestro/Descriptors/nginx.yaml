@@ -56,6 +56,6 @@ sherpas:
 
 asab-config:
   Tools:
-     _schema: 
-        file: asab-config/Tools/_schema.json
+     __schema__: 
+        file: asab-config/Tools/__schema__.json
         if_not_exists: False # Write config only if it does not exist, yet. (true/false, false is default)
