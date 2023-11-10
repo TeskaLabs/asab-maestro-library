@@ -60,11 +60,11 @@ async def main():
 			res = 0
 			async with aiohttp.ClientSession(base_url="http://{}:8894".format(node_id)) as session:
 				for config_type, config_type_data in content.items():
-					if config_type_data.get("_schema") is not None:
-						res += await upload_config_type(session, node_id, config_type, config_type_data["_schema"])
+					if config_type_data.get("__schema__") is not None:
+						res += await upload_config_type(session, node_id, config_type, config_type_data["__schema__"])
 
 					for config_file_name, config_file_data in config_type_data.items():
-						if config_file_name == "_schema":
+						if config_file_name == "__schema__":
 							continue
 						res += await upload_config(session, node_id, config_type, config_file_name, config_file_data)
 
