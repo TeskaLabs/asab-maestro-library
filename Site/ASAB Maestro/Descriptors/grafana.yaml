@@ -31,3 +31,9 @@ nginx:
 
     # TODO: Authorization using SeaCat Auth & Batman
     # TODO: Automated InfluxDB connector configuration
+
+asab-config:
+  Tools:
+     Grafana: 
+        file: asab-config/Tools/Grafana.json
+        if_not_exists: true
