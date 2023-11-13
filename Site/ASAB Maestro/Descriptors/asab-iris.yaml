@@ -23,23 +23,35 @@ asab-config:
     __schema__:
       file:
         {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "title": "asab-iris",
           "type": "object",
           "properties": {
-
             "slack": {
+              "title": "Slack",
+              "description": "Configure connection to Slack channel.",
               "type": "object",
               "properties": {
-                "token": { "type": "string" },
-                "channel": { "type": "string" }
+                "token": {
+                  "type": "string",
+                  "title": "Token"
+                  },
+                "channel": {
+                  "type": "string",
+                  "title": "Channel"
+                  }
               },
               "required": ["token", "channel"]
             },
             "msteams": {
+              "title": "MS Teams",
+              "description": "Configure connection to MS Teams.",
               "type": "object",
               "properties": {
-                "webhook_url": { "type": "string", "format": "uri" }
+                "webhook_url": {
+                  "title": "Webhook URL",
+                  "type": "string",
+                  "format": "uri"
+                  }
               },
               "required": ["webhook_url"]
             }
