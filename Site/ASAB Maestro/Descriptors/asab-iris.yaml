@@ -12,11 +12,45 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: {}
+  config: &config {}
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
     # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
     # [variables] must be filled from general confguration (user)
+
+asab-config:
+  asab-iris:
+    __schema__:
+      file:
+        {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "title": "asab-iris",
+          "type": "object",
+          "properties": {
+
+            "slack": {
+              "type": "object",
+              "properties": {
+                "token": { "type": "string" },
+                "channel": { "type": "string" }
+              },
+              "required": ["token", "channel"]
+            },
+            "msteams": {
+              "type": "object",
+              "properties": {
+                "webhook_url": { "type": "string", "format": "uri" }
+              },
+              "required": ["webhook_url"]
+            }
+          }
+        }
+      if_not_exists: true
+    config: 
+      file:
+        *config
+      if_not_exists: true
+
 
 nginx:
   api: 8896

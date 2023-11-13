@@ -16,7 +16,17 @@ descriptor:
 
 asab:
   configname: conf/asab-library.conf
-  config: {}
+  config: &config {}
+
+asab-config:
+  asab-library:
+    __schema__:
+      file: {}
+      if_not_exists: true
+    config: 
+      file:
+        *config
+      if_not_exists: true
 
 nginx:
   api: 8893

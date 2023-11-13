@@ -28,7 +28,17 @@ files:
 
 asab:
   configname: conf/asab-config.conf
-  config: {}
+  config: &config {}
+
+asab-config:
+  asab-config:
+    __schema__:
+      file: {}
+      if_not_exists: true
+    config: 
+      file:
+        *config
+      if_not_exists: true
 
 nginx:
   api: 8894

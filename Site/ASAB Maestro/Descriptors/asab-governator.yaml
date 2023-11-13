@@ -27,6 +27,17 @@ nginx:
 
 asab:
   configname: conf/asab-governator.conf
-  config:
+  config: &config
     web:
       listen: *apiport
+
+
+asab-config:
+  asab-governator:
+    __schema__:
+      file: {}
+      if_not_exists: true
+    config: 
+      file:
+        *config
+      if_not_exists: true
