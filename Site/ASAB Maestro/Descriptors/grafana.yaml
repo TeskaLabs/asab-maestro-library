@@ -13,14 +13,23 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/provisioning:/etc/grafana/provisioning"
 
   environment:
-    GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
-    GF_SERVER_FROM_SUB_PATH: true
-    GF_ALLOW_EMBEDDING: true
-    GF_SECURITY_ALLOW_EMBEDDING: true
-    GF_COOKIE_SAMESITE: disabled
-    GF_SECURITY_COOKIE_SAMESITE: disabled
     GF_SECURITY_ADMIN_USER: grafana_admin
     GF_SECURITY_ADMIN_PASSWORD: "{{GRAFANA_PASSWORD}}"
+    GF_SERVER_ROOT_URL: "{{PUBLIC_URL}}/grafana/"
+    GF_AUTH_GENERIC_OAUTH_ENABLED: true # false if there's no seacat-auth
+    GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: true
+    GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN: true
+    GF_AUTH_GENERIC_OAUTH_USE_PKCE: false
+    GF_AUTH_GENERIC_OAUTH_USE_REFRESH_TOKEN: false
+    GF_AUTH_GENERIC_OAUTH_NAME: Seacat Auth
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{GRAFANA_CLIENT_SECRET}}"
+    GF_AUTH_GENERIC_OAUTH_SCOPES: openid email profile
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: "{{PUBLIC_URL}}/api/openidconnect/authorize"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{PUBLIC_URL}}/api/openidconnect/token"
+    GF_AUTH_GENERIC_OAUTH_API_URL: "{{PUBLIC_URL}}/api/openidconnect/userinfo"
+    GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: true
+    GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(resources."*"[*], 'authz:superuser') && 'Admin' || contains(resources."*"[*], 'grafana:edit') && 'Editor' || 'Viewer'
 
 files:
   - "provisioning/"
@@ -28,48 +37,11 @@ files:
 nginx:
   upstreams:
     upstream-grafana: 3000
-
-  # https:
-  #    location /grafana:
-  #     - rewrite ^/grafana/(.*) /$1 break
-  #     - proxy_pass http://upstream-grafana
-  #     - proxy_set_header Host $host
-
-  proxy_caches:
-    grafana: keys_zone=grafana:1m max_size=2m
   https:
     location /grafana:
-    - auth_request /_grafana_introspect
-    - auth_request_set $batman $upstream_http_authorization
-    - proxy_set_header Authorization $batman
-
-    # - auth_request_set $cookie $upstream_http_cookie
-    # - proxy_set_header Cookie $cookie
-
     - rewrite ^/grafana/(.*) /$1 break
     - proxy_pass http://upstream-grafana
     - proxy_set_header Host $host
-    # - proxy_redirect off
-    # - proxy_buffering off
-
-    # - proxy_cache_bypass $http_upgrade
-
-    - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie%20batman&client_id=grafana&redirect_uri={{PUBLIC_URL}}$request_uri
-    - error_page 403 /auth
-
-
-    location /_grafana_introspect:
-    - internal
-    - proxy_method POST
-    - proxy_set_body ""
-    - proxy_set_header X-Request-URI "request_uri"
-    - proxy_cache grafana
-    - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/batman?client_id=grafana
-    - proxy_cache_key $cookie_SeaCatSCI_ZLHESG3JKVPI2D3X  # This is a cookie paired to the grafana client - it contains hashed client_id - this is based on SeaCat Auth requirements.
-    - proxy_cache_lock on
-    - proxy_cache_valid 200 10s
-    - proxy_ignore_headers Cache-Control Expires Set-Cookie
-
 
 # TODO: Automated InfluxDB connector configuration
 
@@ -80,11 +52,6 @@ asab-config:
         if_not_exists: true
 
 seacat-auth:
-  config:
-    "batman:grafana":
-      url: "http://{{NODE_ID}}:3000"
-      username: grafana_admin
-      password: "{{GRAFANA_PASSWORD}}"
   content:
   - "cl.json": |
       [{
@@ -104,7 +71,6 @@ seacat-auth:
           "code"
         ],
         "token_endpoint_auth_method": "none",
-        "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
         "client_uri": "{{PUBLIC_URL}}/grafana"
       }]
 
