@@ -7,7 +7,9 @@
 	"examples": [
 		{
 			"library": {
-				"providers": ["Some library provider"]
+				"providers": [
+					"Some library provider"
+				]
 			}
 		}
 	],
@@ -20,16 +22,17 @@
 			"default": {},
 			"examples": [
 				{
-					"providers": ["Some library provider"]
+					"providers": [
+						"Some library provider"
+					]
 				}
 			],
-			"required": ["providers"],
 			"properties": {
 				"providers": {
 					"type": "array",
 					"title": "Providers",
 					"description": "Add custom library providers. See https://docs.teskalabs.com/asab/reference/library/#providers",
-					"default": "",
+					"default": [],
 					"examples": [
 						"Some library provider"
 					]
@@ -91,8 +94,12 @@
 					}
 				}
 			},
-			"required": ["host", "user", "password"]
-		  }
+			"required": [
+				"host",
+				"user",
+				"password"
+			]
+		}
 	},
 	"additionalProperties": true
 }
