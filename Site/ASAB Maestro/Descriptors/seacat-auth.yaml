@@ -29,7 +29,7 @@ sherpas:
 
 asab:
   configname: conf/seacatauth.conf
-  config: &config
+  config: &config  # specify default configuration of the service
     general:
       public_api_base_url: "{{PUBLIC_URL}}/auth/api"
       auth_webui_base_url: "{{PUBLIC_URL}}/auth"
@@ -59,7 +59,6 @@ asab-config:
   seacat-auth:
     __schema__:
       file: {}
-      if_not_exists: true
     config: 
       file:
         *config
@@ -121,7 +120,6 @@ asab-config:
           },
           "additionalProperties": false
         }
-      if_not_exists: true
     system:
       file: {"General": {"schema": "/Schemas/ECS.yaml", "timezone": "Europe/Prague"}}
       if_not_exists: true

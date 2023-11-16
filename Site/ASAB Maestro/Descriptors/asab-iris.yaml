@@ -12,10 +12,9 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: &config {}
+  config: &config {}  # specify default configuration of the service
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
-    # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
     # [variables] must be filled from general confguration (user)
 
 asab-config:
@@ -43,7 +42,7 @@ asab-config:
               "required": ["token", "channel"]
             },
             "msteams": {
-              "title": "MS Teams",
+              "title": "Microsoft Teams",
               "description": "Configure connection to MS Teams.",
               "type": "object",
               "properties": {
@@ -57,10 +56,9 @@ asab-config:
             }
           }
         }
-      if_not_exists: true
     config: 
       file:
-        *config
+        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
       if_not_exists: true
 
 

@@ -35,5 +35,15 @@ nginx:
 asab-config:
   Tools:
      Grafana: 
-        file: asab-config/Tools/Grafana.json
+        file: 
+          {
+              "Tool": {
+                  "name": "Grafana",
+                  "url": "/grafana/",
+                  "image": "media/tools/grafana.svg"
+              },
+              "Authorization": {
+                  "tenants": ""
+              }
+          }
         if_not_exists: true

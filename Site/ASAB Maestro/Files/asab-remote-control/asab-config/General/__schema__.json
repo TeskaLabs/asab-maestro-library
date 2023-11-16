@@ -46,56 +46,49 @@
 					"title": "Host",
 					"description": "Where is your SMTP server.",
 					"examples": "https://smtp-provider.com/"
-					},
+				},
 				"user": {
 					"type": "string",
 					"title": "User",
 					"description": "Set credentials for the SMTP server. Type 'apikey' and fill in apikey into password option if needed."
-					},
+				},
 				"password": {
 					"type": "string",
 					"title": "Password",
 					"description": "Set credentials for the SMTP server."
-					},
+				},
 				"from": {
 					"type": "string",
 					"format": "email",
 					"title": "From",
 					"description": "Set default sender email address for this system."
-					},
+				},
 				"subject": {
 					"type": "string",
 					"title": "Subject",
 					"description": "Set default email subject for this system."
-					},
+				},
 				"ssl": {
-					"type": "string",
-					"enum": ["yes", "no"],
-					"title": "SSL",
+					"type": "boolean",
+					"title": "SSL/TLS",
 					"description": "Switch SSL on?",
-					"default": [
-						"yes",
-						"no"
-					],
+					"default": true,
 					"$defs": {
-						"select": {
-							"type": "select"
-							}
+						"checkbox": {
+							"type": "checkbox"
 						}
-					},
+					}
+				},
 				"starttls": {
-					"type": "string",
-					"title": "starttls",
-					"enum": ["yes", "no"],
-					"default": [
-						"yes",
-						"no"
-					],
+					"type": "boolean",
+					"title": "Use STARTTLS",
+					"description": "Use STARTTLS",
+					"default": false,
 					"$defs": {
-						"select": {
-							"type": "select"
-							}
+						"checkbox": {
+							"type": "checkbox"
 						}
+					}
 				}
 			},
 			"required": ["host", "user", "password"]

@@ -27,7 +27,7 @@ nginx:
 
 asab:
   configname: conf/asab-governator.conf
-  config: &config
+  config: &config  # specify default configuration of the service
     web:
       listen: *apiport
 
@@ -36,8 +36,7 @@ asab-config:
   asab-governator:
     __schema__:
       file: {}
-      if_not_exists: true
     config: 
       file:
-        *config
+        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
       if_not_exists: true
