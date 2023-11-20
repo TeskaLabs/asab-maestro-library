@@ -17,7 +17,7 @@ versions:
   kibana: '7.17.2'
   influxdb: '2.7.1'
   telegraf: '1.28.2'
-  grafana: '10.0.8'
+  grafana: '10.2.1'
   kafdrop: '4.0.0'
   kafka: '7.5.1'
 
