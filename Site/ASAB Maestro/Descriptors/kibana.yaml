@@ -40,7 +40,8 @@ asab-config:
 
 seacat-auth:
   config:
-    "batman:elk":
+    "batman:kibana":
+      kibana_url: "http://{{NODE_ID}}:5601"
       url: "http://{{NODE_ID}}:9200" # <- this is not general enough
       username: elastic
       password: "{{ELASTIC_PASSWORD}}"
