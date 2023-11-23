@@ -40,7 +40,8 @@ asab-config:
 
 seacat-auth:
   config:
-    "batman:elk":
+    "batman:kibana":
+      kibana_url: "http://{{NODE_ID}}:8890/kibana"
       url: "http://{{NODE_ID}}:9200" # <- this is not general enough
       username: elastic
       password: "{{ELASTIC_PASSWORD}}"
@@ -70,6 +71,19 @@ seacat-auth:
 nginx:
   proxy_caches:
     kibana: keys_zone=kibana:1m max_size=2m
+  
+  internal:
+    location /kibana:
+    - proxy_pass http://{{NODE_ID}}:5601
+    - proxy_redirect off
+    - proxy_buffering off
+
+    - proxy_http_version 1.1
+    - proxy_set_header Connection "Keep-Alive"
+    - proxy_set_header Proxy-Connection "Keep-Alive"
+
+    - proxy_cache_bypass $http_upgrade
+
   https:
     location /kibana:
     - auth_request /_kibana_introspect
