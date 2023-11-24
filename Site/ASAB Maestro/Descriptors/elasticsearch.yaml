@@ -41,8 +41,6 @@ descriptor:
 
 
 nginx:
-  upstreams:
-    elasticsearch: 9200
   https:
     location /api/elasticsearch/:
       - "{{AUTH_INTROSPECTION}}"
