@@ -38,3 +38,17 @@ descriptor:
     xpack.security.transport.ssl.certificate_authorities: certs/ca.pem
     xpack.security.transport.ssl.certificate: certs/certificate.pem
     xpack.security.transport.ssl.key: certs/key.pem
+
+
+nginx:
+  upstreams:
+    elasticsearch: 9200
+  https:
+    location /api/elasticsearch/:
+      - "{{AUTH_INTROSPECTION}}"
+      - proxy_set_header Authorization "Basic {{ ("elastic:" + ELASTIC_PASSWORD) | base64_encode }}"
+      - rewrite ^/api/elasticsearch/(.*) /$1 break
+      - proxy_set_header Host $host
+      - proxy_set_header Connection "Keep-Alive"
+      - proxy_set_header Proxy-Connection "Keep-Alive"
+      - proxy_pass http://elasticsearch
