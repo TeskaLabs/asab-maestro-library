@@ -10,24 +10,77 @@ descriptor:
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/grafana"
+    - "{{SITE}}/{{INSTANCE_ID}}/provisioning:/etc/grafana/provisioning"
 
   environment:
-    GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
-    GF_SERVER_FROM_SUB_PATH: true
-    GF_ALLOW_EMBEDDING: true
-    GF_SECURITY_ALLOW_EMBEDDING: true
-    GF_COOKIE_SAMESITE: true
-    GF_SECURITY_COOKIE_SAMESITE: true
+    GF_SECURITY_ADMIN_USER: grafana_admin
+    GF_SECURITY_ADMIN_PASSWORD: "{{GRAFANA_PASSWORD}}"
+    GF_SERVER_ROOT_URL: "{{PUBLIC_URL}}/grafana/"
+    GF_AUTH_GENERIC_OAUTH_ENABLED: true # false if there's no seacat-auth
+    GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: true
+    GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN: true
+    GF_AUTH_GENERIC_OAUTH_USE_PKCE: false
+    GF_AUTH_GENERIC_OAUTH_USE_REFRESH_TOKEN: false
+    GF_AUTH_GENERIC_OAUTH_NAME: Seacat Auth
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{GRAFANA_CLIENT_SECRET}}"
+    GF_AUTH_GENERIC_OAUTH_SCOPES: openid email profile
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: "{{PUBLIC_URL}}/api/openidconnect/authorize"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{PUBLIC_URL}}/api/openidconnect/token"
+    GF_AUTH_GENERIC_OAUTH_API_URL: "{{PUBLIC_URL}}/api/openidconnect/userinfo"
+    GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: true
+    GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(resources."*"[*], 'authz:superuser') && 'Admin' || contains(resources."*"[*], 'grafana:edit') && 'Editor' || 'Viewer'
+
+files:
+  - "provisioning/"
 
 nginx:
   upstreams:
     upstream-grafana: 3000
-
   https:
-     location /grafana:
-      - rewrite ^/grafana/(.*) /$1 break
-      - proxy_pass http://upstream-grafana
-      - proxy_set_header Host $host
+    location /grafana:
+    - rewrite ^/grafana/(.*) /$1 break
+    - proxy_pass http://upstream-grafana
+    - proxy_set_header Host $host
 
-    # TODO: Authorization using SeaCat Auth & Batman
-    # TODO: Automated InfluxDB connector configuration
+# TODO: Automated InfluxDB connector configuration
+
+asab-config:
+  Tools:
+     Grafana: 
+        file: 
+          {
+              "Tool": {
+                  "name": "Grafana",
+                  "url": "/grafana/",
+                  "image": "media/tools/grafana.svg"
+              },
+              "Authorization": {
+                  "tenants": ""
+              }
+          }
+        if_not_exists: true
+
+seacat-auth:
+  content:
+  - "cl.json": |
+      [{
+        "_id": "grafana",
+        "application_type": "web",
+        "authorize_anonymous_users": false,
+        "client_name": "Grafana",
+        "code_challenge_method": "none",
+        "grant_types": [
+          "authorization_code"
+        ],
+        "redirect_uri_validation_method": "prefix_match",
+        "redirect_uris": [
+          "{{PUBLIC_URL}}/grafana"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "client_uri": "{{PUBLIC_URL}}/grafana"
+      }]
+

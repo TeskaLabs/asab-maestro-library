@@ -12,11 +12,55 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: {}
+  config: &config {}  # specify default configuration of the service
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
-    # [kafka] will be filled by the remote-control if kafka exists - what about the name of the topic and group_id?
     # [variables] must be filled from general confguration (user)
+
+asab-config:
+  asab-iris:
+    __schema__:
+      file:
+        {
+          "title": "asab-iris",
+          "type": "object",
+          "properties": {
+            "slack": {
+              "title": "Slack",
+              "description": "Configure connection to Slack channel.",
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "title": "Token"
+                  },
+                "channel": {
+                  "type": "string",
+                  "title": "Channel"
+                  }
+              },
+              "required": ["token", "channel"]
+            },
+            "msteams": {
+              "title": "Microsoft Teams",
+              "description": "Configure connection to MS Teams.",
+              "type": "object",
+              "properties": {
+                "webhook_url": {
+                  "title": "Webhook URL",
+                  "type": "string",
+                  "format": "uri"
+                  }
+              },
+              "required": ["webhook_url"]
+            }
+          }
+        }
+    config: 
+      file:
+        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
+      if_not_exists: true
+
 
 nginx:
   api: 8896
