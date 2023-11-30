@@ -28,16 +28,7 @@ files:
 
 asab:
   configname: conf/asab-config.conf
-  config: &config {}  # specify default configuration of the service
-
-asab-config:
-  asab-config:
-    __schema__:
-      file: {}
-    config: 
-      file:
-        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
-      if_not_exists: true
+  config: {}
 
 nginx:
   api: 8894

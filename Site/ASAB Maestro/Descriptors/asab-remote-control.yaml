@@ -16,7 +16,7 @@ descriptor:
 
 asab:
   configname: conf/asab-remote-control.conf
-  config: &config {}  # specify default configuration of the service
+  config: {}  # specify default configuration of the service
 
 asab-config:
   General:
@@ -24,13 +24,6 @@ asab-config:
       file: asab-config/General/__schema__.json
     config.json:
       file: {}
-      if_not_exists: true
-  asab-remote-control:
-    __schema__:
-      file: {}
-    config: 
-      file:
-        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
       if_not_exists: true
 
 nginx:
