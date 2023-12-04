@@ -1,0 +1,28 @@
+define:
+  type: rc/descriptor
+  name: BS Query
+
+descriptor:
+  image: docker.teskalabs.com/bs-query
+
+  volumes:
+  - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+  - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/data/bsquery"
+  # TODO: add jupiter - /data/hdd/jupyter:/data/jupyter
+
+asab:
+  configname: conf/bs-query.conf
+
+  config:
+    storage:
+    # TODO: remove after bs-query has the right folder /data 
+      path: /data/bsquery
+
+    elasticsearch:
+    # TODO: remove after bs-query is ready to read the config section
+      url: "{{ ELASTIC_HOSTS_AUTHORIZED|join(' ') }}"
+
+    # TODO: needs to be here, but currently is in model
+    # auth:
+    #   multitenancy: "yes"
+    #   public_keys_url: http://lmc01:3081/openidconnect/public_keys
