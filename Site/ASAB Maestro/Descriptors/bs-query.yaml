@@ -26,3 +26,47 @@ asab:
     # auth:
     #   multitenancy: "yes"
     #   public_keys_url: http://lmc01:3081/openidconnect/public_keys
+
+asab-config:
+  bs-query:
+    __schema__:
+      file:
+        {
+          "title": "bs-query",
+          "type": "object",
+          "properties": {
+            "download": {
+              "title": "Downloads Configuration",
+              "type": "object",
+              "properties": {
+                "expiration": {
+                  "type": "string",
+                  "title": "Link Expiration Time",
+                  "description": "Configure how fast a download link expires (in seconds)."
+                }
+              }
+            },
+            "xlsx": {
+              "title": "Files Configuration",
+              "type": "object",
+               "properties": {
+                  "limit": {
+                    "type": "string",
+                    "title": "File Size Limit",
+                    "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
+                  }
+                }
+            },
+            "target:email": {
+              "title": "Emails Configuration",
+              "type": "object",
+              "properties": {
+                "file_size_limit": {
+                  "type": "string",
+                  "title": "Attachment Size Limit"
+                  "description": "Configure the maximum size of email attachments. Default is 50 Mb.",
+                }
+              }
+            }
+          }
+        }
