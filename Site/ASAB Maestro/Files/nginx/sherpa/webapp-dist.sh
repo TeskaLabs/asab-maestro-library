@@ -92,30 +92,35 @@ install_spa() {  # args: URL: $1, Name: $2
 
 mkdir -p "$TMP_DIR"
 
-# Process the file line by line
-while read -r line; do
+if [ -f "/sherpa/webapps.dist" ]; then
 
-	# Get the function/command from the first 'word' of the line
-	cmd=$(echo "$line" | cut -d " " -f 1)
+	# Process the file line by line
+	while read -r line; do
 
-	# Get the arguments by excluding the first 'word'
-	args=$(echo "$line" | cut -d " " -f 2-)
+		# Get the function/command from the first 'word' of the line
+		cmd=$(echo "$line" | cut -d " " -f 1)
 
-	# Switch based on the command
-	case "$cmd" in
-		mfe)
-			# Call the mfe function and pass all arguments
-			install_mfe $args
-			;;
+		# Get the arguments by excluding the first 'word'
+		args=$(echo "$line" | cut -d " " -f 2-)
 
-		spa)
-			# Call the spa function and pass all arguments
-			install_spa $args
-			;;
+		# Switch based on the command
+		case "$cmd" in
+			mfe)
+				# Call the mfe function and pass all arguments
+				install_mfe $args
+				;;
 
-		*)
-			echo "Unknown distribution method: $cmd"
-			;;
-	esac
+			spa)
+				# Call the spa function and pass all arguments
+				install_spa $args
+				;;
 
-done < "/sherpa/webapps.dist"
+			*)
+				echo "Unknown distribution method: $cmd"
+				;;
+		esac
+
+	done < "/sherpa/webapps.dist"
+else
+	echo "File /sherpa/webapps.dist not found. No webapps installed."
+fi
