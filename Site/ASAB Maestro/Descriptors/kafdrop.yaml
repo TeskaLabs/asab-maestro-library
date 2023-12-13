@@ -24,10 +24,10 @@ asab-config:
               "Tool": {
                   "image": "media/tools/kafka.svg",
                   "name": "Kafdrop",
-                  "url": "https://{{PUBLIC_URL}}/kafdrop"
+                  "url": "{{PUBLIC_URL}}/kafdrop"
               },
               "Authorization": {
-                  "tenants": ""
+                  "tenants": "system"
               }
           }
         if_not_exists: true
