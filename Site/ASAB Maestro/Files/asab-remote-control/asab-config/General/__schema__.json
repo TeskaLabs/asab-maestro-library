@@ -74,9 +74,9 @@
 				"ssl": {
 					"type": "boolean",
 					"title": "Use SSL/TLS encryption",
-					"description": ""Enable SSL/TLS encryption for secure email transmission.",
+					"description": "Enable SSL/TLS encryption for secure email transmission.",
 					"default": true,
-					"$defs": 
+					"$defs": {
 						"checkbox": {
 							"type": "checkbox"
 						}
