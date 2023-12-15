@@ -6,15 +6,38 @@ define:
 descriptor:
   image: obsidiandynamics/kafdrop
   environment:
-    SERVER_PORT: 9000  # this is the only working setting
+    SERVER_PORT: 9000  # this is the only working port
     SERVER_SERVLET_CONTEXTPATH: /kafdrop
     KAFKA_BROKERCONNECT: '{{KAFKA_BOOTSTRAP_SERVERS}}'
 
 nginx:
+  proxy_caches:
+    kafdrop: keys_zone=kafdrop:1m max_size=2m
+
   https:
     location /kafdrop:
-      - proxy_pass http://{{INSTANCE_ID}}:9000
+      - auth_request /kafdrop_cookie_introspect
+      - auth_request_set $authorization $upstream_http_authorization
+      - proxy_set_header Authorization $authorization
+
+      - auth_request_set $cookie $upstream_http_cookie
+      - proxy_set_header Cookie $cookie
+      - proxy_pass http://{{NODE_ID}}:9000
       - proxy_redirect off
+      - error_page 403 /auth
+      - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie&client_id=kafdrop&redirect_uri={{PUBLIC_URL}}$request_uri
+
+    location /kafdrop_cookie_introspect:
+      - internal
+      - proxy_method POST
+      - proxy_set_body "$http_authorization"
+      - proxy_set_header X-Request-URI "request_uri"
+      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=kafdrop&resource=kafdrop:access
+      - proxy_cache kafdrop
+      - proxy_cache_key $cookie_SeaCatSCI_SNRWHBFU5IOLBAEC
+      - proxy_cache_lock on
+      - proxy_cache_valid 200 10s
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
 asab-config:
   Tools:
@@ -24,10 +47,39 @@ asab-config:
               "Tool": {
                   "image": "media/tools/kafka.svg",
                   "name": "Kafdrop",
-                  "url": "https://{{PUBLIC_URL}}/kafdrop"
+                  "url": "{{PUBLIC_URL}}/kafdrop"
               },
               "Authorization": {
-                  "tenants": ""
+                  "tenants": "system"
               }
           }
         if_not_exists: true
+
+seacat-auth:
+  content:
+  - "cl.json": |
+      [{
+        "_id": "kafdrop",
+        "application_type": "web",
+        "authorize_anonymous_users": false,
+        "client_name": "Kafdrop",
+        "code_challenge_method": "none",
+        "grant_types": [
+          "authorization_code"
+        ],
+        "redirect_uri_validation_method": "prefix_match",
+        "redirect_uris": [
+          "{{PUBLIC_URL}}/kafdrop"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
+        "client_uri": "{{PUBLIC_URL}}/kafdrop"
+      }]
+  - "rs.json": |
+      [{
+        "_id": "kafdrop:access",
+        "description": "Access Kafdrop."
+      }]
