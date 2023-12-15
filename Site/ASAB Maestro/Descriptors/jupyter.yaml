@@ -1,37 +1,45 @@
 define:
   type: rc/descriptor
-  name: Web-based ZooKeeper UI
-  url: https://zoonavigator.elkozmon.com/
+  name: Jupyter Notebook
+
+secrets:
+  - JUPYTER_TOKEN
 
 descriptor:
-  image: jupyter/base-notebook
+  user: "1000:0"
+  image: quay.io/jupyter/base-notebook
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/home/jovyan"
-    - "{{SITE}}/{{INSTANCE_ID}}/.jupyter:/home/jovyan/.jupyter"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/.jupyter:/home/jovyan/.jupyter"
+    - "{{SITE}}/{{INSTANCE_ID}}:/config"
 
+
+  entrypoint: ["/bin/bash", "-e", "/config/jupyter_start.sh"]
 
 files:
-  ".jupyter/jupyter_notebook_config.py": |
-    c.ServerApp.token = "{{JUPYTER_TOKEN}}"
-    c.ServerApp.allow_origin = '*'
-    c.ServerApp.port = 8888
-    c.NotebookApp.open_browser = False
-    c.ServerApp.allow_remote_access = True
-    c.ServerApp.trust_xheaders = True
+  - "jupyter_notebook_config.py": |
+      c.ServerApp.token = "{{JUPYTER_TOKEN}}"
+      c.ServerApp.allow_origin = '*'
+      c.ServerApp.port = 8888
+      c.NotebookApp.open_browser = False
+      c.ServerApp.allow_remote_access = True
+      c.ServerApp.trust_xheaders = True
 
-    c.ServerApp.custom_display_url = '{{PUBLIC_URL}}/jupyter'
-    c.ServerApp.base_url = '/jupyter'
-    c.ServerApp.quit_button = False
+      c.ServerApp.custom_display_url = '{{PUBLIC_URL}}/jupyter'
+      c.ServerApp.base_url = '/jupyter'
+      c.ServerApp.quit_button = False
+
+  - "jupyter_start.sh"
 
 
 asab-config:
   Tools:
-     Zoonavigator: 
+     Jupyter: 
         file:
           {
               "Tool": {
-                  "image": "media/tools/zookeeper.svg",
+                  "image": "media/tools/jupyter.svg",
                   "name": "Jupyter Notebook",
                   "url": "{{PUBLIC_URL}}/jupyter"
               },
@@ -45,17 +53,22 @@ asab-config:
 
 nginx:
   proxy_caches:
-    zoonavigator: keys_zone=zoonavigator:1m max_size=2m
+    juypter: keys_zone=jupyter:1m max_size=2m
 
   https:
     location /jupyter:
       - auth_request /jupyter_cookie_introspect
       - auth_request_set $authorization $upstream_http_authorization
-      - proxy_set_header Authorization $authorization
-
+      - proxy_set_header Authorization "token {{JUPYTER_TOKEN}}"
       - auth_request_set $cookie $upstream_http_cookie
       - proxy_set_header Cookie $cookie
-      - proxy_pass http://{{NODE_ID}}:9001
+      - proxy_pass http://{{NODE_ID}}:8888
+      - proxy_http_version 1.1
+      - proxy_set_header Upgrade $http_upgrade
+      - proxy_set_header Connection "Upgrade"
+      - proxy_set_header Host $host
+      - proxy_read_timeout 86400
+      - proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for
       - proxy_redirect off
       - error_page 403 /auth
       - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie&client_id=jupyter&redirect_uri={{PUBLIC_URL}}$request_uri
