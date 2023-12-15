@@ -58,7 +58,12 @@
 				"password": {
 					"type": "string",
 					"title": "Password",
-					"description": "Set credentials for the SMTP server."
+					"description": "Set credentials for the SMTP server.",
+					"$defs": {
+						"password": {
+							"type": "password"
+						}
+					}
 				},
 				"from": {
 					"type": "string",
