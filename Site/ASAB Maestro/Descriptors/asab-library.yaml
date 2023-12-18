@@ -9,7 +9,7 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     # For persistency of fultext-search data
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/fulltext:/var/lib/asab-library/fulltext"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/var/lib/asab-library"
 
   # This is critical service
   restart: always
