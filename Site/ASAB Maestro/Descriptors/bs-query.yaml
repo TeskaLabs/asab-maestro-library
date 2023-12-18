@@ -1,0 +1,72 @@
+define:
+  type: rc/descriptor
+  name: BS Query
+
+descriptor:
+  image: docker.teskalabs.com/bs-query
+
+  volumes:
+  - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+  - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/data/bsquery"
+  # TODO: add jupiter - /data/hdd/jupyter:/data/jupyter
+
+asab:
+  configname: conf/bs-query.conf
+
+  config:
+    storage:
+    # TODO: remove after bs-query has the right folder /data 
+      path: /data/bsquery
+
+    elasticsearch:
+    # TODO: remove after bs-query is ready to read the config section
+      url: "{{ ELASTIC_HOSTS_AUTHORIZED|join(' ') }}"
+
+    # TODO: needs to be here, but currently is in model
+    # auth:
+    #   multitenancy: "yes"
+    #   public_keys_url: http://lmc01:3081/openidconnect/public_keys
+
+asab-config:
+  bs-query:
+    __schema__:
+      file:
+        {
+          "title": "bs-query",
+          "type": "object",
+          "properties": {
+            "download": {
+              "title": "Downloads Configuration",
+              "type": "object",
+              "properties": {
+                "expiration": {
+                  "type": "string",
+                  "title": "Link Expiration Time",
+                  "description": "Configure how fast a download link expires (in seconds)."
+                }
+              }
+            },
+            "xlsx": {
+              "title": "Files Configuration",
+              "type": "object",
+               "properties": {
+                  "limit": {
+                    "type": "string",
+                    "title": "File Size Limit",
+                    "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
+                  }
+                }
+            },
+            "target:email": {
+              "title": "Emails Configuration",
+              "type": "object",
+              "properties": {
+                "file_size_limit": {
+                  "type": "string",
+                  "title": "Attachment Size Limit"
+                  "description": "Configure the maximum size of email attachments. Default is 50 Mb.",
+                }
+              }
+            }
+          }
+        }
