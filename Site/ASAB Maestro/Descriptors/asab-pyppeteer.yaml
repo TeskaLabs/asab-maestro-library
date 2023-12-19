@@ -14,7 +14,7 @@ asab:
   configname: conf/asab-pyppeteer.conf
   config:
     seacat_auth:
-      url: http://seacat-auth-1:3081  # TODO!!!
+      url: http://seacat-auth-1:8900  # TODO!!!
     pyppeteer:
       ignore_certificate_errors: 1
       url_white_list: "{{PUBLIC_URL}}"
