@@ -22,51 +22,99 @@ asab:
     # TODO: remove after bs-query is ready to read the config section
       url: "{{ ELASTIC_HOSTS_AUTHORIZED|join(' ') }}"
 
-    # TODO: needs to be here, but currently is in model
-    # auth:
-    #   multitenancy: "yes"
-    #   public_keys_url: http://lmc01:3081/openidconnect/public_keys
+    auth:
+      multitenancy: "yes"
+      public_keys_url: http://seacat-auth-1:3081/openidconnect/public_keys  # TODO!!!
 
-asab-config:
-  bs-query:
-    __schema__:
-      file:
-        {
-          "title": "bs-query",
-          "type": "object",
-          "properties": {
-            "download": {
-              "title": "Downloads Configuration",
-              "type": "object",
-              "properties": {
-                "expiration": {
-                  "type": "string",
-                  "title": "Link Expiration Time",
-                  "description": "Configure how fast a download link expires (in seconds)."
-                }
-              }
-            },
-            "xlsx": {
-              "title": "Files Configuration",
-              "type": "object",
-               "properties": {
-                  "limit": {
-                    "type": "string",
-                    "title": "File Size Limit",
-                    "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
-                  }
-                }
-            },
-            "target:email": {
-              "title": "Emails Configuration",
-              "type": "object",
-              "properties": {
-                "file_size_limit": {
-                  "type": "string",
-                  "title": "Attachment Size Limit"
-                  "description": "Configure the maximum size of email attachments. Default is 50 Mb.",
-                }
-              }
-            }
-          }
-        }
+    pyppeteer:  # TODO !!!
+      url: http://asab-pyppeteer-1:8895
+      username: bs-query
+      password: bs-query
+
+
+seacat-auth:
+  config:
+    "seacatauth:credentials:m2m:machine":
+      mongodb_uri: "{{MONGO_URI}}"
+      mongodb_database: auth
+  content:
+    - "mc.json": |
+        [{
+          "_id": "5f362cf58dca6ae0ad997bfc",
+          "username": "bs-query",
+          "__password": "$2b$12$mKgt17p7sSjHVQO3O00bNO3L3iRcT5MSx06.tQRY7nXL.DtA8rkaq",
+        }]
+    - "r.json": |
+        [{
+          "_id": "*/impersonator",
+          "resources": [
+            "authz:impersonate"
+          ]
+        }]
+    - "ct.json": |
+        [{
+          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc system",
+          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+          "t": "system"
+        }]
+    - "cr.json": |
+        [{
+          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc */impersonator",
+          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+          "r": "*/impersonator"
+        }]
+
+
+nginx:
+  api: 8790
+
+  # This is here for download endpoint with non-oauth authorization
+  https:
+    location /api/bs-query/export-download:
+      - rewrite /api/bs-query/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8790  # TODO!?
+
+
+# asab-config:
+#   bs-query:
+#     __schema__:
+#       file:
+#         {
+#           "title": "bs-query",
+#           "type": "object",
+#           "properties": {
+#             "download": {
+#               "title": "Downloads Configuration",
+#               "type": "object",
+#               "properties": {
+#                 "expiration": {
+#                   "type": "string",
+#                   "title": "Link Expiration Time",
+#                   "description": "Configure how fast a download link expires (in seconds)."
+#                 }
+#               }
+#             },
+#             "xlsx": {
+#               "title": "Files Configuration",
+#               "type": "object",
+#                "properties": {
+#                   "limit": {
+#                     "type": "string",
+#                     "title": "File Size Limit",
+#                     "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
+#                   }
+#                 }
+#             },
+#             "target:email": {
+#               "title": "Emails Configuration",
+#               "type": "object",
+#               "properties": {
+#                 "file_size_limit": {
+#                   "type": "string",
+#                   "title": "Attachment Size Limit"
+#                   "description": "Configure the maximum size of email attachments. Default is 50 Mb.",
+#                 }
+#               }
+#             }
+#           }
+#         }
