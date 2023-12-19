@@ -1,0 +1,23 @@
+define:
+  type: rc/descriptor
+  name: ASAB Pyppeteer
+
+descriptor:
+  image: docker.teskalabs.com/asab/asab-pyppeteer
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+
+asab:
+  configname: conf/asab-pyppeteer.conf
+  config:
+    seacat_auth:
+      url: http://seacat-auth-1:3081  # TODO!!!
+    pyppeteer:
+      ignore_certificate_errors: 1
+      url_white_list: "{{PUBLIC_URL}}"
+
+nginx:
+  api: 8895
