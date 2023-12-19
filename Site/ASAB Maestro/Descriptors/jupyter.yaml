@@ -42,9 +42,6 @@ asab-config:
                   "image": "media/tools/jupyter.svg",
                   "name": "Jupyter Notebook",
                   "url": "{{PUBLIC_URL}}/jupyter"
-              },
-              "Authorization": {
-                  "tenants": "system"
               }
           }
 
