@@ -8,7 +8,7 @@ descriptor:
   volumes:
   - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
   - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/data/bsquery"
-  # TODO: add jupiter - /data/hdd/jupyter:/data/jupyter
+  # TODO: add jupyter - /data/hdd/jupyter:/data/jupyter
 
 asab:
   configname: conf/bs-query.conf
@@ -48,7 +48,8 @@ seacat-auth:
         [{
           "_id": "*/impersonator",
           "resources": [
-            "authz:impersonate"
+            "authz:impersonate",
+            "seacat:access"
           ]
         }]
     - "ct.json": |
@@ -72,49 +73,40 @@ nginx:
   https:
     location /api/bs-query/export-download:
       - rewrite /api/bs-query/(.*) /$1 break
-      - proxy_pass http://{{NODE_ID}}:8790  # TODO!?
+      - proxy_pass http://{{NODE_ID}}:8790
 
 
-# asab-config:
-#   bs-query:
-#     __schema__:
-#       file:
-#         {
-#           "title": "bs-query",
-#           "type": "object",
-#           "properties": {
-#             "download": {
-#               "title": "Downloads Configuration",
-#               "type": "object",
-#               "properties": {
-#                 "expiration": {
-#                   "type": "string",
-#                   "title": "Link Expiration Time",
-#                   "description": "Configure how fast a download link expires (in seconds)."
-#                 }
-#               }
-#             },
-#             "xlsx": {
-#               "title": "Files Configuration",
-#               "type": "object",
-#                "properties": {
-#                   "limit": {
-#                     "type": "string",
-#                     "title": "File Size Limit",
-#                     "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
-#                   }
-#                 }
-#             },
-#             "target:email": {
-#               "title": "Emails Configuration",
-#               "type": "object",
-#               "properties": {
-#                 "file_size_limit": {
-#                   "type": "string",
-#                   "title": "Attachment Size Limit"
-#                   "description": "Configure the maximum size of email attachments. Default is 50 Mb.",
-#                 }
-#               }
-#             }
-#           }
-#         }
+asab-config:
+  bs-query:
+    __schema__:
+      file:
+        {
+          "title": "bs-query",
+          "type": "object",
+          "properties": {
+            "xlsx": {
+              "title": "Files Configuration",
+              "type": "object",
+               "properties": {
+                  "limit": {
+                    "type": "string",
+                    "title": "File Size Limit",
+                    "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
+                  }
+                }
+            },
+            "target:email": {
+              "title": "Emails Configuration",
+              "type": "object",
+              "properties": {
+                "file_size_limit": {
+                  "type": "string",
+                  "title": "Attachment Size Limit",
+                  "description": "Configure the maximum size of email attachments. Default is 50 Mb."
+                }
+              }
+            }
+          }
+        }
+    config.json:
+      file: {}  # TODO: add default values
