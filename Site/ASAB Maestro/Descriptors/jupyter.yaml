@@ -3,7 +3,7 @@ define:
   name: Jupyter Notebook
 
 secrets:
-  - JUPYTER_TOKEN
+  JUPYTER_TOKEN: {}
 
 descriptor:
   user: "1000:0"
