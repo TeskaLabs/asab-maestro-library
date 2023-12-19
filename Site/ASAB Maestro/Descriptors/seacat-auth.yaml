@@ -31,8 +31,7 @@ asab:
   configname: conf/seacatauth.conf
   config:
     general:
-      public_api_base_url: "{{PUBLIC_URL}}/auth/api"
-      auth_webui_base_url: "{{PUBLIC_URL}}/auth"
+      public_url: "{{PUBLIC_URL}}"
 
     seacatauth:
       private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
