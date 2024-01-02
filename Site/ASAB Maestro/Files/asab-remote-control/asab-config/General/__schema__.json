@@ -53,12 +53,12 @@
 				"user": {
 					"type": "string",
 					"title": "User",
-					"description": "Enter your SMTP server username. Use 'apikey' as the username if API key authentication is required."
+					"description": "Enter your SMTP server username."
 				},
 				"password": {
 					"type": "string",
 					"title": "Password",
-					"description": "Enter the password for the SMTP server. If using an API key, enter the key here.",
+					"description": "Enter the password for the SMTP server.",
 					"$defs": {
 						"password": {
 							"type": "password"
