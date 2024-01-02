@@ -2,6 +2,9 @@ define:
   type: rc/descriptor
   name: BS Query
 
+secrets:
+  BSQUERY_PSWD: {}
+
 descriptor:
   image: docker.teskalabs.com/bs-query
 
@@ -27,9 +30,9 @@ asab:
       public_keys_url: http://seacat-auth-1:3081/openidconnect/public_keys  # TODO!!!
 
     pyppeteer:  # TODO !!!
-      url: http://asab-pyppeteer-1:8895
       username: bs-query
-      password: bs-query
+      password: "{{BSQUERY_PSWD}}"
+      url: http://asab-pyppeteer-1:8895  # TODO !! service discovery
 
 
 seacat-auth:
@@ -37,12 +40,12 @@ seacat-auth:
     "seacatauth:credentials:m2m:machine":
       mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
-  content:
+  content: # BSQUERY_PSWD_HASHED created by bsquery tech
     - "mc.json": |
         [{
           "_id": "5f362cf58dca6ae0ad997bfc",
           "username": "bs-query",
-          "__password": "$2b$12$mKgt17p7sSjHVQO3O00bNO3L3iRcT5MSx06.tQRY7nXL.DtA8rkaq",
+          "__password": "{{BSQUERY_PSWD_HASHED}}",
         }]
     - "r.json": |
         [{
