@@ -58,7 +58,12 @@
 				"password": {
 					"type": "string",
 					"title": "Password",
-					"description": "Enter the password for the SMTP server. If using an API key, enter the key here."
+					"description": "Enter the password for the SMTP server. If using an API key, enter the key here.",
+					"$defs": {
+						"password": {
+							"type": "password"
+						}
+					}
 				},
 				"from": {
 					"type": "string",
