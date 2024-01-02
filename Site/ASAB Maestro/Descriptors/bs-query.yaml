@@ -45,7 +45,7 @@ seacat-auth:
         [{
           "_id": "5f362cf58dca6ae0ad997bfc",
           "username": "bs-query",
-          "__password": "{{BSQUERY_PSWD_HASHED}}",
+          "__password": "{{BSQUERY_PSWD_HASHED}}"
         }]
     - "r.json": |
         [{
