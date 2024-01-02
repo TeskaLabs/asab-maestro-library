@@ -3,7 +3,7 @@ define:
   name: BS Query
 
 secrets:
-  BSQUERY_PSWD: {}
+  BSQUERY_PASSWORD: {}
 
 descriptor:
   image: docker.teskalabs.com/bs-query
@@ -31,7 +31,7 @@ asab:
 
     pyppeteer:  # TODO !!!
       username: bs-query
-      password: "{{BSQUERY_PSWD}}"
+      password: "{{BSQUERY_PASSWORD}}"
       url: http://asab-pyppeteer-1:8895  # TODO !! service discovery
 
 
@@ -40,12 +40,12 @@ seacat-auth:
     "seacatauth:credentials:m2m:machine":
       mongodb_uri: "{{MONGO_URI}}"
       mongodb_database: auth
-  content: # BSQUERY_PSWD_HASHED created by bsquery tech
+  content: # BSQUERY_PASSWORD_HASHED created by bsquery tech
     - "mc.json": |
         [{
           "_id": "5f362cf58dca6ae0ad997bfc",
           "username": "bs-query",
-          "__password": "{{BSQUERY_PSWD_HASHED}}"
+          "__password": "{{BSQUERY_PASSWORD_HASHED}}"
         }]
     - "r.json": |
         [{
