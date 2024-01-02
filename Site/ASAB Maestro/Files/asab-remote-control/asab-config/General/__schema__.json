@@ -42,23 +42,23 @@
 		"smtp": {
 			"type": "object",
 			"title": "SMTP Server",
-			"description": "Add configuration for the SMTP server to send emails from the system.",
+			"description": "Configuration for the SMTP server to send emails from the system.",
 			"properties": {
 				"host": {
 					"type": "string",
 					"title": "Host",
-					"description": "Where is your SMTP server.",
-					"examples": "https://smtp-provider.com/"
+					"description": "Specify the domain name or IP address of your SMTP server.",
+					"examples": "smtp.example.com"
 				},
 				"user": {
 					"type": "string",
 					"title": "User",
-					"description": "Set credentials for the SMTP server. Type 'apikey' and fill in apikey into password option if needed."
+					"description": "Enter your SMTP server username. Use 'apikey' as the username if API key authentication is required."
 				},
 				"password": {
 					"type": "string",
 					"title": "Password",
-					"description": "Set credentials for the SMTP server.",
+					"description": "Enter the password for the SMTP server. If using an API key, enter the key here.",
 					"$defs": {
 						"password": {
 							"type": "password"
@@ -74,12 +74,12 @@
 				"subject": {
 					"type": "string",
 					"title": "Subject",
-					"description": "Set default email subject for this system."
+					"description": "Set default email subject for this system. It will be used if no specific subject is available."
 				},
 				"ssl": {
 					"type": "boolean",
-					"title": "SSL/TLS",
-					"description": "Switch SSL on?",
+					"title": "Use SSL/TLS encryption",
+					"description": "Enable SSL/TLS encryption for secure email transmission.",
 					"default": true,
 					"$defs": {
 						"checkbox": {
@@ -90,7 +90,7 @@
 				"starttls": {
 					"type": "boolean",
 					"title": "Use STARTTLS",
-					"description": "Use STARTTLS",
+					"description": "Enable STARTTLS to upgrade an unencrypted connection to a secure connection if available.",
 					"default": false,
 					"$defs": {
 						"checkbox": {
