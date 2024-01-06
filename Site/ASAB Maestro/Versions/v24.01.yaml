@@ -9,7 +9,7 @@ versions:
   asab-governator: stable
   asab-library: latest
   asab-config: v23.45
-  seacat-auth: v23.47-alpha5
+  seacat-auth: latest
   asab-iris: v23.50
   nginx: '1.25.2'
   elasticsearch: '7.17.12'
