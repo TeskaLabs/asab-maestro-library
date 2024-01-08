@@ -25,10 +25,6 @@ asab:
     # TODO: remove after bs-query is ready to read the config section
       url: "{{ ELASTIC_HOSTS_AUTHORIZED|join(' ') }}"
 
-    auth:
-      multitenancy: "yes"
-      public_keys_url: http://seacat-auth-1:3081/openidconnect/public_keys  # TODO!!!
-
     pyppeteer:  # TODO !!!
       username: bs-query
       password: "{{BSQUERY_PASSWORD}}"

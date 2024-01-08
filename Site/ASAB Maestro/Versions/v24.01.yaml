@@ -20,7 +20,8 @@ versions:
   grafana: '10.0.8'
   kafdrop: '4.0.0'
   kafka: '7.5.1'
-  bs-query: v24.01-alpha7
+  bs-query: v24.01-alpha13
+  asab-pyppeteer: v23.47-beta
 
   webapp seacat-auth: v23.29-beta
   webapp influxdb: v2.7.1
