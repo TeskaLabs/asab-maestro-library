@@ -31,8 +31,7 @@ asab:
   configname: conf/seacatauth.conf
   config:
     general:
-      public_api_base_url: "{{PUBLIC_URL}}/auth/api"
-      auth_webui_base_url: "{{PUBLIC_URL}}/auth"
+      public_url: "{{PUBLIC_URL}}"
 
     seacatauth:
       private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
@@ -54,6 +53,68 @@ asab:
       # Configuration of SMTP server should be done in UI > Maintenance > Configuration > General
       # TODO ^^ this is not possible now
       host: <mocked>
+
+asab-config:
+  Tenants:
+    __schema__:
+      file: 
+        {
+          "$id": "Tenants schema",
+          "type": "object",
+          "title": "Tenants",
+          "description": "Configure tenant data",
+          "default": {},
+          "examples": [
+            {
+              "General": {
+                "schema": "/Schemas/ECS.yaml",
+                "timezone": "Europe/Prague"
+              }
+            }
+          ],
+          "required": [],
+          "properties": {
+            "General": {
+              "type": "object",
+              "title": "General tenant configuration",
+              "description": "Tenant-specific data",
+              "default": {},
+              "required": ["schema", "timezone"],
+              "properties": {
+                "schema": {
+                            "type": "string",
+                            "title": "Schema",
+                            "description": "Absolute path to schema in the Library",
+                            "default": [
+                                "/Schemas/ECS.yaml",
+                                "/Schemas/CEF.yaml"
+                            ],
+                            "$defs": {
+                                "select": {
+                                    "type": "select"
+                                }
+                            },
+                            "examples": [
+                                "/Schemas/ECS.yaml"
+                            ]
+                        },
+                "timezone": {
+                  "type": "string",
+                  "title": "Timezone",
+                  "description": "Timezone identifier, e.g. Europe/Prague",
+                  "default": "",
+                  "examples": [
+                    "Europe/Prague"
+                  ]
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+    system:
+      file: {"General": {"schema": "/Schemas/ECS.yaml", "timezone": "Europe/Prague"}}
+      if_not_exists: true
 
 nginx:
 
@@ -98,6 +159,12 @@ nginx:
 
     location /auth/api/openidconnect:
       - rewrite ^/auth/api/openidconnect/(.*) /openidconnect/$1 break
+      - proxy_pass http://upstream-seacat-auth-public
+
+# this is here for grafana
+  internal:
+    location /api/openidconnect:
+      - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
 
 files:

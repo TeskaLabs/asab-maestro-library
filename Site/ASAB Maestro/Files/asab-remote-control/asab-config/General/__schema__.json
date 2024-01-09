@@ -7,7 +7,9 @@
 	"examples": [
 		{
 			"library": {
-				"providers": ["Some library provider"]
+				"providers": [
+					"Some library provider"
+				]
 			}
 		}
 	],
@@ -20,21 +22,88 @@
 			"default": {},
 			"examples": [
 				{
-					"providers": ["Some library provider"]
+					"providers": [
+						"Some library provider"
+					]
 				}
 			],
-			"required": ["providers"],
 			"properties": {
 				"providers": {
 					"type": "array",
 					"title": "Providers",
 					"description": "Add custom library providers. See https://docs.teskalabs.com/asab/reference/library/#providers",
-					"default": "",
+					"default": [],
 					"examples": [
 						"Some library provider"
 					]
 				}
 			}
+		},
+		"smtp": {
+			"type": "object",
+			"title": "SMTP Server",
+			"description": "Configuration for the SMTP server to send emails from the system.",
+			"properties": {
+				"host": {
+					"type": "string",
+					"title": "Host",
+					"description": "Specify the domain name or IP address of your SMTP server.",
+					"examples": "smtp.example.com"
+				},
+				"user": {
+					"type": "string",
+					"title": "User",
+					"description": "Enter your SMTP server username."
+				},
+				"password": {
+					"type": "string",
+					"title": "Password",
+					"description": "Enter the password for the SMTP server.",
+					"$defs": {
+						"password": {
+							"type": "password"
+						}
+					}
+				},
+				"from": {
+					"type": "string",
+					"format": "email",
+					"title": "From",
+					"description": "Set default sender email address for this system."
+				},
+				"subject": {
+					"type": "string",
+					"title": "Subject",
+					"description": "Set default email subject for this system. It will be used if no specific subject is available."
+				},
+				"ssl": {
+					"type": "boolean",
+					"title": "Use SSL/TLS encryption",
+					"description": "Enable SSL/TLS encryption for secure email transmission.",
+					"default": true,
+					"$defs": {
+						"checkbox": {
+							"type": "checkbox"
+						}
+					}
+				},
+				"starttls": {
+					"type": "boolean",
+					"title": "Use STARTTLS",
+					"description": "Enable STARTTLS to upgrade an unencrypted connection to a secure connection if available.",
+					"default": false,
+					"$defs": {
+						"checkbox": {
+							"type": "checkbox"
+						}
+					}
+				}
+			},
+			"required": [
+				"host",
+				"user",
+				"password"
+			]
 		}
 	},
 	"additionalProperties": true

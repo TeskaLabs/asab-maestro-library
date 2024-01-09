@@ -16,7 +16,7 @@ descriptor:
 
 asab:
   configname: conf/asab-remote-control.conf
-  config: {}
+  config: {}  # specify default configuration of the service
 
 asab-config:
   General:
@@ -25,10 +25,6 @@ asab-config:
     config.json:
       file: {}
       if_not_exists: true
-    # config:
-    #   if_not_exists: True  # Write config only if it does not exist, yet. (true/false, false is default)
-    #   file: {}
-    # if not exists True does not work right now.
 
 nginx:
   api: 8891

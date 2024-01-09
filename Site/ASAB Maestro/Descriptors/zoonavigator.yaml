@@ -16,8 +16,79 @@ descriptor:
     AUTO_CONNECT_CONNECTION_ID: ZK
     BASE_HREF: /zoonavigator
 
+asab-config:
+  Tools:
+     Zoonavigator: 
+        file:
+          {
+              "Tool": {
+                  "image": "media/tools/zookeeper.svg",
+                  "name": "Zoonavigator",
+                  "url": "{{PUBLIC_URL}}/zoonavigator"
+              },
+              "Authorization": {
+                  "tenants": "system"
+              }
+          }
+
+        if_not_exists: true
+
+
 nginx:
+  proxy_caches:
+    zoonavigator: keys_zone=zoonavigator:1m max_size=2m
+
   https:
     location /zoonavigator:
-      - proxy_pass http://{{INSTANCE_ID}}:9001
+      - auth_request /zoonavigator_cookie_introspect
+      - auth_request_set $authorization $upstream_http_authorization
+      - proxy_set_header Authorization $authorization
+
+      - auth_request_set $cookie $upstream_http_cookie
+      - proxy_set_header Cookie $cookie
+      - proxy_pass http://{{NODE_ID}}:9001
       - proxy_redirect off
+      - error_page 403 /auth
+      - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie&client_id=zoonavigator&redirect_uri={{PUBLIC_URL}}$request_uri
+
+    location /zoonavigator_cookie_introspect:
+      - internal
+      - proxy_method POST
+      - proxy_set_body "$http_authorization"
+      - proxy_set_header X-Request-URI "request_uri"
+      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=zoonavigator&resource=zoonavigator:access
+      - proxy_cache zoonavigator
+      - proxy_cache_key $cookie_SeaCatSCI_BGCFPK5ONDUD7PWP
+      - proxy_cache_lock on
+      - proxy_cache_valid 200 10s
+      - proxy_ignore_headers Cache-Control Expires Set-Cookie
+
+seacat-auth:
+  content:
+  - "cl.json": |
+      [{
+        "_id": "zoonavigator",
+        "application_type": "web",
+        "authorize_anonymous_users": false,
+        "client_name": "Zoonavigator",
+        "code_challenge_method": "none",
+        "grant_types": [
+          "authorization_code"
+        ],
+        "redirect_uri_validation_method": "prefix_match",
+        "redirect_uris": [
+          "{{PUBLIC_URL}}/zoonavigator"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
+        "client_uri": "{{PUBLIC_URL}}/zoonavigator"
+      }]
+  - "rs.json": |
+      [{
+        "_id": "zoonavigator:access",
+        "description": "Access Zoonavigator."
+      }]
+
