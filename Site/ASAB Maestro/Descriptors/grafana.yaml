@@ -3,6 +3,9 @@ define:
   name: Grafana
   url: https://github.com/grafana/grafana
 
+secrets:
+  GRAFANA_PASSWORD: {}
+
 descriptor:
   image: grafana/grafana
 
