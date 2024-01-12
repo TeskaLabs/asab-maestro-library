@@ -1,0 +1,111 @@
+define:
+  type: rc/descriptor
+  name: BS Query
+
+secrets:
+  BSQUERY_PASSWORD: {}
+
+descriptor:
+  image: docker.teskalabs.com/bs-query
+
+  volumes:
+  - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+  - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/data/bsquery"
+  # TODO: add jupyter - /data/hdd/jupyter:/data/jupyter
+
+asab:
+  configname: conf/bs-query.conf
+
+  config:
+    storage:
+    # TODO: remove after bs-query has the right folder /data 
+      path: /data/bsquery
+
+    elasticsearch:
+    # TODO: remove after bs-query is ready to read the config section
+      url: "{{ ELASTIC_HOSTS_AUTHORIZED|join(' ') }}"
+
+    pyppeteer:  # TODO !!!
+      username: bs-query
+      password: "{{BSQUERY_PASSWORD}}"
+      url: http://asab-pyppeteer-1:8895  # TODO !! service discovery
+
+
+seacat-auth:
+  config:
+    "seacatauth:credentials:m2m:machine":
+      mongodb_uri: "{{MONGO_URI}}"
+      mongodb_database: auth
+  content: # BSQUERY_PASSWORD_HASHED created by bsquery tech
+    - "mc.json": |
+        [{
+          "_id": "5f362cf58dca6ae0ad997bfc",
+          "username": "bs-query",
+          "__password": "{{BSQUERY_PASSWORD_HASHED}}"
+        }]
+    - "r.json": |
+        [{
+          "_id": "*/impersonator",
+          "resources": [
+            "authz:impersonate",
+            "seacat:access"
+          ]
+        }]
+    - "ct.json": |
+        [{
+          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc system",
+          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+          "t": "system"
+        }]
+    - "cr.json": |
+        [{
+          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc */impersonator",
+          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+          "r": "*/impersonator"
+        }]
+
+
+nginx:
+  api: 8790
+
+  # This is here for download endpoint with non-oauth authorization
+  https:
+    location /api/bs-query/export-download:
+      - rewrite /api/bs-query/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8790
+
+
+asab-config:
+  bs-query:
+    __schema__:
+      file:
+        {
+          "title": "bs-query",
+          "type": "object",
+          "properties": {
+            "xlsx": {
+              "title": "Files Configuration",
+              "type": "object",
+               "properties": {
+                  "limit": {
+                    "type": "string",
+                    "title": "File Size Limit",
+                    "description": "Configure the maximum size of xlsx files. Default is 50 000 rows."
+                  }
+                }
+            },
+            "target:email": {
+              "title": "Emails Configuration",
+              "type": "object",
+              "properties": {
+                "file_size_limit": {
+                  "type": "string",
+                  "title": "Attachment Size Limit",
+                  "description": "Configure the maximum size of email attachments. Default is 50 Mb."
+                }
+              }
+            }
+          }
+        }
+    config.json:
+      file: {}  # TODO: add default values
