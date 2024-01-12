@@ -29,7 +29,7 @@ function load_data() {
  */
 function transform_collection(collectionName, data) {
 	data.forEach((record) => {
-		if (collectionName === "c") {
+		if (collectionName === "c" | collectionName === "mc") {
 			record["_id"] = ObjectId(record._id)  // IDs of users are stored as ObjectId
 		}
 		record["_c"] = new Date()
