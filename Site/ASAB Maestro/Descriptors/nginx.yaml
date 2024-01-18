@@ -21,7 +21,7 @@ descriptor:
     # NGINX writes into /var/run
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/run:/var/run"
     # A place for anyone on the server to place a file inside /etc/nginx folder
-    - "{{SLOW_STORAGE}}/nginx/persistent:/etc/nginx/persistent"
+    - "{{SLOW_STORAGE}}/nginx/shared:/etc/nginx/shared"
 
   healthcheck:
     test: ["CMD", "service", "nginx", "status"]
