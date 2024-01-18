@@ -3,6 +3,10 @@ define:
   name: Grafana
   url: https://github.com/grafana/grafana
 
+secrets:
+  GRAFANA_PASSWORD: {}
+  GRAFANA_CLIENT_SECRET: {}
+
 descriptor:
   image: grafana/grafana
 
@@ -26,8 +30,8 @@ descriptor:
     GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{GRAFANA_CLIENT_SECRET}}"
     GF_AUTH_GENERIC_OAUTH_SCOPES: openid email profile
     GF_AUTH_GENERIC_OAUTH_AUTH_URL: "{{PUBLIC_URL}}/api/openidconnect/authorize"
-    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{INTERNAL_URL}}/api/openidconnect/token"
-    GF_AUTH_GENERIC_OAUTH_API_URL: "{{INTERNAL_URL}}/api/openidconnect/userinfo"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{SEACAT_AUTH_PUBLIC}}/openidconnect/token"
+    GF_AUTH_GENERIC_OAUTH_API_URL: "{{SEACAT_AUTH_PUBLIC}}/openidconnect/userinfo"
     GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: true
     GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(resources."*"[*], 'authz:superuser') && 'Admin' || contains(resources."*"[*], 'grafana:edit') && 'Editor' || contains(resources."*"[*], 'grafana:access') && 'Viewer'
 
