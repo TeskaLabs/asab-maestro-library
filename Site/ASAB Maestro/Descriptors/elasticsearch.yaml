@@ -42,7 +42,7 @@ descriptor:
 
 nginx:
   proxy_caches:
-    kibana: keys_zone=elasticsearch:1m max_size=2m
+    elasticsearch: keys_zone=elasticsearch:1m max_size=2m
 
   https:
     location /api/elasticsearch/:
