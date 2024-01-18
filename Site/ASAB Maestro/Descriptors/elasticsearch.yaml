@@ -41,6 +41,9 @@ descriptor:
 
 
 nginx:
+  proxy_caches:
+    kibana: keys_zone=elasticsearch:1m max_size=2m
+
   https:
     location /api/elasticsearch/:
       - auth_request /_elasticsearch_introspect
@@ -61,7 +64,7 @@ nginx:
     - proxy_method POST
     - proxy_set_body ""
     - proxy_set_header X-Request-URI "request_uri"
-    - proxy_cache kibana
+    - proxy_cache elasticsearch
     - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/batman?client_id=elasticsearch
     - proxy_cache_key $authorization
     - proxy_cache_lock on
