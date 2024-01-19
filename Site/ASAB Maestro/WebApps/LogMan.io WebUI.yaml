@@ -21,3 +21,4 @@ mfe:
     /lmio_alert_management_webui: lmio_alert_management_webui
     /lmio_parser_builder_webui: lmio_parser_builder_webui
     /seacat_admin_webui: seacat_admin_webui
+    /lmio_logsources_webui: lmio_logsources_webui
