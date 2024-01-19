@@ -42,7 +42,7 @@ descriptor:
 
 nginx:
   proxy_caches:
-    elasticsearch: keys_zone=elasticsearch:1m max_size=2m
+    elasticsearch_introspection_cache: keys_zone=elasticsearch_introspection_cache:1m max_size=2m
 
   https:
     location /api/elasticsearch/:
@@ -64,7 +64,7 @@ nginx:
     - proxy_method POST
     - proxy_set_body ""
     - proxy_set_header X-Request-URI "request_uri"
-    - proxy_cache elasticsearch
+    - proxy_cache elasticsearch_introspection_cache
     - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/batman?client_id=elasticsearch
     - proxy_cache_key $http_authorization
     - proxy_cache_lock on
