@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v23.47
+  version: v24.03
 
 versions:
   asab-config: v23.45
