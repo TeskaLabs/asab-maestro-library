@@ -4,10 +4,12 @@ define:
   url: https://github.com/influxdata/influxdb
 
 secrets:
-  INFLUXDB_TOKEN: {}
+  INFLUXDB_TOKEN:
+    type: token
+    length: 64
 
 params:
-  INFLUXDB_URL: "http://influxdb:8086/
+  INFLUXDB_URL: "http://influxdb:8086/"
 
 descriptor:
   image: influxdb
