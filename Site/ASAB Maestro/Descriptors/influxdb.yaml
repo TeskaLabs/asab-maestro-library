@@ -3,6 +3,14 @@ define:
   name: InfluxDB
   url: https://github.com/influxdata/influxdb
 
+secrets:
+  INFLUXDB_TOKEN:
+    type: token
+    length: 64
+
+params:
+  INFLUXDB_URL: "http://influxdb:8086/"
+
 descriptor:
   image: influxdb
 
@@ -16,8 +24,8 @@ descriptor:
     DOCKER_INFLUXDB_INIT_MODE: setup
     DOCKER_INFLUXDB_INIT_USERNAME: null # will be provided by the Remote Control
     DOCKER_INFLUXDB_INIT_PASSWORD: null # will be provided by the Remote Control
-    DOCKER_INFLUXDB_INIT_ORG: system
-    DOCKER_INFLUXDB_INIT_BUCKET: metrics
+    DOCKER_INFLUXDB_INIT_ORG: "{{INFLUXDB_ORG}}" # set by the Remote Control
+    DOCKER_INFLUXDB_INIT_BUCKET: "{{INFLUXDB_BUCKET}}"  # set by the Remote Control
     DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
 
 nginx:
