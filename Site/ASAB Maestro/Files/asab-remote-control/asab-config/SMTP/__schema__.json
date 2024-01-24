@@ -1,44 +1,10 @@
 {
-	"$id": "General configuration",
+	"$id": "SMTP configuration",
 	"type": "object",
-	"title": "Sidebar",
-	"description": "Add configuration distributed among all ASAB microservices",
+	"title": "SMTP",
+	"description": "Add SMTP configuration distributed among all ASAB microservices",
 	"default": {},
-	"examples": [
-		{
-			"library": {
-				"providers": [
-					"Some library provider"
-				]
-			}
-		}
-	],
-	"required": [],
 	"properties": {
-		"library": {
-			"type": "object",
-			"title": "Library",
-			"description": "Add custom library providers. See https://docs.teskalabs.com/asab/reference/library/#providers",
-			"default": {},
-			"examples": [
-				{
-					"providers": [
-						"Some library provider"
-					]
-				}
-			],
-			"properties": {
-				"providers": {
-					"type": "array",
-					"title": "Providers",
-					"description": "Add custom library providers. See https://docs.teskalabs.com/asab/reference/library/#providers",
-					"default": [],
-					"examples": [
-						"Some library provider"
-					]
-				}
-			}
-		},
 		"smtp": {
 			"type": "object",
 			"title": "SMTP Server",
@@ -106,5 +72,5 @@
 			]
 		}
 	},
-	"additionalProperties": true
+	"additionalProperties": false
 }

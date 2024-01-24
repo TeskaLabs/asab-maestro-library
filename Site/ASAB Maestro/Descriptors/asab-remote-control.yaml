@@ -19,9 +19,15 @@ asab:
   config: {}  # specify default configuration of the service
 
 asab-config:
-  General:
+  Library:
     __schema__:
-      file: asab-config/General/__schema__.json
+      file: asab-config/Library/__schema__.json
+    config.json:
+      file: {}
+      if_not_exists: true
+  SMTP:
+    __schema__:
+      file: asab-config/SMTP/__schema__.json
     config.json:
       file: {}
       if_not_exists: true
