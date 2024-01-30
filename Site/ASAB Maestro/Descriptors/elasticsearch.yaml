@@ -29,7 +29,7 @@ descriptor:
     http.port: null  # Filled in by the Remote Control (ie 9200)
     transport.port: null  # Filled in by the Remote Control (ie 9300); 
 
-    ES_JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"  # Remote Control sets by default "-Xms2g -Xmx2g" for master node and "-Xms28g -Xmx28g" for data nodes
+    ES_JAVA_OPTS: null  # Remote Control sets by default "-Xms2g -Xmx2g" for master node and "-Xms28g -Xmx28g" for data nodes
     ELASTIC_PASSWORD: null  # Will be filled by the Elasticsearch tech
 
     xpack.security.enabled: true
