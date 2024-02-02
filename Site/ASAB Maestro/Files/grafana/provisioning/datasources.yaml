@@ -32,6 +32,7 @@ datasources:
      httpHeaderName1: Authorization
      httpMode: POST
      version: InfluxQL
+     timeInterval: 1m
 
   secureJsonData:
     httpHeaderValue1: "Token <TOKEN>"
