@@ -40,7 +40,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"description": "",
 			"fieldConfig": {
@@ -103,7 +103,7 @@
 					"alias": "load",
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -153,7 +153,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"description": "",
 			"fieldConfig": {
@@ -208,7 +208,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -336,7 +336,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -402,7 +402,7 @@
 					"alias": "$tag_path",
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -462,7 +462,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -600,7 +600,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -771,7 +771,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -821,7 +821,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -871,7 +871,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -922,7 +922,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -982,7 +982,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -1032,7 +1032,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -1082,7 +1082,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -1142,7 +1142,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -1192,7 +1192,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -1252,7 +1252,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -1304,7 +1304,7 @@
 		{
 			"datasource": {
 				"type": "influxdb",
-				"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+				"uid": "lmio-influxdb-metrics"
 			},
 			"fieldConfig": {
 				"defaults": {
@@ -1355,7 +1355,7 @@
 				{
 					"datasource": {
 						"type": "influxdb",
-						"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+						"uid": "lmio-influxdb-metrics"
 					},
 					"groupBy": [
 						{
@@ -1430,7 +1430,7 @@
 				},
 				"datasource": {
 					"type": "influxdb",
-					"uid": "a0a58bd1-0818-469f-975c-e435058dc2fb"
+					"uid": "lmio-influxdb-metrics"
 				},
 				"definition": "SHOW TAG VALUES WITH KEY = \"node_id\"",
 				"hide": 0,
