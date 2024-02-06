@@ -12,6 +12,7 @@ versions:
   asab-remote-control: latest
   bs-query: v24.03-alpha2 # with service discovery
   elasticsearch: '7.17.12'
+  grafana: '10.3.1'
   influxdb: '2.7.1'
   jupyter: lab-4.0.9
   kafdrop: '4.0.0'
