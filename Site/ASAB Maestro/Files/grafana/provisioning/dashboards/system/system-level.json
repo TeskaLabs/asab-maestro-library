@@ -15,7 +15,7 @@
 			}
 		]
 	},
-	"editable": true,
+	"editable": false,
 	"fiscalYearStartMonth": 0,
 	"graphTooltip": 0,
 	"id": 3,
@@ -783,8 +783,20 @@
 						"mode": "absolute",
 						"steps": [
 							{
-								"color": "text",
+								"color": "dark-red",
 								"value": null
+							},
+							{
+								"color": "semi-dark-orange",
+								"value": 86400
+							},
+							{
+								"color": "semi-dark-yellow",
+								"value": 604800
+							},
+							{
+								"color": "text",
+								"value": 1209600
 							}
 						]
 					},
@@ -1456,6 +1468,6 @@
 	"timezone": "",
 	"title": "System-level",
 	"uid": "d1343865-3928-4576-a5f1-f9b37bb20558",
-	"version": 25,
+	"version": 26,
 	"weekStart": ""
 }
