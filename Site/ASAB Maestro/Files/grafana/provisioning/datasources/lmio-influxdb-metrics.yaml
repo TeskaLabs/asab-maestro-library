@@ -18,7 +18,7 @@ datasources:
   typeLogoUrl: "/grafana/public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
   access: proxy
 
-  url: http://<host>:8086
+  url: http://influxdb:8086
 
   user: ""
   database: ""
