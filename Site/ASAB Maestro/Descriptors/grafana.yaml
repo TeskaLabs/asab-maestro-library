@@ -39,6 +39,45 @@ descriptor:
     GF_AUTH_SIGNOUT_REDIRECT_URL: "{{PUBLIC_URL}}"
 files:
   - "provisioning/"
+  - "provisioning/datasources/lmio-influxdb-metrics.yaml": |
+      # config file version
+      apiVersion: 1
+
+      # list of datasources that should be deleted from the database
+      deleteDatasources:
+        - name: InfluxDB Metrics
+          orgId: 1
+
+      # list of datasources to insert/update depending
+      # whats available in the database
+      datasources:
+      - name: InfluxDB Metrics
+        uid: lmio-influxdb-metrics
+        orgId: 1
+
+        type: influxdb
+        typeName: "InfluxDB"
+        typeLogoUrl: "/grafana/public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
+        access: proxy
+
+        url: http://influxdb:8086
+
+        user: ""
+        database: ""
+        basicAuth: false
+
+        isDefault: true
+        readOnly: false
+
+        jsonData:
+          dbName: "metrics"
+          httpHeaderName1: Authorization
+          httpMode: POST
+          version: InfluxQL
+          timeInterval: 1m
+
+        secureJsonData:
+          httpHeaderValue1: "Token {{INFLUXDB_TOKEN}}"
 
 nginx:
   upstreams:
