@@ -19,6 +19,7 @@ descriptor:
   environment:
     GF_SECURITY_ADMIN_USER: grafana_admin
     GF_SECURITY_ADMIN_PASSWORD: "{{GRAFANA_PASSWORD}}"
+    GF_SECURITY_ALLOW_EMBEDDING: "true" # Allow to use iframe
     GF_SERVER_ROOT_URL: "{{PUBLIC_URL}}/grafana/"
     GF_AUTH_GENERIC_OAUTH_ENABLED: true # false if there's no seacat-auth
     GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: true
@@ -37,6 +38,7 @@ descriptor:
     GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username
     GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: preferred_username
     GF_AUTH_SIGNOUT_REDIRECT_URL: "{{PUBLIC_URL}}"
+
 files:
   - "provisioning/"
   - "provisioning/datasources/lmio-influxdb-metrics.yaml": |
@@ -87,8 +89,6 @@ nginx:
     - rewrite ^/grafana/(.*) /$1 break
     - proxy_pass http://upstream-grafana
     - proxy_set_header Host $host
-
-# TODO: Automated InfluxDB connector configuration
 
 asab-config:
   Tools:
