@@ -50,6 +50,12 @@ nginx:
       - auth_request_set $batman $upstream_http_authorization
       - proxy_set_header Authorization $batman
 
+      # The timeout for ES request handling is set to 10 mins to avoid "Failed to get data from Elasticsearch" message in UI
+      - proxy_connect_timeout 600;
+      - proxy_send_timeout 600;
+      - proxy_read_timeout 600;
+      - send_timeout 600;
+
       - auth_request_set $cookie $upstream_http_cookie
       - proxy_set_header Cookie $cookie
 
