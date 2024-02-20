@@ -56,7 +56,7 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "request_uri"
-      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=zoonavigator&resource=zoonavigator:access
+      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=zoonavigator&resource=tools:zoonavigator:access
       - proxy_cache zoonavigator
       - proxy_cache_key $cookie_SeaCatSCI_BGCFPK5ONDUD7PWP
       - proxy_cache_lock on
@@ -88,7 +88,7 @@ seacat-auth:
       }]
   - "rs.json": |
       [{
-        "_id": "zoonavigator:access",
+        "_id": "tools:zoonavigator:access",
         "description": "Access Zoonavigator."
       }]
 
