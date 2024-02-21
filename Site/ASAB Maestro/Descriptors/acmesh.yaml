@@ -1,0 +1,12 @@
+define:
+  type: rc/descriptor
+  name: ACME.sh
+  url: https://github.com/acmesh-official/acme.sh
+
+descriptor:
+  image: neilpang/acme.sh
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/certs:/certs"
+
+  command: daemon
