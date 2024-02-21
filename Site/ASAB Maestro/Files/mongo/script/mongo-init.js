@@ -39,20 +39,28 @@ function main() {
 	// When replica set is (re)configured, upsert seacat auth data.
 	for (let i = 0; i < 5; i++) {
 
+		print("Connection attempt", i+1);
+
 		for (let hostname of mongoHostnames) {
+			print("Connecting to ", `${hostname}:27017`);
 			try {
 				db = connect( `${hostname}:27017` );
 			} catch (MongoNetworkError) {
+				print("Failed.");
 				continue;
 			}
 
 			if (!db.isMaster()) {
+				print("Not a master.");
 				continue;
 			};
 		
+			print("This is a master, reconfiguring a replica set.");
+
 			try {
 				reconfigureReplicaSet();
 			} catch {
+				print("Failed to reconfigure replica set.");
 				break;
 			}
 
