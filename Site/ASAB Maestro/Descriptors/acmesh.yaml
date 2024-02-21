@@ -26,5 +26,9 @@ nginx:
 # 2) Register by:
 #    /opt/site# ./gov.sh exec acmesh-1 acme.sh --register-account -m <org@example.com>
 # 3) Get the certificate:
-#   ./gov.sh exec acmesh-1 acme.sh --issue --standalone -d <example.com> --httpport 8810
-# 4) Certificates are located at:
+#   ./gov.sh exec acmesh-1 acme.sh --issue --standalone --httpport 8810 -d <example.com>
+# 4) Certificates (and other files) are located at: /data/hdd/acmesh-1/certs/...
+# 5) Paste content of the `/data/hdd/acmesh-1/certs/<example.com>_ecc/<example.com>.key` into Zookeeper /asab/vault/nginx_private_key
+# 6) Paste content of the `/data/hdd/acmesh-1/certs/<example.com>_ecc/fullchain.cer` into Zookeeper /asab/vault/nginx_certificate
+# 7) "up" on all nodes with NGINX
+# TODO: Certificate renewal (repeat step 5,6 and 7)
