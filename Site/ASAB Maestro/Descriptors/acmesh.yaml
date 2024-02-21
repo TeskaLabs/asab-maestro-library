@@ -7,7 +7,7 @@ descriptor:
   image: neilpang/acme.sh
 
   volumes:
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/certs:/certs"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/certs:/acme.sh"
 
   command: daemon
 
@@ -20,3 +20,11 @@ nginx:
   http:
     location /.well-known/acme-challenge:
       - proxy_pass http://acmesh:8810
+
+# How to use:
+# 1) Deploy to a single node in the cluster
+# 2) Register by:
+#    /opt/site# ./gov.sh exec acmesh-1 acme.sh --register-account -m <org@example.com>
+# 3) Get the certificate:
+#   ./gov.sh exec acmesh-1 acme.sh --issue --standalone -d <example.com> --httpport 8810
+# 4) Certificates are located at:
