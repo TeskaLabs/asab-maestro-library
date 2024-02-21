@@ -10,3 +10,13 @@ descriptor:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/certs:/certs"
 
   command: daemon
+
+nginx:
+
+  https:
+    location /.well-known/acme-challenge:
+      - proxy_pass http://acmesh:8810
+
+  http:
+    location /.well-known/acme-challenge:
+      - proxy_pass http://acmesh:8810
