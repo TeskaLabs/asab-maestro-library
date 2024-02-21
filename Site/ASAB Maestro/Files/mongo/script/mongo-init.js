@@ -18,7 +18,7 @@ function reconfigureReplicaSet() {
 			rs.initiate(newConfig);
 			print("SUCCESS_INITIATE");
 		} else {
-			print("Failed with " + error.name + ": " + error.message)
+			print("Failed with " + error.name + ": " + error.message + " / " + error.codeName);
 			throw new Error("ERROR_RECONFIG");
 		}
 	}
@@ -29,6 +29,8 @@ function reconfigureReplicaSet() {
  * reconfigures the replica set, and inserts data into collections, with a maximum of 5 attempts.
  */
 function main() {
+	print("(Re)-initializing the Mongo cluster.");
+
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",");
 
 	// there are 5 attempts to reconfigure replica sets.
@@ -67,6 +69,7 @@ function main() {
 		sleep(5000);
 	}
 
+	print("Exiting due to failure.")
 	quit(1);
 };
 
