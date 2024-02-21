@@ -45,8 +45,8 @@ function main() {
 			print("Connecting to ", `${hostname}:27017`);
 			try {
 				db = connect( `${hostname}:27017` );
-			} catch (MongoNetworkError) {
-				print("Failed.");
+			} catch (e) {
+				print("Failed with error: " + e.name + " - " + e.message);
 				continue;
 			}
 
@@ -59,8 +59,8 @@ function main() {
 
 			try {
 				reconfigureReplicaSet();
-			} catch {
-				print("Failed to reconfigure replica set.");
+			} catch (e) {
+				print("Failed to reconfigure replica set with error: " + e.name + " - " + e.message);
 				break;
 			}
 
