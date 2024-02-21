@@ -33,7 +33,7 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "request_uri"
-      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=kafdrop&resource=kafdrop:access
+      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=kafdrop&resource=tools:kafdrop:access
       - proxy_cache kafdrop
       - proxy_cache_key $cookie_SeaCatSCI_SNRWHBFU5IOLBAEC
       - proxy_cache_lock on
@@ -81,6 +81,6 @@ seacat-auth:
       }]
   - "rs.json": |
       [{
-        "_id": "kafdrop:access",
+        "_id": "tools:kafdrop:access",
         "description": "Access Kafdrop."
       }]

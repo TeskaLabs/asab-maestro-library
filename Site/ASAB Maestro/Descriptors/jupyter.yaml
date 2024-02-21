@@ -75,7 +75,7 @@ nginx:
       - proxy_method POST
       - proxy_set_body "$http_authorization"
       - proxy_set_header X-Request-URI "request_uri"
-      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=jupyter&resource=jupyter:access
+      - proxy_pass http://upstream-seacat-auth-private/nginx/introspect/cookie?client_id=jupyter&resource=tools:jupyter:access
       - proxy_cache jupyter
       - proxy_cache_key $cookie_SeaCatSCI_TELKL64KRVI4CQJO
       - proxy_cache_lock on
@@ -107,6 +107,6 @@ seacat-auth:
       }]
   - "rs.json": |
       [{
-        "_id": "jupyter:access",
+        "_id": "tools:jupyter:access",
         "description": "Access Jupyter Notebook."
       }]
