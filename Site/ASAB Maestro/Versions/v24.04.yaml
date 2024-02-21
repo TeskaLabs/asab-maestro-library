@@ -4,6 +4,7 @@ define:
   version: v24.04
 
 versions:
+  acmesh: 3.0.7
   asab-config: v23.45
   asab-governator: stable
   asab-iris: v23.50
