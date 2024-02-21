@@ -15,13 +15,10 @@ function reconfigureReplicaSet() {
 	} catch (error) {
 		// If there is no replica set configuration, it is probably a first node in the cluster and the replica set should be initialized
 		if (error.codeName === 'NotYetInitialized' || error.codeName === 'InvalidReplicaSetConfig') {
-			try {
-				rs.initiate(newConfig);
-				print("SUCCESS_INITIATE");
-			} catch (initiateError) {
-				throw new Error("ERROR_INITIATE");
-			}
+			rs.initiate(newConfig);
+			print("SUCCESS_INITIATE");
 		} else {
+			print("Failed with " + error.name + ": " + error.message)
 			throw new Error("ERROR_RECONFIG");
 		}
 	}
@@ -45,13 +42,13 @@ function main() {
 			print("Connecting to ", `${hostname}:27017`);
 			try {
 				db = connect( `${hostname}:27017` );
-			} catch (e) {
-				print("Failed with error: " + e.name + " - " + e.message);
+			} catch (error) {
+				print("Failed with " + error.name + ": " + error.message)
 				continue;
 			}
 
 			if (!db.isMaster()) {
-				print("Not a master.");
+				print("Not a master, continuing to the next Mongo node.");
 				continue;
 			};
 		
@@ -60,7 +57,7 @@ function main() {
 			try {
 				reconfigureReplicaSet();
 			} catch (e) {
-				print("Failed to reconfigure replica set with error: " + e.name + " - " + e.message);
+				print("Failed to reconfigure replica set with " + error.name + ": " + error.message)
 				break;
 			}
 
