@@ -34,6 +34,12 @@ descriptor:
 files:
   - "conf.d/"
   - "sherpa/"
+  - "conf.d/server_https.d/01-listen.conf": |
+      listen 443 ssl default_server;
+      # TODO listen [::]:443 ssl default_server;
+  - "conf.d/server_http.d/01-listen.conf": |
+      listen 80 default_server deferred;
+      # TODO listen [::]:80 default_server deferred;
 
 sherpas:
   webapp-dist:
