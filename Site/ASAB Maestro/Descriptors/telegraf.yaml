@@ -109,7 +109,7 @@ files:
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/disk/README.md
       [[inputs.disk]]
-        ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "nsfs", "fuse.sshfs"]
+        ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "nsfs", "fuse.sshfs", "snapfuse"]
         [inputs.disk.tags]
           node_id = "{{NODE_ID}}"
 
