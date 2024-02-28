@@ -22,6 +22,8 @@ install_mfe() {  # args: URL: $1, Name: $2
 		--etag-save "$CACHE_DIR/$2.etag-new" \
 		--etag-compare "$CACHE_DIR/$2.etag" \
 		--max-filesize ${MAXSIZE} \
+		--retry 10 \
+		--retry-delay 0 \
 		-o "$TMP_DIR/$2.tar.xz" \
 		"$1"
 
@@ -62,6 +64,8 @@ install_spa() {  # args: URL: $1, Name: $2
 		--etag-save "$CACHE_DIR/$2.etag-new" \
 		--etag-compare "$CACHE_DIR/$2.etag" \
 		--max-filesize ${MAXSIZE} \
+		--retry 10 \
+		--retry-delay 0 \
 		-o "$TMP_DIR/$2.tar.lzma" \
 		"$1"
 
