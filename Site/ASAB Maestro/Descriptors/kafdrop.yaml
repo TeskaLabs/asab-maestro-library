@@ -48,7 +48,7 @@ asab-config:
               "Tool": {
                   "image": "media/tools/kafka.svg",
                   "name": "Kafdrop",
-                  "url": "{{PUBLIC_URL}}/kafdrop"
+                  "url": "/kafdrop"
               },
               "Authorization": {
                   "tenants": "system"
