@@ -165,6 +165,12 @@ nginx:
       - rewrite ^/auth/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
 
+    # Headers containing user info (roles and resources) are so huge the default size must be extended
+    server:
+      - proxy_buffer_size         128k
+      - proxy_buffers           4 256k
+      - proxy_busy_buffers_size   256k
+
 
 files:
   - "script/"
