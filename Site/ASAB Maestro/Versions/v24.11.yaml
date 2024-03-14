@@ -11,7 +11,7 @@ versions:
   asab-library: v24.04-alpha.01
   asab-pyppeteer: v24.05-beta
   asab-remote-control: v24.11-beta
-  bs-query: v24.08-beta2
+  bs-query: v24.05-beta2
   elasticsearch: '7.17.12'
   grafana: '10.3.1'
   influxdb: '2.7.1'
