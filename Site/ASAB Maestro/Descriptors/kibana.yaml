@@ -55,7 +55,7 @@ seacat-auth:
         ],
         "redirect_uri_validation_method": "prefix_match",
         "redirect_uris": [
-          "{{PUBLIC_URL}}/kibana"
+          "/kibana"
         ],
         "response_types": [
           "code"

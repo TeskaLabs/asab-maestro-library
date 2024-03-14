@@ -24,7 +24,7 @@ asab-config:
               "Tool": {
                   "image": "media/tools/zookeeper.svg",
                   "name": "Zoonavigator",
-                  "url": "{{PUBLIC_URL}}/zoonavigator"
+                  "url": "/zoonavigator"
               },
               "Authorization": {
                   "tenants": "system"
