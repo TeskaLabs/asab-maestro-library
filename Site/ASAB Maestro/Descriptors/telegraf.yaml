@@ -135,6 +135,21 @@ files:
           node_id = "{{NODE_ID}}"
       # TODO: More testing of how this input collects temperature measurements will be needed
 
+      [[inputs.elasticsearch]]
+        [inputs.temp.tags]
+          node_id = "{{NODE_ID}}"
+        servers = ["ELASTIC_HOSTS_AUTHORIZED"]
+        http_timeout = "9s"
+        local = false
+        cluster_health = true
+        cluster_health_level = "indices"
+        cluster_stats = true
+        node = true
+        indices = ["*"]
+
+      [[inputs.burrow]]
+        servers = ["http://burrow:8001"]
+
 # TODO: Smart for disks: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/smart/README.md
 # TODO: hddtemp: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/hddtemp/README.md
 # TODO: sensors: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/sensors/README.md
