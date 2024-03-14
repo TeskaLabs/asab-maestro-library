@@ -41,7 +41,7 @@ asab-config:
               "Tool": {
                   "image": "media/tools/jupyter.svg",
                   "name": "Jupyter Notebook",
-                  "url": "{{PUBLIC_URL}}/jupyter"
+                  "url": "/jupyter"
               }
           }
 
