@@ -54,6 +54,22 @@ asab-config:
               },
               "required": ["webhook_url"]
             }
+            "kafka": {
+              "title": "Kafka",
+              "description": "Configure connection to Kafka.",
+              "type": "object",
+              "properties": {
+                "group_id": {
+                  "title": "Kafka consumer group id.",
+                  "type": "string",
+                 },
+                "topic": {
+                  "title": "Kafka topic",
+                  "type": "string",
+                 }
+              },
+              "required": ["topic", "group_id"]
+            }
           }
         }
     config: 
