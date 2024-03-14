@@ -30,10 +30,18 @@ descriptor:
     retries: 5
     start_period: 10s
 
-
 files:
   - "conf.d/"
   - "sherpa/"
+
+  # This controls where NGINX listens
+  - "conf.d/server_https.d/01-listen.conf": |
+      listen 443 ssl default_server;
+      {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl default_server;{% endif %}
+  
+  - "conf.d/server_http.d/01-listen.conf": |
+      listen 80 default_server deferred;
+      {% if NGINX_LISTEN_IPV6 %}listen [::]:80 default_server deferred;{% endif %}
 
 sherpas:
   webapp-dist:
