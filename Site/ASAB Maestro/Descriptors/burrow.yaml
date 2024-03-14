@@ -1,0 +1,42 @@
+define:
+  type: rc/descriptor
+  name: Burrow
+
+descriptor:
+  image: docker.teskalabs.com/burrow
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/burrow:ro"
+
+files:
+  conf/burrow.toml: |
+    [zookeeper]
+    servers=[ "{{ZOOKEEPER_SERVERS}}" ]
+    timeout=6
+    root-path="/burrow"
+
+    [cluster.local]
+    class-name="kafka"
+    servers=[ "{{KAFKA_BOOTSTRAP_SERVERS}}" ]
+    topic-refresh=60
+    offset-refresh=30
+
+    [consumer.local]
+    class-name="kafka"
+    cluster="local"
+    servers=[ "{{KAFKA_BOOTSTRAP_SERVERS}}" ]
+    group-denylist="^(console-consumer-|python-kafka-consumer-).*$"
+    group-allowlist=""
+
+    [consumer.local_zk]
+    class-name="kafka_zk"
+    cluster="local"
+    servers=[ "{{ZOOKEEPER_SERVERS}}" ]
+    zookeeper-path="/local"
+    zookeeper-timeout=30
+    group-denylist="^(console-consumer-|python-kafka-consumer-).*$"
+    group-allowlist=""
+
+    [httpserver.default]
+    address=":8001"
