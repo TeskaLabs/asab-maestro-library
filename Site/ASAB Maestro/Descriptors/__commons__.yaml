@@ -25,7 +25,7 @@ descriptor:
       max-size: 10m
 
   # We do restarts
-  restart: unless-stopped
+  restart: always
 
 # Common descriptor for sherpas
 sherpa:
