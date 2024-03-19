@@ -8,7 +8,7 @@ versions:
   asab-config: v24.08-beta
   asab-governator: v24.12-beta
   asab-iris: v24.08-beta
-  asab-library: v24.04-alpha.01
+  asab-library: v24.05-beta
   asab-pyppeteer: v24.05-beta
   asab-remote-control: v24.12-beta
   bs-query: v24.05-beta2
