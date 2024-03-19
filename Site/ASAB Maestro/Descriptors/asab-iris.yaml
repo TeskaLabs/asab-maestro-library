@@ -12,7 +12,10 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: &config {}  # specify default configuration of the service
+  config: 
+    kafka:
+      topic: notifications
+      group_id: asab-iris
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
     # [variables] must be filled from general confguration (user)
@@ -58,7 +61,7 @@ asab-config:
         }
     config: 
       file:
-        *config  # transfer the default configuration to ASAB Config if there is no configuration set for the service, yet
+        {}
       if_not_exists: true
 
 
