@@ -23,7 +23,7 @@ sherpas:
 # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
 # provide a name to your sherpa and a descriptor for its very own container.
   mongo:
-    image: library/mongo
+    image: library/mongo:{{ VERSIONS["mongo"] }}
     entrypoint: ["mongosh", "--nodb", "--file", "/script/mongo-insert.js"]
     command: ["echo", "DONE"]
     volumes:
