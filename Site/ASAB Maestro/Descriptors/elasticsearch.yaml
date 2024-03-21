@@ -71,6 +71,11 @@ nginx:
     - proxy_cache_valid 200 10s
     - proxy_ignore_headers Cache-Control Expires Set-Cookie
 
+    # Increase buffer size to fit large Authorization headers
+    - proxy_buffer_size         32k
+    - proxy_buffers           4 64k
+    - proxy_busy_buffers_size   64k
+
 seacat-auth:
   content:
   - "cl.json": |
