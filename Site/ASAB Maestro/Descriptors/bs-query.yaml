@@ -23,10 +23,6 @@ asab:
 
 
 seacat-auth:
-  config:
-    "seacatauth:credentials:m2m:machine":
-      mongodb_uri: "{{MONGO_URI}}"
-      mongodb_database: auth
   content: # BSQUERY_PASSWORD_HASHED created by bsquery tech
     - "mc.json": |
         [{
