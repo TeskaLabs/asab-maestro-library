@@ -118,5 +118,5 @@ nginx:
 
     # Increase buffer size to fit large Authorization headers
     - proxy_buffer_size         32k
-    - proxy_buffers           4 64k
+    - proxy_buffers           8 64k
     - proxy_busy_buffers_size   64k
