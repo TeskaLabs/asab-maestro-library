@@ -23,7 +23,7 @@ sherpas:
 # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
 # provide a name to your sherpa and a descriptor for its very own container.
   mongo:
-    image: library/mongo
+    image: library/mongo:{{ VERSIONS["mongo"] }}
     entrypoint: ["mongosh", "--nodb", "--file", "/script/mongo-insert.js"]
     command: ["echo", "DONE"]
     volumes:
@@ -148,6 +148,11 @@ nginx:
       - proxy_cache_lock on
       - proxy_cache_valid 200 30s
 
+      # Increase buffer size to fit large Authorization headers
+      - proxy_buffer_size         32k
+      - proxy_buffers           8 64k
+      - proxy_busy_buffers_size   64k
+
     location /api/openidconnect:
       - rewrite ^/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
@@ -164,12 +169,6 @@ nginx:
     location /auth/api/openidconnect:
       - rewrite ^/auth/api/openidconnect/(.*) /openidconnect/$1 break
       - proxy_pass http://upstream-seacat-auth-public
-
-    # Headers containing user info (roles and resources) are so huge the default size must be extended
-    server:
-      - proxy_buffer_size         128k
-      - proxy_buffers           4 256k
-      - proxy_busy_buffers_size   256k
 
 
 files:
