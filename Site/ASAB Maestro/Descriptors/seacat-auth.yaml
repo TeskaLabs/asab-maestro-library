@@ -1,3 +1,4 @@
+# Works with v24.06-alpha10 and later
 
 define:
   type: rc/descriptor
@@ -39,6 +40,9 @@ asab:
 
     seacatauth:
       private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
+
+    mongo:
+      database: auth
 
     asab:storage:
       type: mongodb
