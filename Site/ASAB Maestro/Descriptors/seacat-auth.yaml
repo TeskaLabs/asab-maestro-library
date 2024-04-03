@@ -1,3 +1,4 @@
+# Works with v24.06-alpha10 and later
 
 define:
   type: rc/descriptor
