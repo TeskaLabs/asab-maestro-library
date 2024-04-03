@@ -105,3 +105,12 @@ seacat-auth:
         "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
         "client_uri": "{{PUBLIC_URL}}/api/elasticsearch"
       }]
+
+telegraf: |
+  [[inputs.elasticsearch]]
+    servers = {{ELASTIC_HOSTS_AUTHORIZED}}
+    http_timeout = "9s"
+    local = false
+    cluster_health = true
+    cluster_health_level = "indices"
+    cluster_stats = true

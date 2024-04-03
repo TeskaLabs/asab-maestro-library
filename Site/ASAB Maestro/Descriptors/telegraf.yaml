@@ -22,7 +22,7 @@ descriptor:
 
   volumes:
     # For a persistency of the configuration
-    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/telegraf:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/telegraf.d:/etc/telegraf/telegraf.d:ro"
     # Logs
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/telegraf"
     # Mounting importang bits from the host
@@ -36,7 +36,7 @@ descriptor:
     - /var/run/docker.sock:/var/run/docker.sock
 
 files:
-  - "conf/telegraf.conf": |
+  - "telegraf.d/telegraf.conf": |
       [global_tags]
       
       [agent]
