@@ -32,8 +32,6 @@ descriptor:
     - /proc:/hostfs/proc:ro
     - /sys:/hostfs/sys:ro
     - /run:/hostfs/run:ro
-    # For a communication with a docker
-    - /var/run/docker.sock:/var/run/docker.sock
 
 files:
   - "telegraf.d/telegraf.conf": |
