@@ -9,9 +9,6 @@ descriptor:
   # The gid=0 is to enable communication with a Docker/Podman for metrics extraction
   user: "10002:0"
 
-  volumes:
-    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/influxdb2"
-
   environment:
     HOST_MOUNT_PREFIX: /hostfs
     HOST_PROC: /hostfs/proc
@@ -22,7 +19,7 @@ descriptor:
 
   volumes:
     # For a persistency of the configuration
-    - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/telegraf:ro"
+    - "{{SITE}}/{{INSTANCE_ID}}/telegraf.d:/etc/telegraf/telegraf.d:ro"
     # Logs
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/var/log/telegraf"
     # Mounting importang bits from the host
@@ -36,7 +33,7 @@ descriptor:
     - /var/run/docker.sock:/var/run/docker.sock
 
 files:
-  - "conf/telegraf.conf": |
+  - "telegraf.d/telegraf.conf": |
       [global_tags]
       
       [agent]
