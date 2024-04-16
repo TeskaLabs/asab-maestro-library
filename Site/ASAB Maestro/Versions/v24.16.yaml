@@ -6,7 +6,7 @@ define:
 versions:
   acmesh: 3.0.7
   asab-config: v24.08-beta
-  asab-governator: v24.12-beta
+  asab-governator: v24.13-beta
   asab-iris: v24.08-beta
   asab-library: v24.04-alpha.01
   asab-pyppeteer: v24.05-beta
