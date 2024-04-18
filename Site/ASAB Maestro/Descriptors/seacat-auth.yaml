@@ -1,3 +1,4 @@
+# Works with v24.06-alpha10 and later
 
 define:
   type: rc/descriptor
@@ -40,17 +41,18 @@ asab:
     seacatauth:
       private_key: /conf/private-key.pem  # The private file key will be added by ASAB Remote Control / SeaCat Auth tech
 
+    mongo:
+      database: auth
+
     asab:storage:
       type: mongodb
-      mongodb_uri: "{{MONGO_URI}}"
-      mongodb_database: auth
       aes_key: null  # Will be filled by ASAB Remote Control
 
     seacatauth:credentials:mongodb:default:
-      mongodb_uri: "{{MONGO_URI}}"
-      mongodb_database: auth
       tenants: yes
       register: no
+
+    seacatauth:credentials:m2m:machine: {}
 
     seacatauth:communication:email:smtp:
       # By default, SMTP configuration is mocked - e-mails are printed into log of seacat-auth
