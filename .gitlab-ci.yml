@@ -1,5 +1,4 @@
 stages:
-  - test
   - distribute
 
 Azure master:
@@ -9,7 +8,7 @@ Azure master:
     - docker
     - amd64
   only:
-    - master
+    - main
   script:
     - apk update
     - apk add xz
@@ -19,8 +18,8 @@ Azure master:
     # Calculate the checksum
     - sha256sum asab-maestro-library.tar.xz > asab-maestro-library.tar.xz.sha256
     
-    - az storage blob upload --overwrite --file asab-maestro-library.tar.xz --container-name "\$web" --name "asab-maestro-library/asab-maestro-library-master.tar.xz" --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
-    - az storage blob upload --overwrite --file asab-maestro-library.tar.xz.sha256 --container-name "\$web" --name "asab-maestro-library/asab-maestro-library-master.tar.xz.sha256" --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+    - az storage blob upload --overwrite --file asab-maestro-library.tar.xz --container-name "\$web" --name "asab-maestro-library/asab-maestro-library-main.tar.xz" --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+    - az storage blob upload --overwrite --file asab-maestro-library.tar.xz.sha256 --container-name "\$web" --name "asab-maestro-library/asab-maestro-library-main.tar.xz.sha256" --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
   artifacts:
     paths:
       - asab-maestro-library.tar.xz
@@ -34,7 +33,7 @@ Azure branch:
     - amd64
   only:
     - production
-    - master
+    - main
   script:
     - apk update
     - apk add xz
