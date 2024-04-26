@@ -40,4 +40,5 @@ versions:
   webapp lmio_alert_management_webui: v24.03-beta19
   webapp lmio_parser_builder_webui: v24.03-beta19
   webapp seacat_admin_webui: v24.03-beta19
+  webapp seacat_account_webui: v24.03-beta19
   webapp lmio_logsources_webui: v24.03-beta19
