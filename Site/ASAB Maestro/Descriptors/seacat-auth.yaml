@@ -50,7 +50,7 @@ asab:
 
     seacatauth:credentials:mongodb:default:
       tenants: yes
-      register: no
+      registration: yes
 
     seacatauth:credentials:m2m:machine: {}
 
