@@ -28,16 +28,16 @@ versions:
 
   webapp seacat-auth: v23.29-beta
 
-  webapp lmio_webui: v24.03-beta21
-  webapp asab_config_webui: v24.03-beta21
-  webapp asab_library_webui: v24.03-beta21
-  webapp asab_maestro_webui: v24.03-beta21
-  webapp asab_tools_webui: v24.03-beta21
-  webapp bs_query_webui: v24.03-beta21
-  webapp lmio_analysis_webui: v24.03-beta21
-  webapp lmio_lookup_webui: v24.03-beta21
-  webapp lmio_observability_webui: v24.03-beta21
-  webapp lmio_alert_management_webui: v24.03-beta21
-  webapp lmio_parser_builder_webui: v24.03-beta21
-  webapp seacat_admin_webui: v24.03-beta21
-  webapp lmio_logsources_webui: v24.03-beta21
+  webapp lmio_webui: v24.03-beta22
+  webapp asab_config_webui: v24.03-beta22
+  webapp asab_library_webui: v24.03-beta22
+  webapp asab_maestro_webui: v24.03-beta22
+  webapp asab_tools_webui: v24.03-beta22
+  webapp bs_query_webui: v24.03-beta22
+  webapp lmio_analysis_webui: v24.03-beta22
+  webapp lmio_lookup_webui: v24.03-beta22
+  webapp lmio_observability_webui: v24.03-beta22
+  webapp lmio_alert_management_webui: v24.03-beta22
+  webapp lmio_parser_builder_webui: v24.03-beta22
+  webapp seacat_admin_webui: v24.03-beta22
+  webapp lmio_logsources_webui: v24.03-beta22
