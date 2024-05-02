@@ -20,4 +20,5 @@ mfe:
     /lmio_observability_webui: lmio_observability_webui
     /lmio_alert_management_webui: lmio_alert_management_webui
     /seacat_admin_webui: seacat_admin_webui
+    /seacat_account_webui: seacat_account_webui
     /lmio_logsources_webui: lmio_logsources_webui
