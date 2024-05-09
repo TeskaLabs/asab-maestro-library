@@ -17,6 +17,10 @@ descriptor:
     HOST_VAR: /hostfs/var
     HOST_RUN: /hostfs/run
 
+  pid: "host"
+  cap_add:
+    - SYS_PTRACE
+
   volumes:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/telegraf.d:/etc/telegraf/telegraf.d:ro"
