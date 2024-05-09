@@ -6,9 +6,6 @@ define:
 descriptor:
   image: telegraf
 
-  # The gid=0 is to enable communication with a Docker/Podman for metrics extraction
-  user: "10002:0"
-
   environment:
     HOST_MOUNT_PREFIX: /hostfs
     HOST_PROC: /hostfs/proc
