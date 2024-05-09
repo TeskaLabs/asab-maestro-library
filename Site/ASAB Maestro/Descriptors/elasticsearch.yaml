@@ -114,3 +114,9 @@ telegraf: |
     cluster_health = true
     cluster_health_level = "indices"
     cluster_stats = true
+  
+  [[processors.rename]]
+    namepass = ["elasticsearch"]
+    [[processors.rename.replace]]
+      tag = "node_id"
+      dest = "elasticsearch_node_id"
