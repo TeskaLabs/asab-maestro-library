@@ -116,7 +116,7 @@ telegraf: |
     cluster_stats = true
   
   [[processors.rename]]
-    namepass = ["elasticsearch"]
+    namepass = ["elasticsearch*"]
     [[processors.rename.replace]]
       tag = "node_id"
       dest = "elasticsearch_node_id"
