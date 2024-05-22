@@ -35,7 +35,7 @@ function transform_collection(collectionName, data) {
 		record["_c"] = new Date()
 		record["_m"] = new Date()
 		record["_v"] = 1
-		record["managed_by"] = "maestro"
+		record["managed_by"] = "asab-maestro"
 	});
 
 	return data
