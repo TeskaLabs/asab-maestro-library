@@ -20,7 +20,7 @@ asab:
     # [slack] must be filled from general confguration (user)
     # [variables] must be filled from general confguration (user)
   email:
-    markdown_wrapper: /Templates/Wrapper/markdown_wrapper.html
+    markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
 
 asab-config:
   asab-iris:
