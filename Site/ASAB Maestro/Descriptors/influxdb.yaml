@@ -28,6 +28,7 @@ descriptor:
     DOCKER_INFLUXDB_INIT_BUCKET: "{{INFLUXDB_BUCKET}}"  # set by the Remote Control
     DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
     DOCKER_INFLUXDB_INIT_RETENTION: 180d
+    INFLUXD_LOG_LEVEL: warn
 
 nginx:
   upstreams:
