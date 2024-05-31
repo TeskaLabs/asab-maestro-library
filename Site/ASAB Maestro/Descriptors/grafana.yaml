@@ -39,6 +39,7 @@ descriptor:
     GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: preferred_username || username || sub
     GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: email || sub
     GF_AUTH_SIGNOUT_REDIRECT_URL: "{{PUBLIC_URL}}"
+    GF_LOG_LEVEL: warn
 
 files:
   - "provisioning/"
