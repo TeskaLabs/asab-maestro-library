@@ -1,27 +1,17 @@
 const fs = require("fs")
 
-
 /**
  * The function reconfigureReplicaSet is used to find the primary node in a replica set and apply a new configuration to it.
  */
 function reconfigureReplicaSet() {
 	const newConfig = JSON.parse(fs.readFileSync('/script/replica-set.json', 'utf8'))
-	try {
-		// If there is a configuration, the replica set has been initialized and it want's to be reconfigured, which can be done only from the primary node
-		let currentConfig = rs.conf();
-		newConfig.version = newConfig.version + 1;
-		rs.reconfig(newConfig, { force: false });
-		print("SUCCESS_RECONFIG");
-	} catch (error) {
-		// If there is no replica set configuration, it is probably a first node in the cluster and the replica set should be initialized
-		if (error.codeName === 'NotYetInitialized' || error.codeName === 'InvalidReplicaSetConfig') {
-			rs.initiate(newConfig);
-			print("SUCCESS_INITIATE");
-		} else {
-			print("Failed with " + error.name + ": " + error.message + " / " + error.codeName);
-			throw new Error("ERROR_RECONFIG");
-		}
-	}
+	newConfig.version = newConfig.version + 1;
+	rs.reconfig(newConfig, { force: false });
+}
+
+function initiateReplicaSet() {
+	const newConfig = JSON.parse(fs.readFileSync('/script/replica-set.json', 'utf8'))
+	rs.initiate(newConfig);
 }
 
 /**
@@ -48,29 +38,51 @@ function main() {
 				print("Failed with " + error.name + ": " + error.message)
 				continue;
 			}
+			
+			// db.hello() returns an object with basic data about the mongo instance and the database
+			// https://www.mongodb.com/docs/manual/reference/command/hello/#mongodb-dbcommand-dbcmd.hello
+			const hello = db.hello()
 
-			if (!db.isMaster()) {
-				print("Not a master, continuing to the next Mongo node.");
+			// To setup replicaset, the replicaset needs to be both in configuration but also initialized. However, it has to be initialized only once. 
+			// https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set
+			// Mongo starts with rs0 configuration and the replicaset has not yet been initialized. However, this state cannot be tested anyhow.
+			// In this state the mongo instance is not primary, it is not secondary, it has replicaset, and the only indicative thing is this message: 'Does not have a valid replica set config'
+
+			if (!hello.isWritablePrimary && !hello.secondary && hello.isreplicaset && hello.info === 'Does not have a valid replica set config') {
+				// replicaset has not yet been initialized
+				try {
+					initiateReplicaSet()
+					print("Initialization successful.")
+					print("SUCCESS!");
+					quit(0);
+
+				} catch (e) {
+					print("Initialization of replicaset failed.")
+					print("Exiting due to failure.")
+					quit(1);
+				}
+			}
+
+			if (!hello.isWritablePrimary) {
+				print("Not a primary, continuing to the next Mongo node.");
 				continue;
 			};
 		
-			print("This is a master, reconfiguring a replica set.");
+			print("This is a primary, reconfiguring a replicaset.");
 
 			try {
 				reconfigureReplicaSet();
+				print("Successfully reconfigured replicaset.");
+				print("SUCCESS!");
+				quit(0);
 			} catch (e) {
-				print("Failed to reconfigure replica set with " + error.name + ": " + error.message)
-				break;
+				print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + error.codeName);
+				print("Exiting due to failure.")
+				quit(1);
 			}
-
-			print("SUCCESS!");
-			quit(0);  // SUCCESS!
 		};
 		sleep(5000);
 	}
-
-	print("Exiting due to failure.")
-	quit(1);
 };
 
 main();
