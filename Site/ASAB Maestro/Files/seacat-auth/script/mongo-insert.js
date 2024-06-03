@@ -79,6 +79,8 @@ function main() {
 				continue
 			}
 
+			// db.hello() returns an object with basic data about the mongo instance and the database
+			// https://www.mongodb.com/docs/manual/reference/command/hello/#mongodb-dbcommand-dbcmd.hello
 			if (!db.hello()?.isWritablePrimary ?? false) {  //The optional chaining operator (?.) will return undefined instead of causing an error if isMaster() returns null or undefined, or if isWritablePrimary does not exist on the object returned by isMaster(). The nullish coalescing operator (??) will return the value on its right-hand side if the value on its left-hand side is null or undefined.
 				// skip mongo instances that are not primary
 				continue

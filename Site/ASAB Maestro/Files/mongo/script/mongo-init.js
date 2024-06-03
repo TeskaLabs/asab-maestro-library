@@ -38,8 +38,11 @@ function main() {
 				print("Failed with " + error.name + ": " + error.message)
 				continue;
 			}
-
+			
+			// db.hello() returns an object with basic data about the mongo instance and the database
+			// https://www.mongodb.com/docs/manual/reference/command/hello/#mongodb-dbcommand-dbcmd.hello
 			const hello = db.hello()
+
 			// To setup replicaset, the replicaset needs to be both in configuration but also initialized. However, it has to be initialized only once. 
 			// https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set
 			// Mongo starts with rs0 configuration and the replicaset has not yet been initialized. However, this state cannot be tested anyhow.
