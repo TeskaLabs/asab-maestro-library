@@ -18,6 +18,7 @@
 	"editable": true,
 	"fiscalYearStartMonth": 0,
 	"graphTooltip": 0,
+	"id": 16,
 	"links": [],
 	"liveNow": true,
 	"panels": [
@@ -41,49 +42,49 @@
 		  "type": "influxdb",
 		  "uid": "lmio-influxdb-metrics"
 		},
-		"description": "",
 		"fieldConfig": {
 		  "defaults": {
 			"color": {
 			  "mode": "thresholds"
 			},
-			"decimals": 1,
-			"fieldMinMax": false,
 			"mappings": [],
-			"max": 50,
-			"min": 0,
 			"thresholds": {
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "green",
+				  "color": "dark-red",
 				  "value": null
 				},
 				{
-				  "color": "orange",
-				  "value": 30
+				  "color": "semi-dark-orange",
+				  "value": 86400
 				},
 				{
-				  "color": "red",
-				  "value": 60
+				  "color": "semi-dark-yellow",
+				  "value": 604800
+				},
+				{
+				  "color": "text",
+				  "value": 1209600
 				}
 			  ]
 			},
-			"unitScale": false
+			"unit": "s",
+			"unitScale": true
 		  },
 		  "overrides": []
 		},
 		"gridPos": {
-		  "h": 4,
+		  "h": 2,
 		  "w": 2,
 		  "x": 0,
 		  "y": 1
 		},
-		"id": 3,
+		"id": 8,
 		"options": {
 		  "colorMode": "value",
-		  "graphMode": "area",
-		  "justifyMode": "center",
+		  "graphMode": "none",
+		  "justifyMode": "auto",
 		  "orientation": "auto",
 		  "reduceOptions": {
 			"calcs": [
@@ -93,13 +94,12 @@
 			"values": false
 		  },
 		  "showPercentChange": false,
-		  "textMode": "value",
+		  "textMode": "auto",
 		  "wideLayout": true
 		},
 		"pluginVersion": "10.3.1",
 		"targets": [
 		  {
-			"alias": "load",
 			"datasource": {
 			  "type": "influxdb",
 			  "uid": "lmio-influxdb-metrics"
@@ -127,13 +127,13 @@
 			  [
 				{
 				  "params": [
-					"load1"
+					"uptime"
 				  ],
 				  "type": "field"
 				},
 				{
 				  "params": [],
-				  "type": "last"
+				  "type": "mean"
 				}
 			  ]
 			],
@@ -146,7 +146,7 @@
 			]
 		  }
 		],
-		"title": "Load",
+		"title": "Uptime",
 		"type": "stat"
 	  },
 	  {
@@ -161,72 +161,51 @@
 			  "mode": "palette-classic"
 			},
 			"custom": {
-			  "axisBorderShow": false,
-			  "axisCenteredZero": false,
-			  "axisColorMode": "text",
-			  "axisLabel": "",
-			  "axisPlacement": "hidden",
-			  "fillOpacity": 80,
-			  "gradientMode": "none",
 			  "hideFrom": {
 				"legend": false,
 				"tooltip": false,
 				"viz": false
-			  },
-			  "lineWidth": 1,
-			  "scaleDistribution": {
-				"type": "linear"
-			  },
-			  "thresholdsStyle": {
-				"mode": "off"
 			  }
 			},
 			"decimals": 0,
 			"fieldMinMax": false,
 			"mappings": [],
-			"max": 100,
-			"min": 0,
-			"thresholds": {
-			  "mode": "absolute",
-			  "steps": [
-				{
-				  "color": "green",
-				  "value": null
-				}
-			  ]
-			},
 			"unit": "percent",
 			"unitScale": true
 		  },
 		  "overrides": []
 		},
 		"gridPos": {
-		  "h": 4,
-		  "w": 2,
+		  "h": 5,
+		  "w": 6,
 		  "x": 2,
 		  "y": 1
 		},
 		"id": 6,
 		"options": {
-		  "barRadius": 0,
-		  "barWidth": 0.97,
-		  "fullHighlight": false,
-		  "groupWidth": 0.7,
+		  "displayLabels": [
+			"percent"
+		  ],
 		  "legend": {
-			"calcs": [],
 			"displayMode": "list",
-			"placement": "bottom",
-			"showLegend": false
+			"placement": "right",
+			"showLegend": true,
+			"values": [
+			  "percent"
+			]
 		  },
-		  "orientation": "auto",
-		  "showValue": "never",
-		  "stacking": "normal",
+		  "pieType": "pie",
+		  "reduceOptions": {
+			"calcs": [
+			  "lastNotNull"
+			],
+			"fields": "",
+			"values": false
+		  },
 		  "tooltip": {
 			"mode": "multi",
-			"sort": "none"
-		  },
-		  "xTickLabelRotation": 0,
-		  "xTickLabelSpacing": 0
+			"sort": "desc"
+		  }
 		},
 		"pluginVersion": "10.3.1",
 		"targets": [
@@ -238,7 +217,7 @@
 			"groupBy": [
 			  {
 				"params": [
-				  "15m"
+				  "$__interval"
 				],
 				"type": "time"
 			  },
@@ -255,6 +234,24 @@
 			"refId": "A",
 			"resultFormat": "time_series",
 			"select": [
+			  [
+				{
+				  "params": [
+					"usage_idle"
+				  ],
+				  "type": "field"
+				},
+				{
+				  "params": [],
+				  "type": "last"
+				},
+				{
+				  "params": [
+					"idle"
+				  ],
+				  "type": "alias"
+				}
+			  ],
 			  [
 				{
 				  "params": [
@@ -338,7 +335,7 @@
 		  }
 		],
 		"title": "CPU",
-		"type": "barchart"
+		"type": "piechart"
 	  },
 	  {
 		"datasource": {
@@ -377,9 +374,9 @@
 		  "overrides": []
 		},
 		"gridPos": {
-		  "h": 8,
+		  "h": 9,
 		  "w": 7,
-		  "x": 4,
+		  "x": 8,
 		  "y": 1
 		},
 		"id": 7,
@@ -445,6 +442,30 @@
 				"key": "node_id::tag",
 				"operator": "=~",
 				"value": "/^$node_id$/"
+			  },
+			  {
+				"condition": "AND",
+				"key": "path::tag",
+				"operator": "=",
+				"value": "/"
+			  },
+			  {
+				"condition": "OR",
+				"key": "path::tag",
+				"operator": "=",
+				"value": "/data/hdd"
+			  },
+			  {
+				"condition": "OR",
+				"key": "path::tag",
+				"operator": "=",
+				"value": "/data/ssd"
+			  },
+			  {
+				"condition": "OR",
+				"key": "path::tag",
+				"operator": "=",
+				"value": "/var/lib/docker"
 			  }
 			]
 		  }
@@ -581,9 +602,9 @@
 		  ]
 		},
 		"gridPos": {
-		  "h": 8,
-		  "w": 8,
-		  "x": 11,
+		  "h": 9,
+		  "w": 9,
+		  "x": 15,
 		  "y": 1
 		},
 		"id": 11,
@@ -840,49 +861,49 @@
 		  "type": "influxdb",
 		  "uid": "lmio-influxdb-metrics"
 		},
+		"description": "",
 		"fieldConfig": {
 		  "defaults": {
 			"color": {
 			  "mode": "thresholds"
 			},
+			"decimals": 1,
+			"fieldMinMax": false,
 			"mappings": [],
+			"max": 50,
+			"min": 0,
 			"thresholds": {
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "dark-red",
+				  "color": "green",
 				  "value": null
 				},
 				{
-				  "color": "semi-dark-orange",
-				  "value": 86400
+				  "color": "orange",
+				  "value": 30
 				},
 				{
-				  "color": "semi-dark-yellow",
-				  "value": 604800
-				},
-				{
-				  "color": "text",
-				  "value": 1209600
+				  "color": "red",
+				  "value": 60
 				}
 			  ]
 			},
-			"unit": "s",
-			"unitScale": true
+			"unitScale": false
 		  },
 		  "overrides": []
 		},
 		"gridPos": {
-		  "h": 2,
+		  "h": 3,
 		  "w": 2,
-		  "x": 19,
-		  "y": 1
+		  "x": 0,
+		  "y": 3
 		},
-		"id": 8,
+		"id": 3,
 		"options": {
 		  "colorMode": "value",
-		  "graphMode": "none",
-		  "justifyMode": "auto",
+		  "graphMode": "area",
+		  "justifyMode": "center",
 		  "orientation": "auto",
 		  "reduceOptions": {
 			"calcs": [
@@ -892,12 +913,13 @@
 			"values": false
 		  },
 		  "showPercentChange": false,
-		  "textMode": "auto",
+		  "textMode": "value",
 		  "wideLayout": true
 		},
 		"pluginVersion": "10.3.1",
 		"targets": [
 		  {
+			"alias": "load",
 			"datasource": {
 			  "type": "influxdb",
 			  "uid": "lmio-influxdb-metrics"
@@ -925,218 +947,7 @@
 			  [
 				{
 				  "params": [
-					"uptime"
-				  ],
-				  "type": "field"
-				},
-				{
-				  "params": [],
-				  "type": "mean"
-				}
-			  ]
-			],
-			"tags": [
-			  {
-				"key": "node_id::tag",
-				"operator": "=~",
-				"value": "/^$node_id$/"
-			  }
-			]
-		  }
-		],
-		"title": "Uptime",
-		"type": "stat"
-	  },
-	  {
-		"datasource": {
-		  "type": "influxdb",
-		  "uid": "lmio-influxdb-metrics"
-		},
-		"fieldConfig": {
-		  "defaults": {
-			"color": {
-			  "mode": "thresholds"
-			},
-			"mappings": [],
-			"min": 0,
-			"thresholds": {
-			  "mode": "absolute",
-			  "steps": [
-				{
-				  "color": "text",
-				  "value": null
-				}
-			  ]
-			},
-			"unit": "Bps",
-			"unitScale": true
-		  },
-		  "overrides": []
-		},
-		"gridPos": {
-		  "h": 4,
-		  "w": 2,
-		  "x": 21,
-		  "y": 1
-		},
-		"id": 9,
-		"options": {
-		  "colorMode": "value",
-		  "graphMode": "area",
-		  "justifyMode": "auto",
-		  "orientation": "auto",
-		  "reduceOptions": {
-			"calcs": [
-			  "lastNotNull"
-			],
-			"fields": "",
-			"values": false
-		  },
-		  "showPercentChange": false,
-		  "textMode": "auto",
-		  "wideLayout": true
-		},
-		"pluginVersion": "10.3.1",
-		"targets": [
-		  {
-			"datasource": {
-			  "type": "influxdb",
-			  "uid": "lmio-influxdb-metrics"
-			},
-			"groupBy": [
-			  {
-				"params": [
-				  "1m"
-				],
-				"type": "time"
-			  },
-			  {
-				"params": [
-				  "null"
-				],
-				"type": "fill"
-			  }
-			],
-			"measurement": "net",
-			"orderByTime": "ASC",
-			"policy": "default",
-			"refId": "A",
-			"resultFormat": "time_series",
-			"select": [
-			  [
-				{
-				  "params": [
-					"bytes_sent"
-				  ],
-				  "type": "field"
-				},
-				{
-				  "params": [],
-				  "type": "mean"
-				},
-				{
-				  "params": [],
-				  "type": "non_negative_difference"
-				},
-				{
-				  "params": [
-					" / 60"
-				  ],
-				  "type": "math"
-				}
-			  ]
-			],
-			"tags": [
-			  {
-				"key": "node_id::tag",
-				"operator": "=~",
-				"value": "/^$node_id$/"
-			  }
-			]
-		  }
-		],
-		"title": "Network out",
-		"type": "stat"
-	  },
-	  {
-		"datasource": {
-		  "type": "influxdb",
-		  "uid": "lmio-influxdb-metrics"
-		},
-		"fieldConfig": {
-		  "defaults": {
-			"color": {
-			  "mode": "thresholds"
-			},
-			"mappings": [],
-			"thresholds": {
-			  "mode": "absolute",
-			  "steps": [
-				{
-				  "color": "text",
-				  "value": null
-				}
-			  ]
-			},
-			"unit": "none",
-			"unitScale": true
-		  },
-		  "overrides": []
-		},
-		"gridPos": {
-		  "h": 2,
-		  "w": 2,
-		  "x": 19,
-		  "y": 3
-		},
-		"id": 13,
-		"options": {
-		  "colorMode": "value",
-		  "graphMode": "none",
-		  "justifyMode": "auto",
-		  "orientation": "auto",
-		  "reduceOptions": {
-			"calcs": [
-			  "lastNotNull"
-			],
-			"fields": "",
-			"values": false
-		  },
-		  "showPercentChange": false,
-		  "textMode": "auto",
-		  "wideLayout": true
-		},
-		"pluginVersion": "10.3.1",
-		"targets": [
-		  {
-			"datasource": {
-			  "type": "influxdb",
-			  "uid": "lmio-influxdb-metrics"
-			},
-			"groupBy": [
-			  {
-				"params": [
-				  "$__interval"
-				],
-				"type": "time"
-			  },
-			  {
-				"params": [
-				  "null"
-				],
-				"type": "fill"
-			  }
-			],
-			"measurement": "processes",
-			"orderByTime": "ASC",
-			"policy": "default",
-			"refId": "A",
-			"resultFormat": "time_series",
-			"select": [
-			  [
-				{
-				  "params": [
-					"total"
+					"load1"
 				  ],
 				  "type": "field"
 				},
@@ -1155,7 +966,7 @@
 			]
 		  }
 		],
-		"title": "Process count",
+		"title": "Load",
 		"type": "stat"
 	  },
 	  {
@@ -1168,12 +979,9 @@
 			"color": {
 			  "mode": "thresholds"
 			},
-			"decimals": 0,
 			"mappings": [],
-			"max": 100,
-			"min": 0,
 			"thresholds": {
-			  "mode": "absolute",
+			  "mode": "percentage",
 			  "steps": [
 				{
 				  "color": "green",
@@ -1198,13 +1006,12 @@
 		  "h": 4,
 		  "w": 2,
 		  "x": 0,
-		  "y": 5
+		  "y": 6
 		},
-		"id": 4,
+		"id": 12,
 		"options": {
-		  "colorMode": "value",
-		  "graphMode": "area",
-		  "justifyMode": "auto",
+		  "minVizHeight": 75,
+		  "minVizWidth": 75,
 		  "orientation": "auto",
 		  "reduceOptions": {
 			"calcs": [
@@ -1213,9 +1020,9 @@
 			"fields": "",
 			"values": false
 		  },
-		  "showPercentChange": false,
-		  "textMode": "auto",
-		  "wideLayout": true
+		  "showThresholdLabels": false,
+		  "showThresholdMarkers": true,
+		  "sizing": "auto"
 		},
 		"pluginVersion": "10.3.1",
 		"targets": [
@@ -1253,7 +1060,7 @@
 				},
 				{
 				  "params": [],
-				  "type": "mean"
+				  "type": "last"
 				}
 			  ]
 			],
@@ -1267,7 +1074,8 @@
 		  }
 		],
 		"title": "Memory",
-		"type": "stat"
+		"transformations": [],
+		"type": "gauge"
 	  },
 	  {
 		"datasource": {
@@ -1279,12 +1087,9 @@
 			"color": {
 			  "mode": "thresholds"
 			},
-			"decimals": 0,
 			"mappings": [],
-			"max": 100,
-			"min": 0,
 			"thresholds": {
-			  "mode": "absolute",
+			  "mode": "percentage",
 			  "steps": [
 				{
 				  "color": "green",
@@ -1292,11 +1097,11 @@
 				},
 				{
 				  "color": "#EAB839",
-				  "value": 40
+				  "value": 80
 				},
 				{
 				  "color": "red",
-				  "value": 80
+				  "value": 90
 				}
 			  ]
 			},
@@ -1309,13 +1114,12 @@
 		  "h": 4,
 		  "w": 2,
 		  "x": 2,
-		  "y": 5
+		  "y": 6
 		},
-		"id": 5,
+		"id": 153,
 		"options": {
-		  "colorMode": "value",
-		  "graphMode": "area",
-		  "justifyMode": "auto",
+		  "minVizHeight": 75,
+		  "minVizWidth": 75,
 		  "orientation": "auto",
 		  "reduceOptions": {
 			"calcs": [
@@ -1324,9 +1128,9 @@
 			"fields": "",
 			"values": false
 		  },
-		  "showPercentChange": false,
-		  "textMode": "auto",
-		  "wideLayout": true
+		  "showThresholdLabels": false,
+		  "showThresholdMarkers": true,
+		  "sizing": "auto"
 		},
 		"pluginVersion": "10.3.1",
 		"targets": [
@@ -1349,109 +1153,7 @@
 				"type": "fill"
 			  }
 			],
-			"measurement": "mem",
-			"orderByTime": "ASC",
-			"policy": "default",
-			"query": "SELECT (max(\"swap_free\") / max(\"swap_total\")) FROM \"mem\" WHERE (\"node_id\"::tag =~ /^$node_id$/) AND $timeFilter GROUP BY time($__interval) fill(null)",
-			"rawQuery": true,
-			"refId": "A",
-			"resultFormat": "time_series",
-			"select": [
-			  [
-				{
-				  "params": [
-					"swap_free"
-				  ],
-				  "type": "field"
-				},
-				{
-				  "params": [],
-				  "type": "mean"
-				}
-			  ]
-			],
-			"tags": [
-			  {
-				"key": "node_id::tag",
-				"operator": "=~",
-				"value": "/^$node_id$/"
-			  }
-			]
-		  }
-		],
-		"title": "Swap",
-		"type": "stat"
-	  },
-	  {
-		"datasource": {
-		  "type": "influxdb",
-		  "uid": "lmio-influxdb-metrics"
-		},
-		"fieldConfig": {
-		  "defaults": {
-			"color": {
-			  "mode": "thresholds"
-			},
-			"mappings": [],
-			"thresholds": {
-			  "mode": "absolute",
-			  "steps": [
-				{
-				  "color": "text",
-				  "value": null
-				}
-			  ]
-			},
-			"unit": "none",
-			"unitScale": true
-		  },
-		  "overrides": []
-		},
-		"gridPos": {
-		  "h": 2,
-		  "w": 2,
-		  "x": 19,
-		  "y": 5
-		},
-		"id": 168,
-		"options": {
-		  "colorMode": "value",
-		  "graphMode": "none",
-		  "justifyMode": "auto",
-		  "orientation": "auto",
-		  "reduceOptions": {
-			"calcs": [
-			  "lastNotNull"
-			],
-			"fields": "",
-			"values": false
-		  },
-		  "showPercentChange": false,
-		  "textMode": "auto",
-		  "wideLayout": true
-		},
-		"pluginVersion": "10.3.1",
-		"targets": [
-		  {
-			"datasource": {
-			  "type": "influxdb",
-			  "uid": "lmio-influxdb-metrics"
-			},
-			"groupBy": [
-			  {
-				"params": [
-				  "$__interval"
-				],
-				"type": "time"
-			  },
-			  {
-				"params": [
-				  "null"
-				],
-				"type": "fill"
-			  }
-			],
-			"measurement": "processes",
+			"measurement": "swap",
 			"orderByTime": "ASC",
 			"policy": "default",
 			"refId": "A",
@@ -1460,7 +1162,7 @@
 			  [
 				{
 				  "params": [
-					"zombies"
+					"used_percent"
 				  ],
 				  "type": "field"
 				},
@@ -1479,8 +1181,9 @@
 			]
 		  }
 		],
-		"title": "Zombie count",
-		"type": "stat"
+		"title": "Swap",
+		"transformations": [],
+		"type": "gauge"
 	  },
 	  {
 		"datasource": {
@@ -1498,7 +1201,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "text",
+				  "color": "green",
 				  "value": null
 				}
 			  ]
@@ -1511,12 +1214,12 @@
 		"gridPos": {
 		  "h": 4,
 		  "w": 2,
-		  "x": 21,
-		  "y": 5
+		  "x": 4,
+		  "y": 6
 		},
 		"id": 10,
 		"options": {
-		  "colorMode": "value",
+		  "colorMode": "none",
 		  "graphMode": "area",
 		  "justifyMode": "auto",
 		  "orientation": "auto",
@@ -1592,6 +1295,117 @@
 		],
 		"title": "Network in",
 		"type": "stat"
+	  },
+	  {
+		"datasource": {
+		  "type": "influxdb",
+		  "uid": "lmio-influxdb-metrics"
+		},
+		"fieldConfig": {
+		  "defaults": {
+			"color": {
+			  "mode": "thresholds"
+			},
+			"mappings": [],
+			"min": 0,
+			"thresholds": {
+			  "mode": "absolute",
+			  "steps": [
+				{
+				  "color": "green",
+				  "value": null
+				}
+			  ]
+			},
+			"unit": "Bps",
+			"unitScale": true
+		  },
+		  "overrides": []
+		},
+		"gridPos": {
+		  "h": 4,
+		  "w": 2,
+		  "x": 6,
+		  "y": 6
+		},
+		"id": 9,
+		"options": {
+		  "colorMode": "none",
+		  "graphMode": "area",
+		  "justifyMode": "auto",
+		  "orientation": "auto",
+		  "reduceOptions": {
+			"calcs": [
+			  "lastNotNull"
+			],
+			"fields": "",
+			"values": false
+		  },
+		  "showPercentChange": false,
+		  "textMode": "auto",
+		  "wideLayout": true
+		},
+		"pluginVersion": "10.3.1",
+		"targets": [
+		  {
+			"datasource": {
+			  "type": "influxdb",
+			  "uid": "lmio-influxdb-metrics"
+			},
+			"groupBy": [
+			  {
+				"params": [
+				  "1m"
+				],
+				"type": "time"
+			  },
+			  {
+				"params": [
+				  "null"
+				],
+				"type": "fill"
+			  }
+			],
+			"measurement": "net",
+			"orderByTime": "ASC",
+			"policy": "default",
+			"refId": "A",
+			"resultFormat": "time_series",
+			"select": [
+			  [
+				{
+				  "params": [
+					"bytes_sent"
+				  ],
+				  "type": "field"
+				},
+				{
+				  "params": [],
+				  "type": "mean"
+				},
+				{
+				  "params": [],
+				  "type": "non_negative_difference"
+				},
+				{
+				  "params": [
+					" / 60"
+				  ],
+				  "type": "math"
+				}
+			  ]
+			],
+			"tags": [
+			  {
+				"key": "node_id::tag",
+				"operator": "=~",
+				"value": "/^$node_id$/"
+			  }
+			]
+		  }
+		],
+		"title": "Network out",
+		"type": "stat"
 	  }
 	],
 	"refresh": "1m",
@@ -1630,13 +1444,12 @@
 	  ]
 	},
 	"time": {
-	  "from": "now-1h",
+	  "from": "now-6h",
 	  "to": "now"
 	},
 	"timepicker": {},
 	"timezone": "",
 	"title": "System-level Overview",
-	"uid": "d1343865-3928-4576-a5f1-f9b37bb20558",
-	"version": 1,
+	"version": 10,
 	"weekStart": ""
   }
