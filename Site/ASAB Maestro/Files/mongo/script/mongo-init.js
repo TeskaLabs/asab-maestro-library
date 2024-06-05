@@ -71,6 +71,7 @@ function main() {
 			print("This is a primary, reconfiguring a replicaset.");
 
 			try {
+				disableTelemetry()
 				reconfigureReplicaSet();
 				print("Successfully reconfigured replicaset.");
 				print("SUCCESS!");
