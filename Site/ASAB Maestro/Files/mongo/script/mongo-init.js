@@ -71,7 +71,7 @@ function main() {
 			print("This is a primary, reconfiguring a replicaset.");
 
 			try {
-				disableTelemetry()
+				db.disableTelemetry()  // Disable collectoíon of usage data by MongoDB
 				reconfigureReplicaSet();
 				print("Successfully reconfigured replicaset.");
 				print("SUCCESS!");
