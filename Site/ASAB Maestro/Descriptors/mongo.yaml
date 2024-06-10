@@ -40,5 +40,13 @@ files:
         port: 27017
       replication:
         replSetName: rs0
+
+  # Disable telemetry collection by MongoDB
+  - "conf/mongosh.conf": |
+      enableTelemetry: false
+
+  - "conf/mongosync.conf": |
+      disableTelemetry: true
+
   - "script/mongo-init.js"
   # - "script/replica-set.json" will be added by ASAB Remote Control / Mongo Tech
