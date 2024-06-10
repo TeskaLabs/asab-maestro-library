@@ -49,7 +49,7 @@ function upsertSeaCatAuthCollections(data) {
 		let collectionName = line[0]
 		const collection = authDb.getCollection(collectionName)
 		line[1].forEach(document => {
-			print(document["_id"])
+			print(`Upserting ${document["_id"]} to collection ${collectionName}`)
 			collection.updateOne({_id: document["_id"]}, { $set: document }, {upsert: true})
 		});
 	});
