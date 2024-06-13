@@ -31,4 +31,4 @@ descriptor:
 
 files:
   - confro/
-  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology.
+  - confro/oracle.txt: 0  # The oracle.txt is set by the Zookeeper technology, it is needed for clusters with two nodes to resolve split-brain problem
