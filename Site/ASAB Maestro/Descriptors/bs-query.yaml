@@ -22,34 +22,34 @@ asab:
       path: /data/bsquery
 
 
-seacat-auth:
-  content: # BSQUERY_PASSWORD_HASHED created by bsquery tech
-    - "mc.json": |
-        [{
-          "_id": "5f362cf58dca6ae0ad997bfc",
-          "username": "bs-query",
-          "__password": "{{BSQUERY_PASSWORD_HASHED}}"
-        }]
-    - "r.json": |
-        [{
-          "_id": "*/impersonator",
-          "resources": [
-            "authz:impersonate",
-            "seacat:access"
-          ]
-        }]
-    - "ct.json": |
-        [{
-          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc system",
-          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
-          "t": "system"
-        }]
-    - "cr.json": |
-        [{
-          "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc */impersonator",
-          "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
-          "r": "*/impersonator"
-        }]
+files:
+  # BSQUERY_PASSWORD_HASHED is created by bsquery tech
+  - service://seacat-auth/script/to_upload/grafana/mc.json: |
+      [{
+        "_id": "5f362cf58dca6ae0ad997bfc",
+        "username": "bs-query",
+        "__password": "{{BSQUERY_PASSWORD_HASHED}}"
+      }]
+  - service://seacat-auth/script/to_upload/grafana/r.json: |
+      [{
+        "_id": "*/impersonator",
+        "resources": [
+          "authz:impersonate",
+          "seacat:access"
+        ]
+      }]
+  - service://seacat-auth/script/to_upload/grafana/ct.json: |
+      [{
+        "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc system",
+        "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+        "t": "system"
+      }]
+  - service://seacat-auth/script/to_upload/grafana/cr.json: |
+      [{
+        "_id": "m2m:machine:5f362cf58dca6ae0ad997bfc */impersonator",
+        "c": "m2m:machine:5f362cf58dca6ae0ad997bfc",
+        "r": "*/impersonator"
+      }]
 
 
 nginx:
