@@ -40,6 +40,7 @@ versions:
   webapp lmio_alert_management_webui: 
   webapp lmio_parser_builder_webui: 
   webapp seacat_admin_webui: 
+  webapp seacat_account_webui: 
   webapp lmio_logsources_webui: 
 
   # asab-maestro-library: v24.22
