@@ -1,0 +1,46 @@
+define:
+  type: rc/version
+  product: ASAB Maestro
+  version: v24.22
+
+versions:
+  acmesh: 3.0.7
+  asab-config: 
+  asab-governator:
+  asab-iris:
+  asab-library:
+  asab-pyppeteer:
+  asab-remote-control:
+  bs-query:
+  elasticsearch: '7.17.21'
+  grafana: '10.3.1'
+  influxdb: '2.7.1'
+  jupyter: lab-4.0.9
+  kafdrop: '4.0.0'
+  kafka: '7.5.1'
+  kibana: '7.17.21'
+  mongo: '7.0.1'
+  nginx: '1.25.2'
+  seacat-auth:
+  telegraf: '1.28.2'
+  zookeeper: '3.9'
+  zoonavigator: '1.1.2'
+
+  webapp seacat-auth:
+
+  webapp lmio_webui: 
+  webapp asab_config_webui: 
+  webapp asab_library_webui: 
+  webapp asab_maestro_webui: 
+  webapp asab_tools_webui: 
+  webapp bs_query_webui: 
+  webapp lmio_analysis_webui: 
+  webapp lmio_lookup_webui: 
+  webapp lmio_observability_webui: 
+  webapp lmio_alert_management_webui: 
+  webapp lmio_parser_builder_webui: 
+  webapp seacat_admin_webui: 
+  webapp lmio_logsources_webui: 
+
+  # asab-maestro-library: v24.22
+  # The feature of adding library version to version file will come with next ASAB Remote Control version
