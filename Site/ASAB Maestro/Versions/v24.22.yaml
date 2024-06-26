@@ -5,7 +5,7 @@ define:
 
 versions:
   acmesh: 3.0.7
-  asab-config: 
+  asab-config: v24.18
   asab-governator:
   asab-iris:
   asab-library:
