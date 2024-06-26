@@ -7,9 +7,9 @@ versions:
   acmesh: "3.0.7"
   asab-config: v24.18
   asab-governator: v24.18
-  asab-iris:
-  asab-library:
   asab-pyppeteer: v24.18
+  asab-iris: v24.17
+  asab-library: v24.16
   asab-remote-control: v24.18
   bs-query: v24.18
   elasticsearch: '7.17.21'
@@ -28,20 +28,20 @@ versions:
 
   webapp seacat-auth: v23.29
 
-  webapp lmio_webui: 
-  webapp asab_config_webui: 
-  webapp asab_library_webui: 
-  webapp asab_maestro_webui: 
-  webapp asab_tools_webui: 
-  webapp bs_query_webui: 
-  webapp lmio_analysis_webui: 
-  webapp lmio_lookup_webui: 
-  webapp lmio_observability_webui: 
-  webapp lmio_alert_management_webui: 
-  webapp lmio_parser_builder_webui: 
-  webapp seacat_admin_webui: 
-  webapp seacat_account_webui: 
-  webapp lmio_logsources_webui: 
+  webapp lmio_webui: v24.08
+  webapp asab_config_webui: v24.08
+  webapp asab_library_webui: v24.08
+  webapp asab_maestro_webui: v24.08
+  webapp asab_tools_webui: v24.08
+  webapp bs_query_webui: v24.08
+  webapp lmio_analysis_webui: v24.08
+  webapp lmio_lookup_webui: v24.08
+  webapp lmio_observability_webui: v24.08
+  webapp lmio_alert_management_webui: v24.08
+  webapp lmio_parser_builder_webui: v24.08
+  webapp seacat_admin_webui: v24.08
+  webapp seacat_account_webui: v24.08
+  webapp lmio_logsources_webui: v24.08
 
   # asab-maestro-library: v24.22
   # The feature of adding library version to version file will come with next ASAB Remote Control version
