@@ -4,7 +4,7 @@ define:
   version: v24.22
 
 versions:
-  acmesh: 3.0.7
+  acmesh: "3.0.7"
   asab-config: v24.18
   asab-governator:
   asab-iris:
