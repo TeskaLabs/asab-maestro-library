@@ -7,8 +7,8 @@ versions:
   acmesh: "3.0.7"
   asab-config: v24.18
   asab-governator: v24.18
-  asab-iris:
-  asab-library:
+  asab-iris: v24.17
+  asab-library: v24.16
   asab-pyppeteer:
   asab-remote-control: v24.18
   bs-query:
