@@ -21,12 +21,12 @@ versions:
   kibana: '7.17.21'
   mongo: '7.0.1'
   nginx: '1.25.2'
-  seacat-auth:
+  seacat-auth: v24.17.1
   telegraf: '1.28.2'
   zookeeper: '3.9'
   zoonavigator: '1.1.2'
 
-  webapp seacat-auth:
+  webapp seacat-auth: v23.29
 
   webapp lmio_webui: 
   webapp asab_config_webui: 
