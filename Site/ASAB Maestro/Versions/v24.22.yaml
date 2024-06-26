@@ -10,7 +10,7 @@ versions:
   asab-iris:
   asab-library:
   asab-pyppeteer:
-  asab-remote-control:
+  asab-remote-control: v24.18
   bs-query:
   elasticsearch: '7.17.21'
   grafana: '10.3.1'
