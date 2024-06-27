@@ -84,6 +84,7 @@ nginx:
 
 
 files:
+  # OAuth client record of Elasticsearch is managed by mongo sherpa. This file declaration tells mongo sherpa to upload this client to auth database.
   - service://seacat-auth/script/to_upload/elasticsearch/cl.json: |
       [{
         "_id": "elasticsearch",

@@ -61,9 +61,9 @@ asab-config:
           }
         if_not_exists: true
 
-seacat-auth:
-  content:
-  - "cl.json": |
+files:
+  # Files managed by mongo sherpa of seacat-auth
+  - service://seacat-auth/script/to_upload/kafdrop/cl.json: |
       [{
         "_id": "kafdrop",
         "application_type": "web",
@@ -84,7 +84,7 @@ seacat-auth:
         "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
         "client_uri": "{{PUBLIC_URL}}/kafdrop"
       }]
-  - "rs.json": |
+  - service://seacat-auth/script/to_upload/kafdrop/rs.json: |
       [{
         "_id": "tools:kafdrop:access",
         "description": "Access Kafdrop."

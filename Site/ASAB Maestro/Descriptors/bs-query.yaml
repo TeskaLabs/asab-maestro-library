@@ -23,7 +23,8 @@ asab:
 
 
 files:
-  # BSQUERY_PASSWORD_HASHED is created by bsquery tech
+  # BSQUERY_PASSWORD_HASHED parameter is created by bsquery tech
+  # Each file is targeted to /opt/site/seacat-auth-<instance-no>/script/to_upload/grafana/... Files in this folder are uploaded to mongo by mongo sherpa of seacat auth
   - service://seacat-auth/script/to_upload/grafana/mc.json: |
       [{
         "_id": "5f362cf58dca6ae0ad997bfc",
