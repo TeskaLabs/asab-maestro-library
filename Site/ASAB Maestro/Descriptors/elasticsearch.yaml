@@ -82,9 +82,10 @@ nginx:
     - proxy_buffers           8 64k
     - proxy_busy_buffers_size   64k
 
-seacat-auth:
-  content:
-  - "cl.json": |
+
+files:
+  # OAuth client record of Elasticsearch is managed by mongo sherpa. This file declaration tells mongo sherpa to upload this client to auth database.
+  - service://seacat-auth/script/to_upload/elasticsearch/cl.json: |
       [{
         "_id": "elasticsearch",
         "application_type": "api",

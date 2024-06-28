@@ -68,9 +68,8 @@ nginx:
       - proxy_buffers           8 64k
       - proxy_busy_buffers_size   64k
 
-seacat-auth:
-  content:
-  - "cl.json": |
+files:
+  - service://seacat-auth/script/to_upload/zoonavigator/cl.json: |
       [{
         "_id": "zoonavigator",
         "application_type": "web",
@@ -91,7 +90,7 @@ seacat-auth:
         "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
         "client_uri": "{{PUBLIC_URL}}/zoonavigator"
       }]
-  - "rs.json": |
+  - service://seacat-auth/script/to_upload/zoonavigator/rs.json: |
       [{
         "_id": "tools:zoonavigator:access",
         "description": "Access Zoonavigator."
