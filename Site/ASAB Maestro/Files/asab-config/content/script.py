@@ -69,12 +69,17 @@ async def main():
 						res += await upload_config(session, node_id, config_type, config_file_name, config_file_data)
 
 				if res > 0:
-					sys.exit(1)
-			sys.exit(0)
+					print("Upload of configuration failed. Retrying in 5 seconds...")
+					time.sleep(5)
+				else:
+					sys.exit(0)  # SUCCESS!
 		except aiohttp.client_exceptions.ClientConnectorError:
 			print("Cannot reach asab-config. Retrying in 5 seconds...")
 			time.sleep(5)
 		i -= 1
+
+	print("Upload of configuration failed.")
+	sys.exit(1)
 
 
 if __name__ == "__main__":
