@@ -27,14 +27,6 @@ files:
       servers=[ "{{KAFKA_BOOTSTRAP_SERVERS}}" ]
       group-denylist="^(console-consumer-|python-kafka-consumer-).*$"
       group-allowlist=""
-      [consumer.local_zk]
-      class-name="kafka_zk"
-      cluster="local"
-      servers=[ "{{ZOOKEEPER_SERVERS}}" ]
-      zookeeper-path="/local"
-      zookeeper-timeout=30
-      group-denylist="^(console-consumer-|python-kafka-consumer-).*$"
-      group-allowlist=""
       [httpserver.default]
       address=":8001"
 
