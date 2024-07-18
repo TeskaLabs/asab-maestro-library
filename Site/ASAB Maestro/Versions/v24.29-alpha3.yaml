@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v24.29-alpha2
+  version: v24.29-alpha3
 
 versions:
   acmesh: 3.0.7
@@ -10,7 +10,7 @@ versions:
   asab-iris: v24.25-alpha
   asab-library: v24.28-alpha
   asab-pyppeteer: v24.18-beta
-  asab-remote-control: v24.29-alpha2
+  asab-remote-control: v24.29-alpha4
   bs-query: v24.25-alpha
   elasticsearch: '7.17.21'
   grafana: '10.3.1'
@@ -42,5 +42,5 @@ versions:
   webapp seacat_admin_webui: v24.19-beta
   webapp lmio_logsources_webui: v24.19-beta
 
-  library asab-maestro-library: v24.29-alpha2
+  library asab-maestro-library: v24.29-alpha3
 
