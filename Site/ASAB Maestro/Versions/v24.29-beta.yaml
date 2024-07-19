@@ -6,11 +6,11 @@ define:
 versions:
   acmesh: 3.0.7
   asab-config: v24.29-beta
-  asab-governator: v24.18-beta
+  asab-governator: v24.29-beta
   asab-iris: v24.25-beta
   asab-library: v24.28-beta
   asab-pyppeteer: v24.18-beta
-  asab-remote-control: v24.29-alpha
+  asab-remote-control: v24.29-beta
   bs-query: v24.25-beta
   elasticsearch: '7.17.21'
   grafana: '10.3.1'
