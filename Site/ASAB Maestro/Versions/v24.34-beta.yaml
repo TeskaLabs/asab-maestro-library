@@ -43,4 +43,4 @@ versions:
   webapp seacat_account_webui: v24.28.1
   webapp lmio_logsources_webui: v24.28.1
 
-  library asab-maestro-library: v24.34-beta
+  library asab-maestro-library: v24.34
