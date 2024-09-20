@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v24.34-beta
+  version: v24.34
 
 versions:
   acmesh: 3.0.7
