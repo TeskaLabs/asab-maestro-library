@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: release-candidate
+  version: v24.38-beta
 
 versions:
   acmesh: 3.0.7
@@ -21,7 +21,7 @@ versions:
   kibana: '7.17.21'
   mongo: '7.0.1'
   nginx: '1.25.2'
-  seacat-auth: v24.36-alpha3 # Robin will change the version to beta
+  seacat-auth: v24.36-beta
   telegraf: '1.28.2'
   zookeeper: '3.9'
   zoonavigator: '1.1.2'
