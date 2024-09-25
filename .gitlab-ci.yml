@@ -10,8 +10,8 @@ Azure master:
   only:
     - main
   script:
-    - apk update
-    - apk add xz
+    - yum update -y
+    - yum install tar xz -y
     - tar cf /tmp/asab-maestro-library.tar --exclude='.git'  --exclude='./.git' --exclude='./.gitignore' --exclude='./.gitlab-ci.yml' --exclude='./README.md' --exclude='./CHANGELOG' --exclude='./CONTRIBUTING.md' --exclude='./LICENSE' .
     - xz -9 -e -T 0 /tmp/asab-maestro-library.tar
     - mv /tmp/asab-maestro-library.tar.xz asab-maestro-library.tar.xz
@@ -35,8 +35,8 @@ Azure branch:
     - production
     - main
   script:
-    - apk update
-    - apk add xz
+    - yum update -y
+    - yum install tar xz -y
     - echo ${CI_COMMIT_BRANCH}
 
     - tar cf /tmp/asab-maestro-library.tar --exclude='.git'  --exclude='./.git' --exclude='./.gitignore' --exclude='./.gitlab-ci.yml' --exclude='./README.md' --exclude='./CHANGELOG' --exclude='./CONTRIBUTING.md' --exclude='./LICENSE' .
@@ -68,8 +68,8 @@ Azure tag:
     - branches
 
   script:
-    - apk update
-    - apk add xz
+    - yum update -y
+    - yum install tar xz -y
     - echo ${CI_COMMIT_REF_NAME}
     - tar cf /tmp/asab-maestro-library.tar --exclude='.git'  --exclude='./.git' --exclude='./.gitignore' --exclude='./.gitlab-ci.yml' --exclude='./README.md' --exclude='./CHANGELOG' --exclude='./CONTRIBUTING.md' --exclude='./LICENSE' .
     - xz -9 -e -T 0 /tmp/asab-maestro-library.tar
