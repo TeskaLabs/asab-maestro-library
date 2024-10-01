@@ -35,8 +35,8 @@ Azure branch:
     - production
     - main
   script:
-    - apk update
-    - apk add xz
+    - yum update -y
+    - yum install tar xz -y
     - echo ${CI_COMMIT_BRANCH}
 
     - tar cf /tmp/asab-maestro-library.tar --exclude='.git'  --exclude='./.git' --exclude='./.gitignore' --exclude='./.gitlab-ci.yml' --exclude='./README.md' --exclude='./CHANGELOG' --exclude='./CONTRIBUTING.md' --exclude='./LICENSE' .
