@@ -40,6 +40,23 @@ nginx:
       - rewrite ^/influxdb/(.*) /$1 break
       - proxy_pass http://upstream-influxdb
 
+sherpas:
+  # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
+  # provide a name to your sherpa and a descriptor for its very own container.
+  init:
+    image: infuxdb:{{ VERSIONS["influxdb"] }}
+    entrypoint: ["bash", "/script/influx-init.sh"]
+    command: ["echo", "DONE"]
+    volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+    depends_on: ["{{INSTANCE_ID}}"]
+    environment:
+      MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
+
+files:
+  - "script/influx-init.sh"
+  # - "script/replica-set.json" will be added by ASAB Remote Control / Mongo Tech
+
   # Exposure of InfluxDB on the public HTTPS is disabled b/c there is no authorization introspection available
   # https:
   #    location /influxdb:
