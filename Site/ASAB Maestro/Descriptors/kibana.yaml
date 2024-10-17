@@ -63,7 +63,7 @@ asab-config:
 seacat-auth:
   config:
     "batman:elasticsearch":
-      kibana_url: "http://{{NODE_ID}}:8890/kibana"
+      kibana_url: "http://kibana:8890/kibana"
 
 
 nginx:
