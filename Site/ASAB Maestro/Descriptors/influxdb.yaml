@@ -51,7 +51,10 @@ sherpas:
     - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
     depends_on: ["{{INSTANCE_ID}}"]
     environment:
-      MONGO_HOSTNAMES: "{{MONGO_HOSTNAMES}}"
+      INFLUXDB_HOSTNAME: "{{INFLUXDB_HOSTNAME}}"
+      DOCKER_INFLUXDB_INIT_BUCKET: "{{DOCKER_INFLUXDB_INIT_BUCKET}}"
+      DOCKER_INFLUXDB_INIT_ORG: "{{DOCKER_INFLUXDB_INIT_ORG}}"
+      DOCKER_INFLUXDB_INIT_USERNAME: "{{DOCKER_INFLUXDB_INIT_USERNAME}}"
 
 files:
   - "script/influx-init.sh"
