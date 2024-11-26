@@ -14,7 +14,7 @@ function load_data() {
 		const files = fs.readdirSync(path.join("/script/to_upload", subpath));
 		files.forEach(file => {
 			const filePath = path.join("/script/to_upload", subpath, file);
-			const collectionName = file.slice(0,-5)
+			const collectionName = file.slice(0, -5)
 			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))])
 		});
 	})
@@ -45,19 +45,18 @@ function transform_collection(collectionName, data) {
 function upsertSeaCatAuthCollections(data) {
 	// seacat auth uses "auth" database
 	authDb = db.getSiblingDB("auth");
-	const existingRecordIds = Array();
+	const existingRecordIds = {};
+	const newRecordIds = {};
 	const allCollections = authDb.getCollectionNames();
-	allCollections.forEach(collectionName => {existingRecordIds.push(...authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray())});
-	print("All collections in the database:", allCollections);
-	const newRecordIds = Array();
+	allCollections.forEach(collectionName => { existingRecordIds[collectionName] = authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray() });
+	allCollections.forEach(collectionName => { newRecordIds[collectionName] = [] });
 	data.forEach(line => {
 		let collectionName = line[0]
-		print(collectionName)
 		const collection = authDb.getCollection(collectionName)
 		const newRecords = line[1];
-		newRecordIds.push(...newRecords.map(doc => {
+		newRecordIds[collectionName].push(...newRecords.map(doc => {
 			if (collectionName === "c" | collectionName === "mc") {
-			return ObjectId(doc._id);
+				return ObjectId(doc._id);
 			}
 			return doc._id;
 		}));
@@ -68,13 +67,28 @@ function upsertSeaCatAuthCollections(data) {
 		});
 	});
 
-	// Create a to_delete array by subtracting new records from existing records
-	const to_delete = existingRecordIds.filter(id => !newRecordIds.includes(id));
+	allCollections.forEach(collectionName => {
 
-	// Delete records not present in the new data
-	to_delete.forEach(id => {
-		print(`Deleting ${id} from collection ${collectionName}`);
-		collection.deleteOne({ _id: id });
+		const collection = authDb.getCollection(collectionName)
+
+		// Create a to_delete array by subtracting new records from existing records
+		let to_delete;
+		if (collectionName === "c" || collectionName === "mc") {
+			to_delete = existingRecordIds[collectionName].filter(existingId => 
+				!newRecordIds[collectionName].some(newId => existingId.equals(newId))
+			);
+		} else {
+			to_delete = existingRecordIds[collectionName].filter(id => 
+				!newRecordIds[collectionName].includes(id)
+			);
+		}
+
+		// Delete records not present in the new data
+		to_delete.forEach(id => {
+			print(`Deleting ${id} from collection ${collectionName}`);
+			collection.deleteOne({ _id: id });
+		});
+
 	});
 }
 
