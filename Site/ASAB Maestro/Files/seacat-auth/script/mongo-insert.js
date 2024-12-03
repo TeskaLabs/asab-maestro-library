@@ -45,15 +45,24 @@ function transform_collection(collectionName, data) {
 function upsertSeaCatAuthCollections(data) {
 	// seacat auth uses "auth" database
 	authDb = db.getSiblingDB("auth");
+	// save existing and new record IDs for each collection to compare and delete records not present in the new data
 	const existingRecordIds = {};
 	const newRecordIds = {};
 	const allCollections = authDb.getCollectionNames();
-	allCollections.forEach(collectionName => { existingRecordIds[collectionName] = authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray() });
+	// find all existing records managed by asab-maestro
+	allCollections.forEach(collectionName => { 
+		existingRecordIds[collectionName] = authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray() 
+	});
+	// create empty arrays for new record IDs
 	allCollections.forEach(collectionName => { newRecordIds[collectionName] = [] });
+
+	// iterate through new data and upsert records
 	data.forEach(line => {
-		let collectionName = line[0]
+		const collectionName = line[0]
 		const collection = authDb.getCollection(collectionName)
 		const newRecords = line[1];
+
+		// save new record IDs - use object id for users instead of string
 		newRecordIds[collectionName].push(...newRecords.map(doc => {
 			if (collectionName === "c" | collectionName === "mc") {
 				return ObjectId(doc._id);
@@ -61,23 +70,25 @@ function upsertSeaCatAuthCollections(data) {
 			return doc._id;
 		}));
 
+		// upsert new records
 		newRecords.forEach(record => {
 			print(`Upserting ${record["_id"]} to collection ${collectionName}`)
 			collection.updateOne({ _id: record["_id"] }, { $set: record }, { upsert: true })
 		});
 	});
 
+	// Delete records not present in the new data
 	allCollections.forEach(collectionName => {
-
 		const collection = authDb.getCollection(collectionName)
-
 		// Create a to_delete array by subtracting new records from existing records
 		let to_delete;
 		if (collectionName === "c" || collectionName === "mc") {
+			// ObjectId comparison
 			to_delete = existingRecordIds[collectionName].filter(existingId => 
 				!newRecordIds[collectionName].some(newId => existingId.equals(newId))
 			);
 		} else {
+			// String ID comparison
 			to_delete = existingRecordIds[collectionName].filter(id => 
 				!newRecordIds[collectionName].includes(id)
 			);
