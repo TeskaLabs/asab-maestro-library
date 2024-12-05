@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 13,
+  "id": 37,
   "links": [],
   "liveNow": true,
   "panels": [
@@ -539,38 +539,8 @@
             {
               "condition": "AND",
               "key": "path::tag",
-              "operator": "=",
-              "value": "/"
-            },
-            {
-              "condition": "OR",
-              "key": "path::tag",
-              "operator": "=",
-              "value": "/boot"
-            },
-            {
-              "condition": "OR",
-              "key": "path::tag",
-              "operator": "=",
-              "value": "/data/hdd"
-            },
-            {
-              "condition": "OR",
-              "key": "path::tag",
-              "operator": "=",
-              "value": "/data/ssd"
-            },
-            {
-              "condition": "OR",
-              "key": "path::tag",
-              "operator": "=",
-              "value": "/var/log"
-            },
-            {
-              "condition": "OR",
-              "key": "path::tag",
-              "operator": "=",
-              "value": "/var/lib/docker"
+              "operator": "!~",
+              "value": "/^\\.\\/.*$/"
             }
           ]
         }
