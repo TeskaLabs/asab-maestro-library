@@ -91,13 +91,14 @@ asab-config:
                             "type": "string",
                             "title": "Schema",
                             "description": "Absolute path to schema in the Library",
-                            "default": [
+                            "default": "/Schemas/ECS.yaml",
+                            "enum": [
                                 "/Schemas/ECS.yaml",
                                 "/Schemas/CEF.yaml"
                             ],
                             "$defs": {
                                 "select": {
-                                    "type": "select"
+                                    "type": "string"
                                 }
                             },
                             "examples": [
