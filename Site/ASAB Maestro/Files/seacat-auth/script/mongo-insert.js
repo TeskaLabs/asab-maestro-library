@@ -63,6 +63,10 @@ function upsertSeaCatAuthCollections(data) {
 		const newRecords = line[1];
 
 		// save new record IDs - use object id for users instead of string
+		if (!newRecordIds[collectionName]) {
+			newRecordIds[collectionName] = [];
+		}
+
 		newRecordIds[collectionName].push(...newRecords.map(doc => {
 			if (collectionName === "c" | collectionName === "mc") {
 				return ObjectId(doc._id);
