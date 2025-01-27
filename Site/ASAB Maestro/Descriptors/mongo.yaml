@@ -12,13 +12,6 @@ descriptor:
 
   command: mongod --config /etc/mongo/mongod.conf --directoryperdb
 
-  healthcheck:
-    test: ["CMD-SHELL", 'echo "db.runCommand(\"ping\").ok" | mongosh 127.0.0.1:27017/rs0 --quiet']
-    interval: 60s
-    timeout: 10s
-    retries: 5
-    start_period: 30s
-
 sherpas:
   # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
   # provide a name to your sherpa and a descriptor for its very own container.
