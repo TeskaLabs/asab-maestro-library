@@ -1,0 +1,20 @@
+define:
+  type: rc/descriptor
+  name: ASAB Discovery
+
+descriptor:
+  image: docker.teskalabs.com/asab/asab-discovery
+
+  volumes:
+    # For a persistency of the configuration
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+  # This is critical service
+  restart: always
+
+asab:
+  configname: conf/asab-discovery.conf
+  config: {}
+
+nginx:
+  api: 8998
