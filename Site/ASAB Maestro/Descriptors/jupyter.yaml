@@ -70,10 +70,13 @@ asab-config:
                   "image": "media/tools/jupyter.svg",
                   "name": "Jupyter Notebook",
                   "url": "/jupyter"
+              },
+              "Authorization": {
+                  "tenants": "system"
               }
           }
 
-        if_not_exists: true
+        if_not_exists: false
 
 
 nginx:
