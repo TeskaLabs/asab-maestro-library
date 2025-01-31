@@ -4,7 +4,7 @@ define:
   name: Burrow
 
 descriptor:
-  image: docker.teskalabs.com/burrow:v24.16
+  image: docker.teskalabs.com/burrow
 
   volumes:
     # For a persistency of the configuration
