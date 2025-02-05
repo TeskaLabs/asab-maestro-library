@@ -18,7 +18,7 @@
 	"editable": true,
 	"fiscalYearStartMonth": 0,
 	"graphTooltip": 1,
-	"id": 35,
+	"id": 42,
 	"links": [],
 	"liveNow": false,
 	"panels": [
@@ -786,7 +786,7 @@
 		  "defaults": {
 			"color": {
 			  "fixedColor": "dark-orange",
-			  "mode": "shades"
+			  "mode": "palette-classic"
 			},
 			"custom": {
 			  "axisBorderShow": false,
@@ -832,7 +832,7 @@
 				},
 				{
 				  "color": "#EAB839",
-				  "value": 40
+				  "value": 30
 				},
 				{
 				  "color": "red",
@@ -1408,8 +1408,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "text",
-				  "value": null
+				  "color": "text"
 				}
 			  ]
 			},
@@ -1647,8 +1646,7 @@
 			  "mode": "percentage",
 			  "steps": [
 				{
-				  "color": "yellow",
-				  "value": null
+				  "color": "yellow"
 				},
 				{
 				  "color": "orange",
@@ -2602,8 +2600,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "green",
-				  "value": null
+				  "color": "green"
 				},
 				{
 				  "color": "red",
@@ -2812,8 +2809,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "green",
-				  "value": null
+				  "color": "green"
 				},
 				{
 				  "color": "red",
@@ -3021,8 +3017,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "green",
-				  "value": null
+				  "color": "green"
 				},
 				{
 				  "color": "red",
@@ -3230,8 +3225,7 @@
 			  "mode": "absolute",
 			  "steps": [
 				{
-				  "color": "green",
-				  "value": null
+				  "color": "green"
 				},
 				{
 				  "color": "red",
@@ -3447,7 +3441,7 @@
 		  "refresh": 1,
 		  "regex": "/cpu[0-9]+/",
 		  "skipUrlSync": false,
-		  "sort": 1,
+		  "sort": 3,
 		  "type": "query"
 		},
 		{

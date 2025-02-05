@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 31,
+  "id": 67,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -669,7 +669,7 @@
         "x": 0,
         "y": 17
       },
-      "id": 16,
+      "id": 11,
       "interval": "60",
       "options": {
         "legend": {
@@ -726,12 +726,12 @@
             {
               "key": "group::tag",
               "operator": "=",
-              "value": "lmio_alerts"
+              "value": "lmio_watcher"
             }
           ]
         }
       ],
-      "title": "LMIO Alerts",
+      "title": "LogMan.io Watcher",
       "type": "timeseries"
     },
     {
@@ -871,142 +871,6 @@
         }
       ],
       "title": "ASAB IRIS",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {},
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 19,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 10
-              },
-              {
-                "color": "red",
-                "value": 2000000
-              }
-            ]
-          },
-          "unit": "ops",
-          "unitScale": true
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 25
-      },
-      "id": 11,
-      "interval": "60",
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "name": "InfluxDB Metrics",
-            "type": "influxdb"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "burrow_group",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "total_lag"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "group::tag",
-              "operator": "=",
-              "value": "lmio_watcher"
-            }
-          ]
-        }
-      ],
-      "title": "LogMan.io Watcher",
       "type": "timeseries"
     }
   ],
