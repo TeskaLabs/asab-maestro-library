@@ -11,6 +11,7 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{SLOW_STORAGE}}/vault:/data/vault:ro"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/internal:/var/run/internal:ro"
 
   # This is critical service
   restart: always
