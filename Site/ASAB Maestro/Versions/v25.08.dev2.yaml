@@ -1,14 +1,14 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: v25.08.dev1
+  version: v25.08.dev2
 
 versions:
   acmesh: 3.0.7
   asab-config: v24.29
   asab-governator: v25.08-alpha
   asab-iris: v25.07-beta2
-  asab-library: v24.33.09
+  asab-library: v25.02-dev.108.02
   asab-pyppeteer: v24.36
   asab-remote-control: v25.08-alpha
   bs-query: v24.36
@@ -44,4 +44,4 @@ versions:
   webapp seacat_account_webui: v24.47-alpha45
   webapp lmio_logsources_webui: v24.47-alpha45
 
-  library asab-maestro-library: v25.08.dev1
+  library asab-maestro-library: v25.08.dev2
