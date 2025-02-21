@@ -54,11 +54,8 @@ asab:
 
     seacatauth:credentials:m2m:machine: {}
 
-    seacatauth:communication:email:smtp:
-      # By default, SMTP configuration is mocked - e-mails are printed into log of seacat-auth
-      # Configuration of SMTP server should be done in UI > Maintenance > Configuration > General
-      # TODO ^^ this is not possible now
-      host: <mocked>
+    seacatauth:communication:email:iris:
+      url: http://asab-iris:8896
 
 asab-config:
   Tenants:
