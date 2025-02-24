@@ -20,6 +20,8 @@ asab:
     storage:
     # TODO: remove after bs-query has the right folder /data 
       path: /data/bsquery
+    tenants:
+      tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
 
 
 files:
