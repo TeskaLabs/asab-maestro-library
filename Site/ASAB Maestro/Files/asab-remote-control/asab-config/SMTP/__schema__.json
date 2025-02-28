@@ -16,6 +16,11 @@
 					"description": "Specify the domain name or IP address of your SMTP server.",
 					"examples": "smtp.example.com"
 				},
+				"port": {
+					"type": "integer",
+					"title": "Port",
+					"description": "Specify port optionally."
+				},
 				"user": {
 					"type": "string",
 					"title": "User",
@@ -66,9 +71,7 @@
 				}
 			},
 			"required": [
-				"host",
-				"user",
-				"password"
+				"host"
 			]
 		}
 	},
