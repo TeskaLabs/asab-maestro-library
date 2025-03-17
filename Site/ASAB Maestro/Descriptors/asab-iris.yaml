@@ -37,11 +37,13 @@ asab-config:
               "properties": {
                 "token": {
                   "type": "string",
-                  "title": "Token"
+                  "title": "Token",
+                  "minLength": 1
                   },
                 "channel": {
                   "type": "string",
-                  "title": "Channel"
+                  "title": "Channel",
+                  "minLength": 1
                   }
               },
               "required": ["token", "channel"]
@@ -54,7 +56,8 @@ asab-config:
                 "webhook_url": {
                   "title": "Webhook URL",
                   "type": "string",
-                  "format": "uri"
+                  "format": "uri",
+                  "minLength": 1
                   }
               },
               "required": ["webhook_url"]

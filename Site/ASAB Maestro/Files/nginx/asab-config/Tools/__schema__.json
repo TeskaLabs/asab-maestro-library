@@ -40,7 +40,8 @@
 					"default": "",
 					"examples": [
 						"MyTool"
-					]
+					],
+					"minLength": 1
 				},
 				"url": {
 					"type": "string",
@@ -49,7 +50,8 @@
 					"default": "",
 					"examples": [
 						"https://logman.io/my-tool"
-					]
+					],
+					"minLength": 1
 				},
 				"image": {
 					"type": "string",
@@ -63,7 +65,8 @@
 					},
 					"examples": [
 						"tools/my-tool.svg"
-					]
+					],
+					"minLength": 1
 				}
 			}
 		},

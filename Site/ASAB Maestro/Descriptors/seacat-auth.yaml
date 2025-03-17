@@ -112,7 +112,8 @@ asab-config:
                   "default": "",
                   "examples": [
                     "Europe/Prague"
-                  ]
+                  ],
+                  "minLength": 1
                 }
               }
             }
