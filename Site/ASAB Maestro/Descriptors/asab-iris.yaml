@@ -22,7 +22,7 @@ asab:
     email:
       markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
     variables:
-      public_url: https://app.logman.io
+      public_url: "{{PUBLIC_URL}}"
 
 asab-config:
   asab-iris:
