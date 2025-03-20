@@ -6,9 +6,6 @@ define:
 descriptor:
   image: telegraf
 
-  # The gid=0 is to enable communication with a Docker/Podman for metrics extraction
-  user: "10002:0"
-
   environment:
     HOST_MOUNT_PREFIX: /hostfs
     HOST_PROC: /hostfs/proc
@@ -16,6 +13,10 @@ descriptor:
     HOST_ETC: /hostfs/etc
     HOST_VAR: /hostfs/var
     HOST_RUN: /hostfs/run
+
+  pid: "host"
+  cap_add:
+    - SYS_PTRACE
 
   volumes:
     # For a persistency of the configuration
@@ -106,7 +107,7 @@ files:
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/disk/README.md
       [[inputs.disk]]
-        ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "nsfs", "fuse.sshfs", "snapfuse"]
+        ignore_fs = ["tmpfs", "devtmpfs", "devfs", "iso9660", "overlay", "aufs", "squashfs", "nsfs", "fuse.sshfs", "fuse.snapfuse", "snapfuse"]
         [inputs.disk.tags]
           node_id = "{{NODE_ID}}"
 

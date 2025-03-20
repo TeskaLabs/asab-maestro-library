@@ -20,30 +20,11 @@ files:
       server.publicBaseUrl: {{PUBLIC_URL}}/kibana
       server.basePath: "/kibana"
       server.rewriteBasePath: true
-
 # server.publicBaseUrl: "{{PUBLIC_URL}}/kibana" -> kibana is directly dependent on nginx tech - on nginx present in the model
 # nginx locations are dependent on seacat auth presence
 
-asab-config:
-  # add files in this structure:
-  #   <name of the schema>:
-  #      _schema
-  #      <name of the config>:
-  #        file: ....
-  #        if_exists: boolean
-  Tools:
-    # _schema: will be added by nginx descriptor
-    Kibana:
-      if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
-      file: {"Tool": {"image": "media/tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
-        
-
-seacat-auth:
-  config:
-    "batman:elasticsearch":
-      kibana_url: "http://{{NODE_ID}}:8890/kibana"
-  content:
-  - "cl.json": |
+  # oauth client is managed by mongo sherpa of seacat-auth
+  - service://seacat-auth/script/to_upload/kibana/cl.json: |
       [{
         "_id": "kibana",
         "application_type": "web",
@@ -64,6 +45,26 @@ seacat-auth:
         "cookie_entry_uri": "{{PUBLIC_URL}}/api/cookie-entry",
         "client_uri": "{{PUBLIC_URL}}/kibana"
       }]
+
+asab-config:
+  # add files in this structure:
+  #   <name of the schema>:
+  #      _schema
+  #      <name of the config>:
+  #        file: ....
+  #        if_exists: boolean
+  Tools:
+    # _schema: will be added by nginx descriptor
+    Kibana:
+      if_not_exists: False  # Write config only if it does not exist, yet. (true/false, false is default)
+      file: {"Tool": {"image": "media/tools/kibana.svg", "name": "Kibana", "url": "{{PUBLIC_URL}}/kibana"}}
+        
+
+seacat-auth:
+  config:
+    "batman:elasticsearch":
+      kibana_url: "http://kibana:8890/kibana"
+
 
 nginx:
   proxy_caches:

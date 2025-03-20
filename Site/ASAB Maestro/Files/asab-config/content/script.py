@@ -53,7 +53,7 @@ async def main():
 		print("Error decoding JSON data from /content/content.json file")
 		return
 	
-	i = 5
+	i = 10
 	while i > 0:
 		try:
 			# Initialize aiohttp session and send requests
@@ -69,12 +69,17 @@ async def main():
 						res += await upload_config(session, node_id, config_type, config_file_name, config_file_data)
 
 				if res > 0:
-					sys.exit(1)
-			sys.exit(0)
+					print("Upload of configuration failed. Retrying in 10 seconds...")
+					time.sleep(10)
+				else:
+					sys.exit(0)  # SUCCESS!
 		except aiohttp.client_exceptions.ClientConnectorError:
-			print("Cannot reach asab-config. Retrying in 5 seconds...")
-			time.sleep(5)
+			print("Cannot reach asab-config. Retrying in 10 seconds...")
+			time.sleep(10)
 		i -= 1
+
+	print("Upload of configuration failed.")
+	sys.exit(1)
 
 
 if __name__ == "__main__":

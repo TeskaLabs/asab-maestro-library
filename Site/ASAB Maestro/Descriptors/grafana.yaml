@@ -35,9 +35,11 @@ descriptor:
     GF_AUTH_GENERIC_OAUTH_API_URL: "{{SEACAT_AUTH_PUBLIC}}/openidconnect/userinfo"
     GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: true
     GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(resources."*"[*], 'authz:superuser') && 'Admin' || contains(resources."*"[*], 'tools:grafana:edit') && 'Editor' || contains(resources."*"[*], 'tools:grafana:access') && 'Viewer'
-    GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username
-    GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: preferred_username
+    GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: preferred_username || username || sub
+    GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: preferred_username || username || sub
+    GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: email || sub
     GF_AUTH_SIGNOUT_REDIRECT_URL: "{{PUBLIC_URL}}"
+    GF_LOG_LEVEL: warn
 
 files:
   - "provisioning/"
@@ -80,6 +82,36 @@ files:
 
         secureJsonData:
           httpHeaderValue1: "Token {{INFLUXDB_TOKEN}}"
+  # Files targeted to mongo sherpa dedicated folder. These auth items (client, resources) are managed by maestro.
+  - service://seacat-auth/script/to_upload/grafana/cl.json: |
+      [{
+        "_id": "grafana",
+        "application_type": "web",
+        "authorize_anonymous_users": false,
+        "client_name": "Grafana",
+        "code_challenge_method": "none",
+        "grant_types": [
+          "authorization_code"
+        ],
+        "redirect_uri_validation_method": "prefix_match",
+        "redirect_uris": [
+          "{{PUBLIC_URL}}/grafana"
+        ],
+        "response_types": [
+          "code"
+        ],
+        "token_endpoint_auth_method": "none",
+        "client_uri": "{{PUBLIC_URL}}/grafana"
+      }]
+  - service://seacat-auth/script/to_upload/grafana/rs.json: |
+      [{
+        "_id": "tools:grafana:access",
+        "description": "Access Grafana."
+      },
+      {
+        "_id": "tools:grafana:edit",
+        "description": "Edit Grafana content."
+      }]
 
 nginx:
   upstreams:
@@ -105,36 +137,3 @@ asab-config:
               }
           }
         if_not_exists: true
-
-seacat-auth:
-  content:
-  - "cl.json": |
-      [{
-        "_id": "grafana",
-        "application_type": "web",
-        "authorize_anonymous_users": false,
-        "client_name": "Grafana",
-        "code_challenge_method": "none",
-        "grant_types": [
-          "authorization_code"
-        ],
-        "redirect_uri_validation_method": "prefix_match",
-        "redirect_uris": [
-          "{{PUBLIC_URL}}/grafana"
-        ],
-        "response_types": [
-          "code"
-        ],
-        "token_endpoint_auth_method": "none",
-        "client_uri": "{{PUBLIC_URL}}/grafana"
-      }]
-  - "rs.json": |
-      [{
-        "_id": "tools:grafana:access",
-        "description": "Access Grafana."
-      },
-      {
-        "_id": "tools:grafana:edit",
-        "description": "Edit Grafana content."
-      }]
-
