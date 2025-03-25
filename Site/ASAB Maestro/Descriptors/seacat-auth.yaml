@@ -55,7 +55,7 @@ asab:
     seacatauth:credentials:m2m:machine: {}
 
     seacatauth:communication:email:iris:
-      url: http://asab-iris.service_id.asab
+      url: http://asab-iris:8896
 
 asab-config:
   Tenants:
@@ -109,8 +109,7 @@ asab-config:
                   "default": "",
                   "examples": [
                     "Europe/Prague"
-                  ],
-                  "minLength": 1
+                  ]
                 }
               }
             }
@@ -127,12 +126,8 @@ nginx:
 
   upstreams:
     # Public Auth API at tcp/3081
-    upstream-seacat-auth-public:
-      - port 3081
-      - ip_hash
-    upstream-seacat-auth-private:
-      - port 8900
-      - ip_hash
+    upstream-seacat-auth-public: 3081
+    upstream-seacat-auth-private: 8900
 
   proxy_caches:
     oauth2_introspect: keys_zone=oauth2_introspect:1m max_size=2m
