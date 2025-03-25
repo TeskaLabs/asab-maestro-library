@@ -55,7 +55,7 @@ asab:
     seacatauth:credentials:m2m:machine: {}
 
     seacatauth:communication:email:iris:
-      url: http://asab-iris:8896
+      url: http://asab-iris.service_id.asab
 
 asab-config:
   Tenants:
