@@ -17,8 +17,5 @@ asab:
       ignore_certificate_errors: 1
       url_white_list: "{{PUBLIC_URL}}"
 
-    seacat_auth:
-      url: http://seacat-auth:8900  # TODO: implement service discovery in the pyppeteer
-
 nginx:
   api: 8895
