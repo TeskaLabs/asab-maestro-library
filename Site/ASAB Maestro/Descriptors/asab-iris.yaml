@@ -21,6 +21,8 @@ asab:
     # [variables] must be filled from general confguration (user)
     email:
       markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
+    variables:
+      public_url: "{{PUBLIC_URL}}"
 
 asab-config:
   asab-iris:
