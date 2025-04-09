@@ -1,7 +1,7 @@
 define:
   type: rc/version
   product: ASAB Maestro
-  version: release-candidate
+  version: v25.15-beta
 
 versions:
   acmesh: 3.0.7
@@ -44,6 +44,6 @@ versions:
   webapp seacat_account_webui: v25.09-beta2
   webapp lmio_logsources_webui: v25.09-beta2
 
-  library asab-maestro-library: main
+  library asab-maestro-library: v25.15-beta
 
   asab-discovery: v25.05
