@@ -4,7 +4,7 @@ define:
   url: https://www.elastic.co/kibana
 
 descriptor:
-  image: docker.elastic.co/kibana/kibana
+  image: pcr.teskalabs.com/kibana/kibana
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/config:/usr/share/kibana/config"
 
