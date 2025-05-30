@@ -31,7 +31,7 @@ files:
       [{
         "_id": "5f362cf58dca6ae0ad997bfc",
         "username": "bs-query",
-        "__password": "{{BSQUERY_PASSWORD_HASHED}}"
+        "__password": "{{BSQUERY_PASSWORD|argon2_hash}}"
       }]
   - service://seacat-auth/script/to_upload/grafana/r.json: |
       [{
