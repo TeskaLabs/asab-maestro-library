@@ -38,6 +38,7 @@ descriptor:
     xpack.security.transport.ssl.certificate_authorities: certs/ca.pem
     xpack.security.transport.ssl.certificate: certs/certificate.pem
     xpack.security.transport.ssl.key: certs/key.pem
+    action.auto_create_index: .monitoring*
 
 
 nginx:
