@@ -36,41 +36,94 @@ asab-config:
               "title": "Slack",
               "description": "Configure connection to Slack channel.",
               "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "token": {
                   "type": "string",
                   "title": "Token",
                   "minLength": 1
-                  },
+                },
                 "channel": {
                   "type": "string",
                   "title": "Channel",
                   "minLength": 1
-                  }
+                }
               },
-              "required": ["token", "channel"]
+              "if": { "minProperties": 1 },
+              "then": { "required": ["token", "channel"] }
             },
             "msteams": {
               "title": "Microsoft Teams",
               "description": "Configure connection to MS Teams.",
               "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "webhook_url": {
                   "title": "Webhook URL",
                   "type": "string",
                   "format": "uri",
                   "minLength": 1
-                  }
+                }
               },
-              "required": ["webhook_url"]
+              "if": { "minProperties": 1 },
+              "then": { "required": ["webhook_url"] }
+            },
+            "m365_email": {
+              "title": "Microsoft 365 Email",
+              "description": "Configure Graph API for sending mail via M365.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "api_url": {
+                  "type": "string",
+                  "title": "API URL",
+                  "format": "uri",
+                  "minLength": 1
+                },
+                "tenant_id": {
+                  "type": "string",
+                  "title": "Tenant ID",
+                  "minLength": 1
+                },
+                "client_id": {
+                  "type": "string",
+                  "title": "Client ID",
+                  "minLength": 1
+                },
+                "client_secret": {
+                  "type": "string",
+                  "title": "Client Secret",
+                  "minLength": 1
+                },
+                "user_email": {
+                  "type": "string",
+                  "title": "User Email",
+                  "format": "email",
+                  "minLength": 1
+                }
+              },
+              "if": { "minProperties": 1 },
+              "then": {
+                "required": [
+                  "api_url",
+                  "tenant_id",
+                  "client_id",
+                  "client_secret",
+                  "user_email"
+                ]
+              }
             }
-          }
+          },
+          "additionalProperties": false,
+          "anyOf": [
+            { "required": ["slack"] },
+            { "required": ["msteams"] },
+            { "required": ["m365_email"] }
+          ]
         }
-    config: 
-      file:
-        {}
+    config:
+      file: {}
       if_not_exists: true
-
 
 nginx:
   api: 8896
