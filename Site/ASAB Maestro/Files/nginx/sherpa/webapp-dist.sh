@@ -18,7 +18,7 @@ install_mfe() {  # args: URL: $1, Name: $2
 	rm -rf "$2.new" "$CACHE_DIR/$2.etag-new"
 	
 	# Download the web application from the provided URL
-	curl --silent --show-error \
+	curl -k --silent --show-error \
 		--etag-save "$CACHE_DIR/$2.etag-new" \
 		--etag-compare "$CACHE_DIR/$2.etag" \
 		--max-filesize ${MAXSIZE} \
@@ -60,7 +60,7 @@ install_spa() {  # args: URL: $1, Name: $2
 	rm -rf "$2.new" "$CACHE_DIR/$2.etag-new"
 	
 	# Download the web application from the provided URL
-	curl --silent --show-error \
+	curl -k --silent --show-error \
 		--etag-save "$CACHE_DIR/$2.etag-new" \
 		--etag-compare "$CACHE_DIR/$2.etag" \
 		--max-filesize ${MAXSIZE} \
