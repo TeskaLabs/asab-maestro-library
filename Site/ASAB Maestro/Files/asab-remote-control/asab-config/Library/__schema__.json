@@ -38,6 +38,25 @@
 					]
 				}
 			}
+		},
+		"library:git": {
+			"type": "object",
+			"title": "Git Provider",
+			"description": "Library configuration specific to the GIT provider.",
+			"properties": {
+				"cert_file": {
+					"type": "string",
+					"title": "Trusted CA Certificate File",
+					"description": "Trusted CA certificate for the library GIT provider.",
+					"default": "",
+					"$defs": {
+						"textarea": {
+							"type": "textarea"
+						}
+					}
+				}
+			}
+
 		}
 	},
 	"additionalProperties": false
