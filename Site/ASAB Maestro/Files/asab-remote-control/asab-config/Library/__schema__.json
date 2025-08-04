@@ -48,7 +48,6 @@
 					"type": "string",
 					"title": "Trusted CA Certificate File",
 					"description": "Trusted CA certificate for the library GIT provider.",
-					"default": "",
 					"$defs": {
 						"textarea": {
 							"type": "textarea"
