@@ -7,9 +7,14 @@ secrets:
   INFLUXDB_TOKEN:
     type: token
     length: 64
+  INFLUXDB_ADMIN_PASSWORD:
+    type: token
+    length: 16
 
 params:
   INFLUXDB_URL: "http://influxdb:8086/"
+  INFLUXDB_ORG: system
+  INFLUXDB_BUCKET: metrics
 
 descriptor:
   image: influxdb
@@ -22,11 +27,11 @@ descriptor:
 
   environment:
     DOCKER_INFLUXDB_INIT_MODE: setup
-    DOCKER_INFLUXDB_INIT_USERNAME: null # will be provided by the Remote Control
-    DOCKER_INFLUXDB_INIT_PASSWORD: null # will be provided by the Remote Control
-    DOCKER_INFLUXDB_INIT_ORG: "{{INFLUXDB_ORG}}" # set by the Remote Control
-    DOCKER_INFLUXDB_INIT_BUCKET: "{{INFLUXDB_BUCKET}}"  # set by the Remote Control
-    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: '{{INFLUXDB_TOKEN}}'
+    DOCKER_INFLUXDB_INIT_USERNAME: admin
+    DOCKER_INFLUXDB_INIT_PASSWORD: "{{INFLUXDB_ADMIN_PASSWORD}}"
+    DOCKER_INFLUXDB_INIT_ORG: "{{INFLUXDB_ORG}}"
+    DOCKER_INFLUXDB_INIT_BUCKET: "{{INFLUXDB_BUCKET}}"
+    DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "{{INFLUXDB_TOKEN}}"
     DOCKER_INFLUXDB_INIT_RETENTION: 30d
 
     INFLUXD_LOG_LEVEL: warn
