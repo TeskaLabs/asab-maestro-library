@@ -32,3 +32,9 @@ asab:
 
 nginx:
   api: 8894
+
+  # This is here for download endpoint with non-oauth authorization
+  https:
+    location /api/asab-config/export:
+      - rewrite /api/asab-config/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8894
