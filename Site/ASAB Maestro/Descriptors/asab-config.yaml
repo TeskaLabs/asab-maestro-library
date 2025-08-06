@@ -2,6 +2,9 @@ define:
   type: rc/descriptor
   name: ASAB Config
 
+secrets:
+  DOWNLOAD_SECRET_KEY: {}
+
 descriptor:
   # The REST API is at tcp/8894
 
@@ -28,7 +31,9 @@ files:
 
 asab:
   configname: conf/asab-config.conf
-  config: {}
+  config:
+    download:
+      secret_key: "{{DOWNLOAD_SECRET_KEY}}"
 
 nginx:
   api: 8894
