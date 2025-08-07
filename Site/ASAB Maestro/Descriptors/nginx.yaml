@@ -35,9 +35,15 @@ files:
   - "sherpa/"
 
   # This controls where NGINX listens
-  - "conf.d/server_https.d/01-listen.conf": |
+  - "conf.d/server_https_default.d/01-listen.conf": |
       listen 443 ssl default_server;
       {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl default_server;{% endif %}
+      return 301 https://{{PUBLIC_URL}}$request_uri;
+
+  - "conf.d/server_https.d/01-listen.conf": |
+      server {{PUBLIC_URL}}
+      listen 443 ssl;
+      {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl;{% endif %}
   
   - "conf.d/server_http.d/01-listen.conf": |
       listen 80 default_server deferred;
