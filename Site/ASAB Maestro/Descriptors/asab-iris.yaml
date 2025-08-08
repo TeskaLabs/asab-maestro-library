@@ -54,7 +54,7 @@ asab-config:
             },
             "msteams": {
               "title": "Microsoft Teams",
-              "description": "Configure connection to MS Teams.",
+              "description": "Configure connection to MSTeams.",
               "type": "object",
               "additionalProperties": false,
               "properties": {
