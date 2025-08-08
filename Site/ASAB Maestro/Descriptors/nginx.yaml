@@ -35,7 +35,9 @@ files:
   - "sherpa/"
 
   # This controls where NGINX listens
+    # Default server matches anything that's NOT the main public domain
   - "conf.d/server_https_default.d/01-listen.conf": |
+      server_name _;
       listen 443 ssl default_server;
       {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl default_server;{% endif %}
       return 301 https://{{PUBLIC_DNS_NAME}}$request_uri;
