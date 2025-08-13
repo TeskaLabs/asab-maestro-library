@@ -1,5 +1,5 @@
 <configuration>
-	
+
 	<property name="zookeeper.console.threshold" value="INFO" />
 	<property name="zookeeper.log.dir" value="/logs" />
 	<property name="zookeeper.log.file" value="zookeeper.log" />
@@ -8,15 +8,13 @@
 	<property name="zookeeper.log.maxbackupindex" value="20" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n</pattern>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>level=%level|timestamp=%d{yyyy-MM-dd'T'HH:mm:ss.SSS}|logger=%logger{0}|message=%msg%n</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>${zookeeper.console.threshold}</level>
 		</filter>
 	</appender>
-
-
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>
