@@ -18,10 +18,151 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 107,
+  "id": 17,
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "lmio-influxdb-metrics"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "eventlane::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "lmio.eventlane.event",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "event.aggr"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "tenant::tag",
+              "operator": "=~",
+              "value": "/^$tenant$/"
+            }
+          ]
+        }
+      ],
+      "title": "Parsec Aggregated Metrics",
+      "type": "timeseries"
+    },
     {
       "datasource": {
         "type": "influxdb",
@@ -32,15 +173,6 @@
           "color": {
             "mode": "thresholds"
           },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "fieldMinMax": false,
-          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -50,153 +182,42 @@
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 500
-              },
-              {
                 "color": "red",
-                "value": 1000
+                "value": 80
               }
             ]
           },
-          "unit": "short",
+          "unit": "bytes",
           "unitScale": true
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Lag"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "gauge",
-                  "valueDisplayMode": "color"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 714
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "topic"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 335
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "",
-                    "url": "/grafana/d/kafka-partitions/kafka-partitions?orgId=1&var-topic=${__data.fields.topic}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "group"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 385
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "",
-                    "url": "/grafana/d/kafka-consumer-groups/kafka-consumer-groups?orgId=1&var-group=${__data.fields.group}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Available"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Available"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-text"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "red",
-                      "value": null
-                    },
-                    {
-                      "color": "green",
-                      "value": 10
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 30,
-        "w": 24,
-        "x": 0,
+        "h": 8,
+        "w": 12,
+        "x": 12,
         "y": 0
       },
-      "hideTimeOverride": true,
-      "id": 1,
-      "interval": "5m",
+      "id": 3,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": [
-            "lag (last)"
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
           ],
-          "reducer": [
-            "sum"
-          ],
-          "show": true
+          "fields": "",
+          "values": false
         },
-        "showHeader": true,
-        "sortBy": []
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "10.3.1",
       "targets": [
         {
-          "alias": "$tag_group @ $tag_topic",
           "datasource": {
             "type": "influxdb",
             "uid": "lmio-influxdb-metrics"
@@ -204,133 +225,418 @@
           "groupBy": [
             {
               "params": [
-                "group::tag"
+                "$interval"
               ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "topic::tag"
-              ],
-              "type": "tag"
+              "type": "time"
             }
           ],
-          "measurement": "kafka.consumer_group",
+          "measurement": "commlink",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
-          "resultFormat": "table",
+          "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "lag"
+                  "bytes.in"
                 ],
                 "type": "field"
-              }
-            ],
-            [
+              },
               {
-                "params": [
-                  "available"
-                ],
-                "type": "field"
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "tenant::tag",
+              "operator": "=",
+              "value": "cef"
+            },
+            {
+              "condition": "AND",
+              "key": "appclass::tag",
+              "operator": "=",
+              "value": "LMIOReceiverApp"
+            }
+          ]
         }
       ],
-      "title": "Consumer group Lag per Topic",
-      "transformations": [
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "available": {
-                "aggregations": [
-                  "last"
-                ],
-                "operation": "aggregate"
-              },
-              "count": {
-                "aggregations": [
-                  "last"
-                ],
-                "operation": "aggregate"
-              },
-              "group": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "lag": {
-                "aggregations": [
-                  "last"
-                ],
-                "operation": "aggregate"
-              },
-              "topic": {
-                "aggregations": [],
-                "operation": "groupby"
-              }
-            }
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
+      "title": "Panel Title",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "config": {
-                  "id": "greater",
-                  "options": {
-                    "value": 20
-                  }
-                },
-                "fieldName": "lag (last)"
-              }
-            ],
-            "match": "any",
-            "type": "include"
-          }
-        },
-        {
-          "id": "sortBy",
-          "options": {
-            "fields": {},
-            "sort": [
+                "color": "green",
+                "value": null
+              },
               {
-                "desc": true,
-                "field": "lag (last)"
+                "color": "red",
+                "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
-        {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "lag \\(last\\)",
-            "renamePattern": "Lag"
-          }
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
         {
-          "id": "renameByRegex",
-          "options": {
-            "regex": "available \\(last\\)",
-            "renamePattern": "Available"
-          }
+          "datasource": {
+            "type": "influxdb",
+            "uid": "lmio-influxdb-metrics"
+          },
+          "groupBy": [],
+          "measurement": "lmio.eventlane.event",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "event.in"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "tenant::tag",
+              "operator": "=~",
+              "value": "/^$tenant$/"
+            },
+            {
+              "condition": "AND",
+              "key": "pipeline::tag",
+              "operator": "=",
+              "value": "ParsecPipeline"
+            }
+          ]
         }
       ],
-      "type": "table"
+      "title": "Panel Title",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "lmio-influxdb-metrics"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "commlink",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(\"diff\") \nFROM (\n  SELECT non_negative_difference(sum(\"bytes.in\")) AS \"diff\"\n  FROM \"commlink\"\n  WHERE \"tenant\" = 'cef' \n    AND \"appclass\" = 'LMIOReceiverApp' \n    AND $timeFilter\n  GROUP BY time(1m)\n)\n",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "bytes.in"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "tenant::tag",
+              "operator": "=",
+              "value": "cef"
+            },
+            {
+              "condition": "AND",
+              "key": "appclass::tag",
+              "operator": "=",
+              "value": "LMIOReceiverApp"
+            }
+          ]
+        }
+      ],
+      "title": "Panel Title",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "lmio-influxdb-metrics"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "bspump.pipeline.tenant.eps",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "eps.aggr"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "pipeline::tag",
+              "operator": "=",
+              "value": "ParsecPipeline"
+            }
+          ]
+        }
+      ],
+      "title": "Panel Title",
+      "type": "timeseries"
     }
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [
-    "kafka"
-  ],
+  "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "cef",
+          "value": "cef"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "lmio-influxdb-metrics"
+        },
+        "definition": "SHOW TAG VALUES WITH KEY = \"tenant\"",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "tenant",
+        "options": [],
+        "query": "SHOW TAG VALUES WITH KEY = \"tenant\"",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
@@ -338,8 +644,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "test",
-  "uid": "test",
+  "title": "WIP - Aggregated test",
   "version": 1,
   "weekStart": ""
 }
