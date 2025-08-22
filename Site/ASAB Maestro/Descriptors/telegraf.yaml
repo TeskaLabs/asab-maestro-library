@@ -133,6 +133,10 @@ files:
           node_id = "{{NODE_ID}}"
       # TODO: More testing of how this input collects temperature measurements will be needed
 
+      # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/zookeeper/README.md
+      [[inputs.zookeeper]]
+        servers=[ {{ZOOKEEPER_SERVERS}} ]
+
 # TODO: Smart for disks: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/smart/README.md
 # TODO: hddtemp: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/hddtemp/README.md
 # TODO: sensors: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/sensors/README.md
