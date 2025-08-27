@@ -23,3 +23,4 @@ mfe:
     /seacat_account_webui: seacat_account_webui
     /lmio_logsources_webui: lmio_logsources_webui
     /lmio_parser_builder_webui: lmio_parser_builder_webui
+    /lmio_detection_webui: lmio_detection_webui
