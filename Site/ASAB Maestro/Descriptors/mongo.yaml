@@ -29,7 +29,7 @@ sherpas:
 files:
   - "conf/mongod.conf": |
       net:
-        bindIp: 0.0.0.0
+        bindIp: "{{INTERNAL_NETWORK_IP}}"
         port: 27017
       replication:
         replSetName: rs0
