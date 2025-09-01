@@ -13,7 +13,7 @@ descriptor:
 files:
   - "conf/burrow.toml": |
       [zookeeper]
-      servers=[ "{{ZOOKEEPER_SERVERS}}" ]
+      servers=[ "{{ZOOKEEPER_SERVERS | join(",")}}" ]
       timeout=6
       root-path="/burrow"
       [cluster.local]

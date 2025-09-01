@@ -12,7 +12,7 @@ descriptor:
   environment:
     HTTP_PORT: "9001"
     CONNECTION_ZK_NAME: Local ZooKeeper
-    CONNECTION_ZK_CONN: "{{ZOOKEEPER_SERVERS}}"
+    CONNECTION_ZK_CONN: '{{ ZOOKEEPER_SERVERS | join(",") }}'
     AUTO_CONNECT_CONNECTION_ID: ZK
     BASE_HREF: /zoonavigator
 

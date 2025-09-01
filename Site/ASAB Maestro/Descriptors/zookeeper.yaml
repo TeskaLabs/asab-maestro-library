@@ -36,3 +36,8 @@ files:
   # The oracle.txt is set by the Zookeeper technology, it is needed for clusters with two nodes to resolve split-brain problem
   # More at https://zookeeper.apache.org/doc/r3.8.1/zookeeperOracleQuorums.html
   - confro/oracle.txt: 0
+
+
+telegraf: |
+  [[inputs.zookeeper]]
+    servers = {{ZOOKEEPER_SERVERS}}
