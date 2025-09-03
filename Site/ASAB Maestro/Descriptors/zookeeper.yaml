@@ -24,7 +24,10 @@ descriptor:
     JVMFLAGS: "-Xms2000m -Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
 
   healthcheck:
-    test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 || exit -1"]
+    test:
+    - "CMD-SHELL"
+    - "echo ruok | nc 127.0.0.1 2181 || exit -1"  # response 'imok' when the server process is active
+    - "echo stat | nc 127.0.0.1 2181 | grep '^Mode: ' || exit -1"  # response contains 'Mode: leader/follower/observer' if the server joined the quorum
     interval: 60s
     timeout: 10s
     retries: 5
