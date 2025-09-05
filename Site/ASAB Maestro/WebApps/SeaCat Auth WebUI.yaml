@@ -4,7 +4,8 @@ define:
   url: https://teskalabs.com
 
 webapp:
-  distribution: https://asabwebui.z16.web.core.windows.net/
+  distribution: https://webappsreg.z6.web.core.windows.net/
 
-spa:
-  https: seacat-auth
+mfe:
+  https:
+    /: seacat_auth_webui
