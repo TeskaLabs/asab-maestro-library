@@ -678,7 +678,9 @@
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "LogMan.io"
+  ],
   "templating": {
     "list": [
       {
