@@ -1161,7 +1161,9 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 41,
-  "tags": [],
+  "tags": [
+    "LogMan.io"
+  ],
   "templating": {
     "list": []
   },
