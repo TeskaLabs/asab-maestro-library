@@ -111,7 +111,7 @@ files:
 telegraf: |
   [[inputs.elasticsearch]]
     servers = {{ELASTIC_HOSTS_AUTHORIZED}}
-    http_timeout = "9s"
+    timeout = "9s"
     local = false
     cluster_health = true
     cluster_health_level = "indices"
