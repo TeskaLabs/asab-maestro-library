@@ -134,8 +134,7 @@ files:
       # TODO: More testing of how this input collects temperature measurements will be needed
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/zookeeper/README.md
-      [[inputs.zookeeper]]
-        servers=[ {{ZOOKEEPER_SERVERS}} ]
+      # Configuration for ZooKeeper metrics is located at /Site/ASAB Maestro/Descriptors/zookeeper.yaml
 
 # TODO: Smart for disks: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/smart/README.md
 # TODO: hddtemp: https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/hddtemp/README.md
