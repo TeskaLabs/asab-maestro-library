@@ -31,7 +31,7 @@
       },
       "id": 2,
       "panels": [],
-      "title": "Lags",
+      "title": "Consumer Lags",
       "type": "row"
     },
     {
@@ -109,10 +109,16 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -123,6 +129,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -253,8 +260,12 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -267,6 +278,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -277,6 +289,12 @@
                 "$__interval"
               ],
               "type": "time"
+            },
+            {
+              "params": [
+                "group::tag"
+              ],
+              "type": "tag"
             },
             {
               "params": [
@@ -300,7 +318,7 @@
               },
               {
                 "params": [],
-                "type": "mean"
+                "type": "last"
               }
             ]
           ],
@@ -391,8 +409,12 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -405,6 +427,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -444,7 +467,7 @@
               },
               {
                 "params": [],
-                "type": "mean"
+                "type": "last"
               }
             ]
           ],
@@ -532,8 +555,12 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -546,6 +573,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -673,8 +701,12 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -687,6 +719,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -697,6 +730,12 @@
                 "$__interval"
               ],
               "type": "time"
+            },
+            {
+              "params": [
+                "group::tag"
+              ],
+              "type": "tag"
             },
             {
               "params": [
@@ -811,8 +850,12 @@
       "interval": "60",
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -825,6 +868,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
+          "alias": "$tag_group",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -835,6 +879,12 @@
                 "$__interval"
               ],
               "type": "time"
+            },
+            {
+              "params": [
+                "group::tag"
+              ],
+              "type": "tag"
             },
             {
               "params": [
@@ -872,6 +922,304 @@
         }
       ],
       "title": "ASAB IRIS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 10000
+              },
+              {
+                "color": "red",
+                "value": 100000
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 25
+      },
+      "id": 16,
+      "interval": "60",
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "alias": "$tag_group",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "group::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "kafka.consumer_group",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "lag"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "group::tag",
+              "operator": "=",
+              "value": "lmio-alerts"
+            }
+          ]
+        }
+      ],
+      "title": "LMIO Alert Management",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 10000
+              },
+              {
+                "color": "red",
+                "value": 100000
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "id": 17,
+      "interval": "60",
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "diff"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "alias": "$tag_group",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "group::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "kafka.consumer_group",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "lag"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "group::tag",
+              "operator": "=~",
+              "value": "/^lmio-integ*/"
+            }
+          ]
+        }
+      ],
+      "title": "LMIO Integration Service",
       "type": "timeseries"
     }
   ],
