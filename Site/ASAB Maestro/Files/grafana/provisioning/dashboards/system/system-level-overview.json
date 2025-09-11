@@ -1972,7 +1972,9 @@
   ],
   "refresh": "1m",
   "schemaVersion": 39,
-  "tags": [],
+  "tags": [
+    "system"
+  ],
   "templating": {
     "list": [
       {
