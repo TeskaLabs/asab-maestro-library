@@ -112,13 +112,40 @@ asab-config:
                   "user_email"
                 ]
               }
+            },
+            "sms": {
+              "title": "SMS",
+              "description": "Configure connection to SMSBrána.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "login": {
+                  "type": "string",
+                  "title": "Login",
+                  "minLength": 1
+                },
+                "password": {
+                  "type": "string",
+                  "title": "Password",
+                  "minLength": 1
+                },
+                "api_url": {
+                  "type": "string",
+                  "title": "API URL",
+                  "format": "uri",
+                  "minLength": 1
+                }
+              },
+              "if": { "minProperties": 1 },
+              "then": { "required": ["login", "password", "api_url"] }
             }
           },
           "additionalProperties": false,
           "anyOf": [
             { "required": ["slack"] },
             { "required": ["msteams"] },
-            { "required": ["m365_email"] }
+            { "required": ["m365_email"] },
+            { "required": ["sms"] }
           ]
         }
     config:
