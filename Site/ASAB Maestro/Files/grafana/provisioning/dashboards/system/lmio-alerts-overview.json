@@ -15,10 +15,10 @@
       }
     ]
   },
+  "description": "Overview of LogMan.io Alert Management micro-service.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 29,
   "links": [],
   "panels": [
     {
@@ -39,6 +39,7 @@
         "type": "influxdb",
         "uid": "lmio-influxdb-metrics"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -88,7 +89,6 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
           "alias": "signal.in",
@@ -144,7 +144,7 @@
           ]
         }
       ],
-      "title": "Total Number of Consumed Signals",
+      "title": "Total Number of Processed Signals",
       "type": "stat"
     },
     {
@@ -209,7 +209,6 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
           "alias": "signal.drop",
@@ -308,7 +307,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
+        "w": 9,
         "x": 8,
         "y": 1
       },
@@ -334,7 +333,6 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
           "alias": "critical",
@@ -502,6 +500,219 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "description": "CPU usage of lmio-alerts Docker containers.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 17,
+        "y": 1
+      },
+      "id": 14,
+      "interval": "60",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "alias": "$tag_instance_id",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "instance_id::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "docker_container_cpu",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage_percent"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "service_id::tag",
+              "operator": "=",
+              "value": "lmio-alerts"
+            }
+          ]
+        }
+      ],
+      "title": "CPU Percentage",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "description": "Memory usage of lmio-alerts Docker container.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "decbytes",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 20,
+        "y": 1
+      },
+      "id": 12,
+      "interval": "60",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "alias": "memory_usage",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "docker_container_mem",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "usage"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "instance_id::tag",
+              "operator": "=",
+              "value": "lmio-alerts-1"
+            }
+          ]
+        }
+      ],
+      "title": "Memory Usage",
+      "type": "stat"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -513,6 +724,304 @@
       "panels": [],
       "title": "Details",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "id": 6,
+      "interval": "60",
+      "options": {
+        "barRadius": 0,
+        "barWidth": 1,
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xField": "Time",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "targets": [
+        {
+          "alias": "signal.in",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "signals_consumed",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "signal.in"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  "signal.in"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "appclass::tag",
+              "operator": "=",
+              "value": "LmioAlertApplication"
+            }
+          ]
+        }
+      ],
+      "title": "Processed Signals",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short",
+          "unitScale": true
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "signal.drop"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "id": 3,
+      "interval": "60",
+      "options": {
+        "barRadius": 0,
+        "barWidth": 1,
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "targets": [
+        {
+          "alias": "signal.drop",
+          "datasource": {
+            "name": "InfluxDB Metrics",
+            "type": "influxdb"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "signals_unprocessed",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "signal.drop"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  "signal.drop"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "appclass::tag",
+              "operator": "=",
+              "value": "LmioAlertApplication"
+            }
+          ]
+        }
+      ],
+      "title": "Unprocessed Signals",
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -608,9 +1117,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 11,
+        "w": 12,
         "x": 0,
-        "y": 6
+        "y": 13
       },
       "id": 5,
       "interval": "60",
@@ -627,11 +1136,13 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "orientation": "auto",
         "showValue": "auto",
-        "stacking": "none",
+        "stacking": "normal",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -641,7 +1152,6 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 100
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -847,7 +1357,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": 0
+                "value": null
               }
             ]
           },
@@ -858,9 +1368,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 13,
-        "x": 11,
-        "y": 6
+        "w": 12,
+        "x": 12,
+        "y": 13
       },
       "id": 4,
       "interval": "60",
@@ -882,7 +1392,6 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
           "alias": "lag.last",
@@ -952,6 +1461,7 @@
         "type": "influxdb",
         "uid": "lmio-influxdb-metrics"
       },
+      "description": "CPU usage of lmio-alerts Docker containers.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -963,25 +1473,35 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
             }
           },
-          "fieldMinMax": false,
           "mappings": [],
+          "max": 100,
           "min": 0,
-          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -991,27 +1511,24 @@
               }
             ]
           },
-          "unit": "short",
+          "unit": "percent",
           "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 11,
+        "w": 12,
         "x": 0,
-        "y": 13
+        "y": 20
       },
-      "id": 6,
+      "id": 13,
       "interval": "60",
       "options": {
-        "barRadius": 0,
-        "barWidth": 1,
-        "fullHighlight": true,
-        "groupWidth": 0.7,
         "legend": {
           "calcs": [
             "lastNotNull",
+            "min",
             "max",
             "mean"
           ],
@@ -1019,22 +1536,15 @@
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
-        },
-        "xField": "Time",
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        }
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
-          "alias": "signal.in",
+          "alias": "$tag_instance_id",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -1048,12 +1558,18 @@
             },
             {
               "params": [
+                "instance_id::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
                 "null"
               ],
               "type": "fill"
             }
           ],
-          "measurement": "signals_consumed",
+          "measurement": "docker_container_cpu",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1062,39 +1578,34 @@
             [
               {
                 "params": [
-                  "signal.in"
+                  "usage_percent"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "sum"
-              },
-              {
-                "params": [
-                  "signal.in"
-                ],
-                "type": "alias"
+                "type": "last"
               }
             ]
           ],
           "tags": [
             {
-              "key": "appclass::tag",
+              "key": "service_id::tag",
               "operator": "=",
-              "value": "LmioAlertApplication"
+              "value": "lmio-alerts"
             }
           ]
         }
       ],
-      "title": "Consumed Signals",
-      "type": "barchart"
+      "title": "CPU Percentage",
+      "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
         "uid": "lmio-influxdb-metrics"
       },
+      "description": "Memory usage of lmio-alerts Docker containers.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1106,70 +1617,61 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 100,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
             }
           },
-          "fieldMinMax": false,
           "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": null
               }
             ]
           },
-          "unit": "short",
+          "unit": "decbytes",
           "unitScale": true
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "signal.drop"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
-        "w": 13,
-        "x": 11,
-        "y": 13
+        "w": 12,
+        "x": 12,
+        "y": 20
       },
-      "id": 3,
+      "id": 11,
       "interval": "60",
       "options": {
-        "barRadius": 0,
-        "barWidth": 1,
-        "fullHighlight": true,
-        "groupWidth": 0.7,
         "legend": {
           "calcs": [
             "lastNotNull",
+            "min",
             "max",
             "mean"
           ],
@@ -1177,21 +1679,15 @@
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 100
+        }
       },
-      "pluginVersion": "12.1.0",
       "targets": [
         {
-          "alias": "signal.drop",
+          "alias": "$tag_instance_id",
           "datasource": {
             "name": "InfluxDB Metrics",
             "type": "influxdb"
@@ -1205,12 +1701,18 @@
             },
             {
               "params": [
+                "instance_id::tag"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
                 "null"
               ],
               "type": "fill"
             }
           ],
-          "measurement": "signals_unprocessed",
+          "measurement": "docker_container_mem",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1219,37 +1721,30 @@
             [
               {
                 "params": [
-                  "signal.drop"
+                  "usage"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "sum"
-              },
-              {
-                "params": [
-                  "signal.drop"
-                ],
-                "type": "alias"
+                "type": "last"
               }
             ]
           ],
           "tags": [
             {
-              "key": "appclass::tag",
+              "key": "service_id::tag",
               "operator": "=",
-              "value": "LmioAlertApplication"
+              "value": "lmio-alerts"
             }
           ]
         }
       ],
-      "title": "Unprocessed Signals",
-      "type": "barchart"
+      "title": "Memory usage",
+      "type": "timeseries"
     }
   ],
-  "preload": false,
-  "schemaVersion": 1,
+  "refresh": "",
   "tags": [
     "LogMan.io"
   ],
@@ -1260,9 +1755,16 @@
     "from": "now-3h",
     "to": "now"
   },
-  "timepicker": {},
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
   "timezone": "browser",
   "title": "LogMan.io Alerts",
-  "uid": "d7923290-3aaf-41c6-820b-a0ec0154fc21",
-  "version": 30
+  "version": 14
 }
