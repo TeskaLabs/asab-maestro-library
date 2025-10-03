@@ -120,7 +120,14 @@ nginx:
   https:
     location /grafana:
     - rewrite ^/grafana/(.*) /$1 break
-    - add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;" always
+    - add_header Content-Security-Policy "default-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;" always
+    - proxy_pass http://upstream-grafana
+    - proxy_set_header Host $host
+
+    location /grafana/api/live/ws:
+    - rewrite ^/grafana/(.*) /$1 break
+    - proxy_set_header Upgrade    websocket;
+    - proxy_set_header Connection upgrade;
     - proxy_pass http://upstream-grafana
     - proxy_set_header Host $host
 
