@@ -126,8 +126,8 @@ nginx:
 
     location /grafana/api/live/ws:
     - rewrite ^/grafana/(.*) /$1 break
-    - proxy_set_header Upgrade    websocket;
-    - proxy_set_header Connection upgrade;
+    - proxy_set_header Upgrade    websocket
+    - proxy_set_header Connection upgrade
     - proxy_pass http://upstream-grafana
     - proxy_set_header Host $host
 
