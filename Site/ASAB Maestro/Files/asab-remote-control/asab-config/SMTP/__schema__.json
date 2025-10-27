@@ -52,23 +52,27 @@
 					"type": "boolean",
 					"title": "Use SSL/TLS encryption",
 					"description": "Enable SSL/TLS encryption for secure email transmission.",
-					"default": true,
-					"$defs": {
-						"checkbox": {
-							"type": "checkbox"
-						}
-					}
+					"default": true
 				},
 				"starttls": {
 					"type": "boolean",
 					"title": "Use STARTTLS",
 					"description": "Enable STARTTLS to upgrade an unencrypted connection to a secure connection if available.",
-					"default": false,
-					"$defs": {
-						"checkbox": {
-							"type": "checkbox"
-						}
-					}
+					"default": false
+				},
+				"validate_certs": {
+					"type": "boolean",
+					"title": "Validate certificates",
+					"description": "Enable or disable certificate verification.",
+					"default": false
+				},
+				"cert_bundle": {
+					"type": "string",
+					"title": "Certificate bundle path",
+					"description": "Path to CA bundle file for verifying certificates.",
+					"examples": [
+						"/asab-iris/etc/smtp.crt"
+					]
 				}
 			},
 			"required": [
