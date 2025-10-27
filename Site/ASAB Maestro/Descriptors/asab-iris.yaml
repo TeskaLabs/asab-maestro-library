@@ -41,7 +41,12 @@ asab-config:
                 "token": {
                   "type": "string",
                   "title": "Token",
-                  "minLength": 1
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                      }
+                    }
                 },
                 "channel": {
                   "type": "string",
@@ -88,7 +93,12 @@ asab-config:
                 "client_id": {
                   "type": "string",
                   "title": "Client ID",
-                  "minLength": 1
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                      }
+                    }
                 },
                 "client_secret": {
                   "type": "string",
@@ -127,7 +137,12 @@ asab-config:
                 "password": {
                   "type": "string",
                   "title": "Password",
-                  "minLength": 1
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                      }
+                    }
                 },
                 "api_url": {
                   "type": "string",
