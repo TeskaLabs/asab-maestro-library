@@ -40,6 +40,11 @@ descriptor:
     xpack.security.transport.ssl.key: certs/key.pem
     action.auto_create_index: .monitoring*
 
+  deploy:
+    resources:
+      limits:
+        memory: 64g
+
 
 nginx:
   proxy_caches:
