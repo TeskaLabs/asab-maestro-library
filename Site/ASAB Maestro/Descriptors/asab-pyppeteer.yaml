@@ -16,6 +16,7 @@ asab:
     pyppeteer:
       ignore_certificate_errors: 1
       url_white_list: "{{PUBLIC_URL}}"
+      public_url: "{{PUBLIC_URL}}"
 
 nginx:
   api: 8895
