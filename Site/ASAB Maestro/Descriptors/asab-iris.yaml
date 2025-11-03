@@ -12,7 +12,7 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: 
+  config:
     kafka:
       topic: notifications
       group_id: asab-iris
