@@ -1,0 +1,7 @@
+define:
+  type: rc/descriptor
+  name: Kafkacat
+  url: https://github.com/edenhill/kcat
+
+descriptor:
+  image: confluentinc/cp-kafkacat
