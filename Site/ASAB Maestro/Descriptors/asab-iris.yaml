@@ -93,17 +93,17 @@ asab-config:
                 "client_id": {
                   "type": "string",
                   "title": "Client ID",
+                  "minLength": 1
+                },
+                "client_secret": {
+                  "type": "string",
+                  "title": "Client Secret",
                   "minLength": 1,
                   "$defs": {
                     "password": {
                       "type": "password"
                       }
                     }
-                },
-                "client_secret": {
-                  "type": "string",
-                  "title": "Client Secret",
-                  "minLength": 1
                 },
                 "user_email": {
                   "type": "string",
