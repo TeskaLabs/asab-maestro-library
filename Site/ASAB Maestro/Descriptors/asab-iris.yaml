@@ -12,7 +12,7 @@ descriptor:
 
 asab:
   configname: conf/asab-iris.conf
-  config: 
+  config:
     kafka:
       topic: notifications
       group_id: asab-iris
@@ -93,7 +93,12 @@ asab-config:
                 "client_id": {
                   "type": "string",
                   "title": "Client ID",
-                  "minLength": 1
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                      }
+                    }
                 },
                 "client_secret": {
                   "type": "string",
