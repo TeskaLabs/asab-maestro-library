@@ -110,11 +110,12 @@ files:
 
 telegraf: |
   [[inputs.elasticsearch]]
+    internal = "10m"
     servers = {{ELASTIC_HOSTS_AUTHORIZED}}
     timeout = "9s"
     local = false
     cluster_health = true
-    cluster_health_level = "indices"
+    cluster_health_level = "cluster"
     cluster_stats = true
   
   [[processors.rename]]
