@@ -80,7 +80,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -181,7 +181,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -282,7 +282,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -383,7 +383,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -490,7 +490,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -597,7 +597,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -704,7 +704,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "datasource": {
@@ -810,7 +810,6 @@
               "type": "linear"
             },
             "showPoints": "auto",
-            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -865,7 +864,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "12.2.0",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "alias": "$col",
@@ -1101,7 +1100,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 25
           },
           "id": 4,
           "maxPerRow": 2,
@@ -1471,7 +1470,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 24
+            "y": 31
           },
           "id": 22,
           "options": {
@@ -1691,7 +1690,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 24
+            "y": 31
           },
           "id": 26,
           "options": {
@@ -1825,7 +1824,7 @@
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1833,206 +1832,208 @@
         "y": 13
       },
       "id": 30,
-      "panels": [
+      "panels": [],
+      "title": "Storage",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "lmio-influxdb-metrics"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "bars",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "semi-dark-yellow",
+                "value": 0
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 40
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "free"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 31,
+      "maxPerRow": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0",
+      "repeat": "path",
+      "repeatDirection": "h",
+      "targets": [
         {
+          "alias": "$col",
           "datasource": {
             "type": "influxdb",
             "uid": "lmio-influxdb-metrics"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "bars",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "normal"
-                },
-                "thresholdsStyle": {
-                  "mode": "line"
-                }
-              },
-              "mappings": [],
-              "min": 0,
-              "thresholds": {
-                "mode": "percentage",
-                "steps": [
-                  {
-                    "color": "semi-dark-yellow"
-                  },
-                  {
-                    "color": "semi-dark-orange",
-                    "value": 40
-                  },
-                  {
-                    "color": "semi-dark-red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "decbytes",
-              "unitScale": true
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "free"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "dark-green",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 24,
-            "x": 0,
-            "y": 63
-          },
-          "id": 31,
-          "maxPerRow": 3,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "repeat": "path",
-          "repeatDirection": "h",
-          "targets": [
+          "groupBy": [
             {
-              "alias": "$col",
-              "datasource": {
-                "type": "influxdb",
-                "uid": "lmio-influxdb-metrics"
-              },
-              "groupBy": [
-                {
-                  "params": [
-                    "$__interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "path::tag"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
+              "params": [
+                "$__interval"
               ],
-              "measurement": "disk",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"used\") AS \"used\", mean(\"free\") AS \"free\" FROM \"disk\" WHERE (\"node_id\"::tag =~ /^$node_id$/ AND \"path\"::tag = '$path') AND $timeFilter GROUP BY time($__interval), \"path\"::tag fill(null)",
-              "rawQuery": true,
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "used"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "used"
-                    ],
-                    "type": "alias"
-                  }
-                ],
-                [
-                  {
-                    "params": [
-                      "free"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "free"
-                    ],
-                    "type": "alias"
-                  }
-                ]
+              "type": "time"
+            },
+            {
+              "params": [
+                "path::tag"
               ],
-              "tags": [
-                {
-                  "key": "node_id::tag",
-                  "operator": "=~",
-                  "value": "/^$node_id$/"
-                },
-                {
-                  "condition": "AND",
-                  "key": "path::tag",
-                  "operator": "=",
-                  "value": "/data/ssd"
-                }
-              ]
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
             }
           ],
-          "title": "Storage $path",
-          "type": "timeseries"
+          "measurement": "disk",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"used\") AS \"used\", mean(\"free\") AS \"free\" FROM \"disk\" WHERE (\"node_id\"::tag =~ /^$node_id$/ AND \"path\"::tag = '$path') AND $timeFilter GROUP BY time($__interval), \"path\"::tag fill(null)",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "used"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [
+                  "used"
+                ],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": [
+                  "free"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [
+                  "free"
+                ],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "node_id::tag",
+              "operator": "=~",
+              "value": "/^$node_id$/"
+            },
+            {
+              "condition": "AND",
+              "key": "path::tag",
+              "operator": "=",
+              "value": "/data/ssd"
+            }
+          ]
         }
       ],
-      "title": "Storage",
-      "type": "row"
+      "title": "Storage $path",
+      "type": "timeseries"
     },
     {
       "collapsed": true,
@@ -2040,7 +2041,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 42
       },
       "id": 40,
       "panels": [
@@ -2135,7 +2136,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 64
+            "y": 71
           },
           "id": 41,
           "maxPerRow": 2,
@@ -2365,7 +2366,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 43
       },
       "id": 61,
       "panels": [
@@ -2461,7 +2462,7 @@
             "h": 10,
             "w": 24,
             "x": 0,
-            "y": 65
+            "y": 72
           },
           "id": 48,
           "options": {
@@ -2556,7 +2557,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 44
       },
       "id": 62,
       "panels": [
@@ -2625,7 +2626,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 28
+            "y": 35
           },
           "id": 65,
           "options": {
@@ -2837,7 +2838,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 28
+            "y": 35
           },
           "id": 66,
           "options": {
@@ -2991,17 +2992,12 @@
   ],
   "preload": false,
   "refresh": "1m",
-  "schemaVersion": 42,
   "tags": [
     "system"
   ],
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "fusion1",
-          "value": "fusion1"
-        },
         "datasource": {
           "type": "influxdb",
           "uid": "lmio-influxdb-metrics"
@@ -3018,9 +3014,7 @@
       },
       {
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -3043,9 +3037,7 @@
       },
       {
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -3068,9 +3060,7 @@
       },
       {
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -3093,9 +3083,7 @@
       },
       {
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
