@@ -98,6 +98,7 @@ files:
 
       # https://github.com/influxdata/telegraf/blob/release-1.28/plugins/inputs/docker/README.md
       [[inputs.docker]]
+        interval = "5m"
         gather_services = false
         perdevice_include = []
         docker_label_include = ["node_id", "service_id", "instance_id"]
