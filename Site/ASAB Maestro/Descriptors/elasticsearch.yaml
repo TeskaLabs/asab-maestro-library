@@ -110,7 +110,7 @@ files:
 
 telegraf: |
   [[inputs.elasticsearch]]
-    internal = "10m"
+    internal = "5m"
     servers = {{ELASTIC_HOSTS_AUTHORIZED}}
     timeout = "9s"
     local = false
