@@ -31,6 +31,7 @@ files:
       net:
         bindIp: "{{INTERNAL_NETWORK_IP}},127.0.0.1"
         port: 27017
+        maxIncomingConnections: 120000
       replication:
         replSetName: rs0
 
