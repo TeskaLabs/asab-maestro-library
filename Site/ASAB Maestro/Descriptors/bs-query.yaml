@@ -59,11 +59,12 @@ nginx:
 
   # This is here for download endpoint with non-oauth authorization
   https:
-  # TODO: For backward compatibility; remove cca 12/2026
+    # TODO: For backward compatibility; remove cca 12/2026
     location /api/bs-query/export-download:
       - rewrite /api/bs-query/(.*) /$1 break
       - proxy_pass http://{{NODE_ID}}:8790
 
+    # Regex is used for tenant: /{tenant}/export-download/<....>
     location ~ ^/api/bs-query/[a-z0-9]+/export-download:
       - rewrite /api/bs-query/(.*) /$1 break
       - proxy_pass http://{{NODE_ID}}:8790
