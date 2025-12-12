@@ -38,6 +38,7 @@ files:
       net:
         bindIp: 0.0.0.0
         port: 27017
+        maxIncomingConnections: 120000
       replication:
         replSetName: rs0
 

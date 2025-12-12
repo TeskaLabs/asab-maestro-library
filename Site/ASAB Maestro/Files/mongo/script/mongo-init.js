@@ -14,11 +14,6 @@ function initiateReplicaSet() {
 	rs.initiate(newConfig);
 }
 
-function setMaxIncomingConnections() {
-	db.adminCommand({ setParameter: 1, maxIncomingConnections: 120000 });
-	print("Set maxIncomingConnections to 120000");
-}
-
 /**
  * The main function reads JSON files from a directory, connects to multiple MongoDB instances,
  * reconfigures the replica set, and inserts data into collections, with a maximum of 5 attempts.
@@ -58,7 +53,6 @@ function main() {
 				try {
 					initiateReplicaSet()
 					print("Initialization successful.")
-					setMaxIncomingConnections()
 					print("SUCCESS!");
 					quit(0);
 
@@ -79,7 +73,6 @@ function main() {
 			try {
 				reconfigureReplicaSet();
 				print("Successfully reconfigured replicaset.");
-				setMaxIncomingConnections();
 				print("SUCCESS!");
 				quit(0);
 			} catch (e) {
