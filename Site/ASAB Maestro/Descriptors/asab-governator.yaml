@@ -5,7 +5,7 @@ define:
 descriptor:
   # The REST API is at tcp/8892
 
-  image: docker.teskalabs.com/asab/asab-governator
+  image: pcr.teskalabs.com/asab/asab-governator
   # TODO: switch to prc.teskalabs.com/asab/asab-governator
 
   volumes:
