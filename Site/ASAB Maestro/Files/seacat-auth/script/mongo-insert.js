@@ -81,16 +81,13 @@ function upsertSeaCatAuthCollections(data, db) {
 	});
 
 	// Delete records not present in the new data.
-	// Only consider collections that are in the current upload data. Otherwise we would
-	// delete all documents in any DB collection that was not in this run's data (e.g. due
-	// to race when to_upload is populated by multiple services, or a missing file).
-	// When incoming data for a collection is empty, skip deletes for that collection so
-	// we never wipe it due to missing/corrupted payload (do not rely on governator/tarball).
+	// Only consider collections that are in the current upload data.
+	// When incoming data for a collection is empty, skip deletes for that collection.
 	const collectionsInThisRun = [...new Set(data.map(line => line[0]))];
 	collectionsInThisRun.forEach(collectionName => {
 		const newIds = newRecordIds[collectionName];
 		if (!newIds || newIds.length === 0) {
-			print(`Skipping delete for collection ${collectionName}: no data in this run (possible incomplete payload).`);
+			print(`Skipping delete for collection ${collectionName}: no data in this run.`);
 			return;
 		}
 
