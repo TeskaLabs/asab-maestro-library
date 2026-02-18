@@ -8,18 +8,20 @@ const fs = require("fs")
 function load_data() {
 	const data = [] // array of arrays - each object has just one key/value pair
 
-	const subpaths = fs.readdirSync("/script/to_upload");
-
+	const subpaths = fs.readdirSync("/script/to_upload").sort();
+	// Sort so processing order is deterministic. Multiple files can map to the same
+	// collection (e.g. rs.json in seacat-auth, grafana, jupyter, ...); last upsert wins
+	// per _id, so we need a stable order to get the same mongo result for the same tarball.
 	subpaths.forEach(subpath => {
-		const files = fs.readdirSync(path.join("/script/to_upload", subpath));
+		const files = fs.readdirSync(path.join("/script/to_upload", subpath)).sort();
 		files.forEach(file => {
 			const filePath = path.join("/script/to_upload", subpath, file);
-			const collectionName = file.slice(0, -5)
-			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))])
+			const collectionName = file.slice(0, -5);
+			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))]);
 		});
-	})
+	});
 
-	return data
+	return data;
 }
 
 /**
@@ -29,7 +31,7 @@ function load_data() {
  */
 function transform_collection(collectionName, data) {
 	data.forEach((record) => {
-		if (collectionName === "c" | collectionName === "mc") {
+		if (collectionName === "c" || collectionName === "mc") {
 			record["_id"] = ObjectId(record._id)  // IDs of users are stored as ObjectId
 		}
 		record["_c"] = new Date()
@@ -68,7 +70,7 @@ function upsertSeaCatAuthCollections(data) {
 		}
 
 		newRecordIds[collectionName].push(...newRecords.map(doc => {
-			if (collectionName === "c" | collectionName === "mc") {
+			if (collectionName === "c" || collectionName === "mc") {
 				return ObjectId(doc._id);
 			}
 			return doc._id;
@@ -81,20 +83,32 @@ function upsertSeaCatAuthCollections(data) {
 		});
 	});
 
-	// Delete records not present in the new data
-	allCollections.forEach(collectionName => {
+	// Delete records not present in the new data.
+	// Only consider collections that are in the current upload data. Otherwise we would
+	// delete all documents in any DB collection that was not in this run's data (e.g. due
+	// to race when to_upload is populated by multiple services, or a missing file).
+	// When incoming data for a collection is empty, skip deletes for that collection so
+	// we never wipe it due to missing/corrupted payload (do not rely on governator/tarball).
+	const collectionsInThisRun = data.map(line => line[0]);
+	collectionsInThisRun.forEach(collectionName => {
+		const newIds = newRecordIds[collectionName];
+		if (!newIds || newIds.length === 0) {
+			print(`Skipping delete for collection ${collectionName}: no data in this run (possible incomplete payload).`);
+			return;
+		}
+
 		const collection = authDb.getCollection(collectionName)
 		// Create a to_delete array by subtracting new records from existing records
 		let to_delete;
 		if (collectionName === "c" || collectionName === "mc") {
 			// ObjectId comparison
-			to_delete = existingRecordIds[collectionName].filter(existingId => 
-				!newRecordIds[collectionName].some(newId => existingId.equals(newId))
+			to_delete = (existingRecordIds[collectionName] || []).filter(existingId =>
+				!newIds.some(newId => existingId.equals(newId))
 			);
 		} else {
 			// String ID comparison
-			to_delete = existingRecordIds[collectionName].filter(id => 
-				!newRecordIds[collectionName].includes(id)
+			to_delete = (existingRecordIds[collectionName] || []).filter(id =>
+				!newIds.includes(id)
 			);
 		}
 
