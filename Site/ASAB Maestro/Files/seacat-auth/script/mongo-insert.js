@@ -44,9 +44,9 @@ function transform_collection(collectionName, data) {
 }
 
 
-function upsertSeaCatAuthCollections(data) {
+function upsertSeaCatAuthCollections(data, db) {
 	// seacat auth uses "auth" database
-	authDb = db.getSiblingDB("auth");
+	const authDb = db.getSiblingDB("auth");
 	// save existing and new record IDs for each collection to compare and delete records not present in the new data
 	const existingRecordIds = {};
 	const newRecordIds = {};
@@ -55,9 +55,6 @@ function upsertSeaCatAuthCollections(data) {
 	allCollections.forEach(collectionName => { 
 		existingRecordIds[collectionName] = authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray() 
 	});
-	// create empty arrays for new record IDs
-	allCollections.forEach(collectionName => { newRecordIds[collectionName] = [] });
-
 	// iterate through new data and upsert records
 	data.forEach(line => {
 		const collectionName = line[0]
@@ -89,7 +86,7 @@ function upsertSeaCatAuthCollections(data) {
 	// to race when to_upload is populated by multiple services, or a missing file).
 	// When incoming data for a collection is empty, skip deletes for that collection so
 	// we never wipe it due to missing/corrupted payload (do not rely on governator/tarball).
-	const collectionsInThisRun = data.map(line => line[0]);
+	const collectionsInThisRun = [...new Set(data.map(line => line[0]))];
 	collectionsInThisRun.forEach(collectionName => {
 		const newIds = newRecordIds[collectionName];
 		if (!newIds || newIds.length === 0) {
@@ -128,7 +125,8 @@ function upsertSeaCatAuthCollections(data) {
  */
 function main() {
 
-	let data = {}
+	let data = []
+	let db
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
 
@@ -147,7 +145,7 @@ function main() {
 
 			// db.hello() returns an object with basic data about the mongo instance and the database
 			// https://www.mongodb.com/docs/manual/reference/command/hello/#mongodb-dbcommand-dbcmd.hello
-			if (!db.hello()?.isWritablePrimary ?? false) {  //The optional chaining operator (?.) will return undefined instead of causing an error if isMaster() returns null or undefined, or if isWritablePrimary does not exist on the object returned by isMaster(). The nullish coalescing operator (??) will return the value on its right-hand side if the value on its left-hand side is null or undefined.
+			if (!(db.hello()?.isWritablePrimary ?? false)) {  // treat absent/null isWritablePrimary as false (not primary) before negating
 				// skip mongo instances that are not primary
 				continue
 			};
@@ -161,7 +159,7 @@ function main() {
 
 
 			try {
-				upsertSeaCatAuthCollections(data);
+				upsertSeaCatAuthCollections(data, db);
 			} catch (err) {
 				print("UNSUCCESSFUL_DATA_INSERT", err);
 				quit(1)
