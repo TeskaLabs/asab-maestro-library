@@ -8,18 +8,20 @@ const fs = require("fs")
 function load_data() {
 	const data = [] // array of arrays - each object has just one key/value pair
 
-	const subpaths = fs.readdirSync("/script/to_upload");
-
+	const subpaths = fs.readdirSync("/script/to_upload").sort();
+	// Sort so processing order is deterministic. Multiple files can map to the same
+	// collection (e.g. rs.json in seacat-auth, grafana, jupyter, ...); last upsert wins
+	// per _id, so we need a stable order to get the same mongo result for the same tarball.
 	subpaths.forEach(subpath => {
-		const files = fs.readdirSync(path.join("/script/to_upload", subpath));
+		const files = fs.readdirSync(path.join("/script/to_upload", subpath)).sort();
 		files.forEach(file => {
 			const filePath = path.join("/script/to_upload", subpath, file);
-			const collectionName = file.slice(0, -5)
-			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))])
+			const collectionName = file.slice(0, -5);
+			data.push([collectionName, transform_collection(collectionName, JSON.parse(fs.readFileSync(filePath, 'utf8')))]);
 		});
-	})
+	});
 
-	return data
+	return data;
 }
 
 /**
@@ -29,7 +31,7 @@ function load_data() {
  */
 function transform_collection(collectionName, data) {
 	data.forEach((record) => {
-		if (collectionName === "c" | collectionName === "mc") {
+		if (collectionName === "c" || collectionName === "mc") {
 			record["_id"] = ObjectId(record._id)  // IDs of users are stored as ObjectId
 		}
 		record["_c"] = new Date()
@@ -42,9 +44,9 @@ function transform_collection(collectionName, data) {
 }
 
 
-function upsertSeaCatAuthCollections(data) {
+function upsertSeaCatAuthCollections(data, db) {
 	// seacat auth uses "auth" database
-	authDb = db.getSiblingDB("auth");
+	const authDb = db.getSiblingDB("auth");
 	// save existing and new record IDs for each collection to compare and delete records not present in the new data
 	const existingRecordIds = {};
 	const newRecordIds = {};
@@ -53,9 +55,6 @@ function upsertSeaCatAuthCollections(data) {
 	allCollections.forEach(collectionName => { 
 		existingRecordIds[collectionName] = authDb.getCollection(collectionName).find({ managed_by: "asab-maestro" }).map(record => record._id).toArray() 
 	});
-	// create empty arrays for new record IDs
-	allCollections.forEach(collectionName => { newRecordIds[collectionName] = [] });
-
 	// iterate through new data and upsert records
 	data.forEach(line => {
 		const collectionName = line[0]
@@ -68,7 +67,7 @@ function upsertSeaCatAuthCollections(data) {
 		}
 
 		newRecordIds[collectionName].push(...newRecords.map(doc => {
-			if (collectionName === "c" | collectionName === "mc") {
+			if (collectionName === "c" || collectionName === "mc") {
 				return ObjectId(doc._id);
 			}
 			return doc._id;
@@ -81,20 +80,29 @@ function upsertSeaCatAuthCollections(data) {
 		});
 	});
 
-	// Delete records not present in the new data
-	allCollections.forEach(collectionName => {
+	// Delete records not present in the new data.
+	// Only consider collections that are in the current upload data.
+	// When incoming data for a collection is empty, skip deletes for that collection.
+	const collectionsInThisRun = [...new Set(data.map(line => line[0]))];
+	collectionsInThisRun.forEach(collectionName => {
+		const newIds = newRecordIds[collectionName];
+		if (!newIds || newIds.length === 0) {
+			print(`Skipping delete for collection ${collectionName}: no data in this run.`);
+			return;
+		}
+
 		const collection = authDb.getCollection(collectionName)
 		// Create a to_delete array by subtracting new records from existing records
 		let to_delete;
 		if (collectionName === "c" || collectionName === "mc") {
 			// ObjectId comparison
-			to_delete = existingRecordIds[collectionName].filter(existingId => 
-				!newRecordIds[collectionName].some(newId => existingId.equals(newId))
+			to_delete = (existingRecordIds[collectionName] || []).filter(existingId =>
+				!newIds.some(newId => existingId.equals(newId))
 			);
 		} else {
 			// String ID comparison
-			to_delete = existingRecordIds[collectionName].filter(id => 
-				!newRecordIds[collectionName].includes(id)
+			to_delete = (existingRecordIds[collectionName] || []).filter(id =>
+				!newIds.includes(id)
 			);
 		}
 
@@ -114,7 +122,8 @@ function upsertSeaCatAuthCollections(data) {
  */
 function main() {
 
-	let data = {}
+	let data = []
+	let db
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
 
@@ -133,7 +142,7 @@ function main() {
 
 			// db.hello() returns an object with basic data about the mongo instance and the database
 			// https://www.mongodb.com/docs/manual/reference/command/hello/#mongodb-dbcommand-dbcmd.hello
-			if (!db.hello()?.isWritablePrimary ?? false) {  //The optional chaining operator (?.) will return undefined instead of causing an error if isMaster() returns null or undefined, or if isWritablePrimary does not exist on the object returned by isMaster(). The nullish coalescing operator (??) will return the value on its right-hand side if the value on its left-hand side is null or undefined.
+			if (!(db.hello()?.isWritablePrimary ?? false)) {  // treat absent/null isWritablePrimary as false (not primary) before negating
 				// skip mongo instances that are not primary
 				continue
 			};
@@ -147,7 +156,7 @@ function main() {
 
 
 			try {
-				upsertSeaCatAuthCollections(data);
+				upsertSeaCatAuthCollections(data, db);
 			} catch (err) {
 				print("UNSUCCESSFUL_DATA_INSERT", err);
 				quit(1)
