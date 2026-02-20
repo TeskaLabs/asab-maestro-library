@@ -43,7 +43,7 @@ files:
       return 301 https://{{PUBLIC_DNS_NAME}}$request_uri;
 
   - "conf.d/server_https.d/01-listen.conf": |
-      server_name {{PUBLIC_DNS_NAME}} {% for name in ALIAS_DNS_NAMES %}{{name}} {% endfor %};
+      server_name nginx {{PUBLIC_DNS_NAME}} {% for name in ALIAS_DNS_NAMES %}{{name}} {% endfor %};
       listen 443 ssl;
       {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl;{% endif %}
   
