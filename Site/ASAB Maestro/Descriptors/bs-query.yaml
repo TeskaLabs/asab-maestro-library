@@ -22,7 +22,8 @@ asab:
       path: /data/bsquery
     tenants:
       tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
-
+    variables:
+      public_url: "{{PUBLIC_URL}}"
 
 files:
   # BSQUERY_PASSWORD_HASHED parameter is created by bsquery tech
