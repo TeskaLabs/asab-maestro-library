@@ -45,8 +45,8 @@ asab-config:
                   "$defs": {
                     "password": {
                       "type": "password"
-                      }
                     }
+                  }
                 },
                 "channel": {
                   "type": "string",
@@ -79,6 +79,14 @@ asab-config:
               "type": "object",
               "additionalProperties": false,
               "properties": {
+
+                "mode": {
+                  "type": "string",
+                  "title": "Mode",
+                  "enum": ["app", "delegated"],
+                  "default": "app"
+                },
+
                 "api_url": {
                   "type": "string",
                   "title": "API URL",
@@ -102,26 +110,44 @@ asab-config:
                   "$defs": {
                     "password": {
                       "type": "password"
-                      }
                     }
+                  }
                 },
                 "user_email": {
                   "type": "string",
                   "title": "User Email",
                   "format": "email",
                   "minLength": 1
+                },
+
+                "redirect_uri": {
+                  "type": "string",
+                  "title": "Redirect URI",
+                  "format": "uri",
+                  "minLength": 1
                 }
               },
-              "if": { "minProperties": 1 },
-              "then": {
-                "required": [
-                  "api_url",
-                  "tenant_id",
-                  "client_id",
-                  "client_secret",
-                  "user_email"
-                ]
-              }
+
+              "required": [
+                "api_url",
+                "tenant_id",
+                "client_id",
+                "client_secret",
+                "user_email"
+              ],
+
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "mode": { "const": "delegated" }
+                    }
+                  },
+                  "then": {
+                    "required": ["redirect_uri"]
+                  }
+                }
+              ]
             },
             "sms": {
               "title": "SMS",
@@ -141,8 +167,8 @@ asab-config:
                   "$defs": {
                     "password": {
                       "type": "password"
-                      }
                     }
+                  }
                 },
                 "api_url": {
                   "type": "string",
