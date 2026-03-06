@@ -35,7 +35,7 @@ files:
   - "sherpa/"
 
   # This controls where NGINX listens
-    # Default server matches anything that's NOT the main public domain
+  # Default server matches anything that's NOT the main public domain
   - "conf.d/server_https_default.d/01-listen.conf": |
       server_name _;
       listen 443 ssl default_server;
@@ -46,10 +46,35 @@ files:
       server_name nginx {{PUBLIC_DNS_NAME}} {% for name in ALIAS_DNS_NAMES %}{{name}} {% endfor %};
       listen 443 ssl;
       {% if NGINX_LISTEN_IPV6 %}listen [::]:443 ssl;{% endif %}
-  
+
   - "conf.d/server_http.d/01-listen.conf": |
       listen 80 default_server deferred;
       {% if NGINX_LISTEN_IPV6 %}listen [::]:80 default_server deferred;{% endif %}
+
+  - "conf.d/logging.conf": |
+      log_format ecs escape=json
+      '{'
+      '"@timestamp":"$time_iso8601",'
+      '"event.dataset":"nginx.access",'
+      '"client.ip":"$remote_addr",'
+      '"http.request.method":"$request_method",'
+      '"url.path":"$uri",'
+      '"url.query":"$args",'
+      '"network.protocol":"http",'
+      '"http.request.body.bytes":$request_length,'
+      '"http.response.status_code":$status,'
+      '"http.response.body.bytes":$body_bytes_sent,'
+      '"user_agent.original":"$http_user_agent",'
+      '"http.request.referrer":"$http_referer",'
+      '"event.duration":$request_time'
+      '}';
+
+      error_log /dev/stderr notice;
+      error_log /var/log/nginx/error.log notice;
+
+      access_log /dev/stdout ecs;
+      access_log /var/log/nginx/access.log main;
+
 
 sherpas:
   webapp-dist:
