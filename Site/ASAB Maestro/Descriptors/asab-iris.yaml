@@ -169,3 +169,12 @@ asab-config:
 
 nginx:
   api: 8896
+
+  # MS365 delegated OAuth callback must stay reachable without nginx auth.
+  # Microsoft redirects the browser here with ?code=..., nginx rewrites the
+  # public /api/asab-iris/... path to Iris's internal /authorize_ms365 route.
+  https:
+    location /api/asab-iris/authorize_ms365:
+      - auth_basic off
+      - rewrite /api/asab-iris/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8896
