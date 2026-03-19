@@ -101,8 +101,8 @@ nginx:
 
     - proxy_cache_bypass $http_upgrade
 
-    - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie%20batman&client_id=kibana&redirect_uri={{PUBLIC_URL}}$request_uri
-    - error_page 403 /auth
+    - error_page 401 =302 /auth/api/openidconnect/authorize?response_type=code&scope=cookie%20batman&client_id=kibana&redirect_uri={{PUBLIC_URL}}$request_uri
+    - error_page 403 =302 /auth
 
 
     location /_kibana_introspect:

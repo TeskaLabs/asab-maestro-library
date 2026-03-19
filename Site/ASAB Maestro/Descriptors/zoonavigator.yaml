@@ -49,8 +49,8 @@ nginx:
       - proxy_set_header Cookie $cookie
       - proxy_pass http://{{NODE_ID}}:9001
       - proxy_redirect off
-      - error_page 403 /auth
-      - error_page 401 /auth/api/openidconnect/authorize?response_type=code&scope=cookie&client_id=zoonavigator&redirect_uri={{PUBLIC_URL}}$request_uri
+      - error_page 403 =302 /auth
+      - error_page 401 =302 /auth/api/openidconnect/authorize?response_type=code&scope=cookie&client_id=zoonavigator&redirect_uri={{PUBLIC_URL}}$request_uri
 
     location /zoonavigator_cookie_introspect:
       - internal
