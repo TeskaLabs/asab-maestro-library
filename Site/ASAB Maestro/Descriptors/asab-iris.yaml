@@ -25,11 +25,11 @@ asab:
       public_url: "{{PUBLIC_URL}}"
 
 asab-config:
-  asab-iris:
+  Slack:
     __schema__:
       file:
         {
-          "title": "asab-iris",
+          "title": "Slack",
           "type": "object",
           "properties": {
             "slack": {
@@ -56,7 +56,20 @@ asab-config:
               },
               "if": { "minProperties": 1 },
               "then": { "required": ["token", "channel"] }
-            },
+            }
+          }
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
+  Microsoft Teams:
+    __schema__:
+      file:
+        {
+          "title": "Microsoft Teams",
+          "type": "object",
+          "properties": {
             "msteams": {
               "title": "Microsoft Teams",
               "description": "Configure connection to MS Teams.",
@@ -72,7 +85,21 @@ asab-config:
               },
               "if": { "minProperties": 1 },
               "then": { "required": ["webhook_url"] }
-            },
+            }
+          }
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
+
+  Microsoft 365 Email:
+    __schema__:
+      file:
+        {
+          "title": "Microsoft 365 Email",
+          "type": "object",
+          "properties": {
             "m365_email": {
               "title": "Microsoft 365 Email",
               "description": "Configure Graph API for sending mail via M365.",
@@ -148,8 +175,21 @@ asab-config:
                   }
                 }
               ]
-            },
-            "sms": {
+            }
+          }
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
+  SMS:
+    __schema__:
+      file:
+        {
+          "title": "SMS",
+          "type": "object",
+          "properties": {
+          "sms": {
               "title": "SMS",
               "description": "Configure connection to SMSBrána.",
               "type": "object",
@@ -179,7 +219,22 @@ asab-config:
               },
               "if": { "minProperties": 1 },
               "then": { "required": ["login", "password", "api_url"] }
-            },
+            }
+          }
+          
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
+
+  Push notification:
+    __schema__:
+      file:
+        {
+          "title": "Push notification",
+          "type": "object",
+          "properties": {
             "push": {
               "title": "Push notification",
               "description": "Configure connection to push backend (ntfy).",
@@ -207,16 +262,9 @@ asab-config:
               "if": { "minProperties": 1 },
               "then": { "required": ["url"] }
             }
-          },
-          "additionalProperties": false,
-          "anyOf": [
-            { "required": ["slack"] },
-            { "required": ["msteams"] },
-            { "required": ["m365_email"] },
-            { "required": ["sms"] },
-            { "required": ["push"] }
-          ]
+          }
         }
+
     config:
       file: {}
       if_not_exists: true
