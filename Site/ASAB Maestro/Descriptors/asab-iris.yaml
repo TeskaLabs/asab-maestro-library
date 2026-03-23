@@ -228,16 +228,16 @@ asab-config:
       if_not_exists: true
 
 
-  Push notification:
+  "ntfy.sh Push Notifications":
     __schema__:
       file:
         {
-          "title": "Push notification",
+          "title": "ntfy.sh Push Notifications",
           "type": "object",
           "properties": {
             "push": {
-              "title": "Push notification",
-              "description": "Configure connection to push backend (ntfy).",
+              "title": "ntfy.sh Push Notifications",
+              "description": "Configure connection to push backend (https://ntfy.sh/).",
               "type": "object",
               "additionalProperties": false,
               "properties": {
