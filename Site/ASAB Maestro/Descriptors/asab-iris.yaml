@@ -179,6 +179,33 @@ asab-config:
               },
               "if": { "minProperties": 1 },
               "then": { "required": ["login", "password", "api_url"] }
+            },
+            "push": {
+              "title": "Push notification",
+              "description": "Configure connection to push backend (ntfy).",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "title": "Base URL",
+                  "type": "string",
+                  "format": "uri",
+                  "minLength": 1
+                },
+                "default_topic": {
+                  "title": "Default topic",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "timeout": {
+                  "title": "Timeout (seconds)",
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 10
+                }
+              },
+              "if": { "minProperties": 1 },
+              "then": { "required": ["url"] }
             }
           },
           "additionalProperties": false,
@@ -186,7 +213,8 @@ asab-config:
             { "required": ["slack"] },
             { "required": ["msteams"] },
             { "required": ["m365_email"] },
-            { "required": ["sms"] }
+            { "required": ["sms"] },
+            { "required": ["push"] }
           ]
         }
     config:
