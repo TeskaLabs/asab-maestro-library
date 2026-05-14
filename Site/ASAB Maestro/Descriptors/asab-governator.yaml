@@ -25,6 +25,12 @@ descriptor:
 nginx:
   api: &apiport 8892
 
+  https:
+    # This is for downloading receiver jizera archive data
+    location /api/asab-governator/export_logs:
+      - rewrite /api/asab-governator/(.*) /$1 break
+      - proxy_pass http://upstream-asab-governator-8892
+
 asab:
   configname: conf/asab-governator.conf
   config:
