@@ -25,11 +25,6 @@ descriptor:
 nginx:
   api: &apiport 8892
 
-  https:
-    location /api/{{INSTANCE_ID}}/export-download:
-      - rewrite /api/{{INSTANCE_ID}}/(.*) /$1 break
-      - proxy_pass http://{{NODE_ID}}:8892
-
 asab:
   configname: conf/asab-governator.conf
   config:
