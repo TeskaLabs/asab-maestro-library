@@ -8,7 +8,7 @@ webapp:
   # TODO: Implement fallback source: https://webappsreg-secondary.z6.web.core.windows.net/
 
 mfe:
-  https:
+  https: &https
     /: lmio_webui
     /asab_config_webui: asab_config_webui
     /asab_library_webui: asab_library_webui
@@ -24,3 +24,6 @@ mfe:
     /lmio_logsources_webui: lmio_logsources_webui
     /lmio_parser_builder_webui: lmio_parser_builder_webui
     /lmio_detection_webui: lmio_detection_webui
+
+  # Internal server serves identical content to https
+  internal: *https
