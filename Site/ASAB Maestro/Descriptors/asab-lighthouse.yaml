@@ -1,0 +1,20 @@
+---
+define:
+  type: rc/descriptor
+  name: ASAB Lighthouse
+
+descriptor:
+  image: docker.teskalabs.com/asab/asab-lighthouse
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+asab:
+  configname: conf/asab-lighthouse.conf
+  config:
+    auth:
+      public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
+    tenants:
+      tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
+
+nginx:
+  api: 8899
