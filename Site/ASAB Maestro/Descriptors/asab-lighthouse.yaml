@@ -1,0 +1,13 @@
+---
+define:
+  type: rc/descriptor
+  name: ASAB Lighthouse
+
+descriptor:
+  image: docker.teskalabs.com/asab/asab-lighthouse
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+asab:
+  configname: conf/asab-lighthouse.conf
+    
