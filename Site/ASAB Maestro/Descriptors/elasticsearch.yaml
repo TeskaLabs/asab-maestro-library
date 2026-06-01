@@ -117,6 +117,7 @@ telegraf: |
     cluster_health = true
     cluster_health_level = "cluster"
     cluster_stats = true
+    node_stats = ["breaker", "fs", "indices", "jvm", "os", "process"]
   
   [[processors.rename]]
     namepass = ["elasticsearch*"]
