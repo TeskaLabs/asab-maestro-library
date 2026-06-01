@@ -4,7 +4,7 @@ define:
   url: https://nginx.org
 
 descriptor:
-  image: library/nginx
+  image: pcr.teskalabs.com/library/nginx
 
   # Aligned with "container user" in NGINX container
   user: 10001:10001

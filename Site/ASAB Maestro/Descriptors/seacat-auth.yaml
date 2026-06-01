@@ -10,7 +10,7 @@ params:
   SEACAT_AUTH_PUBLIC: "http://seacat-auth:3081"
 
 descriptor:
-  image: teskalabs/seacat-auth
+  image: pcr.teskalabs.com/teskalabs/seacat-auth
   
   environment:
     # provisioning is skipped in automated deployments
