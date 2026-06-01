@@ -8,7 +8,7 @@ secrets:
   GRAFANA_CLIENT_SECRET: {}
 
 descriptor:
-  image: grafana/grafana
+  image: pcr.teskalabs.com/grafana/grafana
 
   user: "10003:10003"
 

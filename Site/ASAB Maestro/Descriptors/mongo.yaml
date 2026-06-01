@@ -4,7 +4,7 @@ define:
   url: https://github.com/mongodb/mongo
 
 descriptor:
-  image: library/mongo
+  image: pcr.teskalabs.com/library/mongo
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"

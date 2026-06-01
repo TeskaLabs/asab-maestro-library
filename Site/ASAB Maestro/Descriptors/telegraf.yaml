@@ -4,7 +4,7 @@ define:
   url: https://github.com/influxdata/telegraf
 
 descriptor:
-  image: telegraf
+  image: pcr.teskalabs.com/telegraf
 
   environment:
     HOST_MOUNT_PREFIX: /hostfs
