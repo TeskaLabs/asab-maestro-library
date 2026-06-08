@@ -24,6 +24,21 @@ descriptor:
 
 nginx:
   api: &apiport 8892
+  https:
+    # Instance-specific endpoint for export-download
+    # Uses Jinja2 templating to create unique locations per instance:
+    #   /api/asab-governator-1/export-download -> node1:8892
+    #   /api/asab-governator-2/export-download -> node2:8892
+    #   etc.
+    # This endpoint bypasses OAuth introspection for export functionality
+    location /api/{{INSTANCE_ID}}/export-download:
+      - rewrite /api/{{INSTANCE_ID}}/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8892
+  internal:
+    # Same instance-specific endpoint for internal server
+    location /api/{{INSTANCE_ID}}/export-download:
+      - rewrite /api/{{INSTANCE_ID}}/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8892
 
 asab:
   configname: conf/asab-governator.conf
