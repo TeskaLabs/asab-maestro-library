@@ -9,6 +9,8 @@ descriptor:
   volumes:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
 asab:
   configname: conf/asab-iris.conf
@@ -16,6 +18,8 @@ asab:
     kafka:
       topic: notifications
       group_id: asab-iris
+    library:
+      cache_dir: /library/cache
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
     # [variables] must be filled from general confguration (user)
