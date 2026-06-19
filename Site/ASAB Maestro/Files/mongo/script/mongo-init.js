@@ -58,12 +58,53 @@ function defaultWriteConcernFromEnv() {
 	return { w: String(w).trim(), wtimeout: 0 }
 }
 
+/**
+ * Count reachable voting members (excluding arbiters) from rs.status().
+ * Used to determine if "majority" write concern is achievable.
+ */
+function reachableVotingMemberCount() {
+	let count = 0
+	try {
+		const st = rs.status()
+		for (let i = 0; i < st.members.length; i++) {
+			const m = st.members[i]
+			// Skip arbiters (they don't hold data, but they do vote)
+			// Only count members that are in a healthy state (PRIMARY=1, SECONDARY=2, STARTUP2=5, RECOVERING=3)
+			const isHealthy = [1, 2, 3, 5].includes(m.state)
+			if (isHealthy) {
+				const conf = rs.conf()
+				const memberConf = conf.members.find(cm => cm.host === m.name)
+				if (memberConf && memberConf.arbiterOnly !== true) {
+					count++
+				}
+			}
+		}
+	} catch (e) {
+		print("[cwwc] could not determine reachable voting members: " + e.message)
+	}
+	return count
+}
+
 function ensureClusterWideDefaultWriteConcern() {
 	const dwc = defaultWriteConcernFromEnv()
+	// When dwc is "majority", check if we can actually achieve majority.
+	// If members are being decommissioned (unreachable), use a weaker write concern.
+	const reachableCount = reachableVotingMemberCount()
+	const wc = { w: "majority", wtimeout: 15000 }
+	if (dwc.w === "majority" && reachableCount > 0) {
+		// If majority requires more members than are reachable, use w=1 instead.
+		const current = rs.conf()
+		const totalVotingMembers = current.members.filter(m => m.votes > 0).length
+		const majority = Math.floor(totalVotingMembers / 2) + 1
+		if (majority > reachableCount) {
+			print("[cwwc] majority=" + majority + " but only " + reachableCount + " reachable; using w=1 for setDefaultRWConcern")
+			wc.w = 1
+		}
+	}
 	const res = db.adminCommand({
 		setDefaultRWConcern: 1,
 		defaultWriteConcern: dwc,
-		writeConcern: { w: "majority", wtimeout: 15000 },
+		writeConcern: wc,
 	})
 	if (!res.ok) {
 		const msg = res.errmsg != null ? res.errmsg : JSON.stringify(res)
@@ -269,34 +310,108 @@ function connectedMemberHost() {
  * Flow 2: mongo instance removed from cluster model — host no longer in replica-set.json.
  * Remaining desired config must still list at least one data member; cannot remove this primary's host.
  */
+/**
+ * Check if a member is reachable from rs.status().
+ * Returns true if healthy, false if unhealthy/unreachable, true if not found (assume reachable).
+ */
+function isMemberReachable(host) {
+	try {
+		const st = rs.status()
+		for (let i = 0; i < st.members.length; i++) {
+			if (normalizeMemberHost(st.members[i].name) === normalizeMemberHost(host)) {
+				return st.members[i].health === 1
+			}
+		}
+	} catch (e) {
+		// Cannot read status — assume reachable (will try rs.remove first)
+	}
+	return true
+}
+
+/**
+ * Force-reconfig to remove members from the replica set.
+ * Used when members are unreachable and rs.remove() would hang indefinitely.
+ * Builds a new config with only the surviving members and applies with {force: true}.
+ */
+function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
+	const hostsToRemove = Array.from(toRemoveSet)
+	print("[force reconfig] Removing unreachable members via rs.reconfig({force:true}): " + hostsToRemove.join(", "))
+	const filtered = current.members.filter(function(m) {
+		const h = normalizeMemberHost(m.host)
+		return !toRemoveSet.has(h)
+	})
+	if (filtered.length === 0) {
+		throw new Error("Force reconfig would remove ALL members — refusing (need at least 1 data member)")
+	}
+	// Validate at least one data member remains
+	let hasData = false
+	for (let i = 0; i < filtered.length; i++) {
+		if (filtered[i].arbiterOnly !== true) {
+			hasData = true
+			break
+		}
+	}
+	if (!hasData) {
+		throw new Error("Force reconfig would remove all data-bearing members — refusing")
+	}
+	const newConfig = {
+		_id: current._id,
+		members: filtered,
+		version: current.version + 1,
+		protocolVersion: current.protocolVersion !== undefined ? current.protocolVersion : 1,
+	}
+	if (current.settings !== undefined && current.settings !== null) {
+		newConfig.settings = Object.assign({}, current.settings)
+	}
+	const result = rs.reconfig(newConfig, {force: true})
+	print("[force reconfig] ok=" + result.ok + " (new version=" + newConfig.version + ")")
+}
+
+/**
+ * Flow 2: mongo instance removed from cluster model — host no longer in replica-set.json.
+ * Remaining desired config must still list at least one data member; cannot remove this primary's host.
+ */
 function removeMembersDroppedFromDesired(desired, current) {
 	if (desiredDataMemberCount(desired) < 1) {
 		throw new Error("replica-set.json must keep at least one data (non-arbiter) member")
 	}
 	const wantHosts = desiredHostSet(desired)
 	const selfH = connectedMemberHost()
-	const toRemove = []
+	const toRemoveReachable = []
+	const toRemoveUnreachable = new Set()
 	for (const cm of current.members) {
 		const h = normalizeMemberHost(cm.host)
 		if (!wantHosts.has(h)) {
-			toRemove.push(h)
+			if (selfH !== null && h === selfH) {
+				throw new Error(
+					"Desired config omits the current primary host (" +
+						h +
+					"). Step down another primary first, or keep this member in replica-set.json until then."
+				)
+			}
+			if (isMemberReachable(h)) {
+				toRemoveReachable.push(h)
+			} else {
+				toRemoveUnreachable.add(h)
+			}
 		}
 	}
-	for (let i = 0; i < toRemove.length; i++) {
-		const h = toRemove[i]
-		print("[flow 2 decommission] Removing member not present in desired config: " + h)
-		if (selfH !== null && h === selfH) {
-			throw new Error(
-				"Desired config omits the current primary host (" +
-					h +
-					"). Step down another primary first, or keep this member in replica-set.json until then."
-			)
-		}
+	// Remove reachable members via rs.remove() (they respond quickly)
+	for (let i = 0; i < toRemoveReachable.length; i++) {
+		const h = toRemoveReachable[i]
+		print("[flow 2 decommission] Removing reachable member: " + h)
 		try {
 			rs.remove(h)
+			current = rs.conf()
 		} catch (e) {
-			print("rs.remove failed (may retry next init): " + e.message)
+			print("rs.remove failed (will handle via force reconfig): " + e.message)
+			toRemoveUnreachable.add(h)
 		}
+	}
+	// Remove unreachable members via force reconfig (avoids hanging on rs.remove)
+	if (toRemoveUnreachable.size > 0) {
+		current = rs.conf()
+		forceReconfigToRemoveMembers(desired, current, toRemoveUnreachable)
 	}
 }
 
@@ -366,8 +481,11 @@ function assertArbiterToDataRequiresManual(desired, current) {
 			continue
 		}
 		const wantArbiter = dm.arbiterOnly === true
+		const wantData = dm.arbiterOnly === false
 		const isArbiter = cm.arbiterOnly === true
-		if (isArbiter && !wantArbiter) {
+		// Only fail if operator EXPLICITLY wants arbiter->data (arbiterOnly: false in desired).
+		// If desired config omits arbiterOnly for an existing arbiter, preserve arbiter status.
+		if (isArbiter && wantData) {
 			offenders.push(h)
 		}
 	}
@@ -470,6 +588,11 @@ function assertNoIllegalArbiterTransition(desired, current) {
 		if (!cm) {
 			continue
 		}
+		// Only fail if operator EXPLICITLY wants to change arbiterOnly (true or false in desired).
+		// If desired config omits arbiterOnly for an existing member, preserve current role.
+		if (dm.arbiterOnly === undefined || dm.arbiterOnly === null) {
+			continue
+		}
 		const wantArbiter = dm.arbiterOnly === true
 		const isArbiter = cm.arbiterOnly === true
 		if (isArbiter !== wantArbiter) {
@@ -492,11 +615,14 @@ function assertNoIllegalArbiterTransition(desired, current) {
  */
 function mergeLiveMemberWithDesired(dm, cm) {
 	const h = normalizeMemberHost(dm.host)
-	const wantArbiter = dm.arbiterOnly === true
 	const out = Object.assign({}, cm)
 	out._id = cm._id
 	out.host = h
-	out.arbiterOnly = wantArbiter
+	// Only change arbiterOnly if operator explicitly sets it (true or false).
+	// If desired config omits arbiterOnly for an existing member, preserve current role.
+	if (dm.arbiterOnly !== undefined && dm.arbiterOnly !== null) {
+		out.arbiterOnly = dm.arbiterOnly === true
+	}
 	if (dm.priority !== undefined) {
 		out.priority = dm.priority
 	}
@@ -512,8 +638,10 @@ function mergeLiveMemberWithDesired(dm, cm) {
 	if (out.votes === undefined || out.votes === null) {
 		out.votes = 1
 	}
+	// Fix: use out.arbiterOnly instead of undefined wantArbiter
+	const isArbiter = out.arbiterOnly === true
 	if (out.priority === undefined || out.priority === null) {
-		out.priority = wantArbiter ? 0 : 1
+		out.priority = isArbiter ? 0 : 1
 	}
 	return out
 }
