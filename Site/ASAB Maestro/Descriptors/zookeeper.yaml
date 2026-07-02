@@ -33,6 +33,20 @@ descriptor:
     retries: 5
     start_period: 30s
 
+
+sherpas:
+  # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
+  # provide a name to your sherpa and a descriptor for its very own container.
+  reconfig:
+    image: pcr.teskalabs.com/asab-governator:{{ VERSIONS["asab-governator"] }}
+    entrypoint: ["python3", "/script/reconfig.py"]
+    command: ["echo", "DONE"]
+    volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+    depends_on: ["{{INSTANCE_ID}}"]
+    environment:
+      ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
+
 files:
   - confro/
 
