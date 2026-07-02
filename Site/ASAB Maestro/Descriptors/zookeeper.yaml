@@ -38,7 +38,7 @@ sherpas:
   # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
   # provide a name to your sherpa and a descriptor for its very own container.
   reconfig:
-    image: pcr.teskalabs.com/asab-governator:{{ VERSIONS["asab-governator"] }}
+    image: pcr.teskalabs.com/asab/asab-governator:{{ VERSIONS["asab-governator"] }}
     entrypoint: ["python3", "/script/reconfig.py"]
     command: ["echo", "DONE"]
     volumes:
