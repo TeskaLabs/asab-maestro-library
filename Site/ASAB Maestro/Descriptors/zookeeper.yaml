@@ -54,6 +54,7 @@ files:
   # More at https://zookeeper.apache.org/doc/r3.8.1/zookeeperOracleQuorums.html
   - confro/oracle.txt: 0
 
+  - script/
 
 telegraf: |
   [[inputs.zookeeper]]
