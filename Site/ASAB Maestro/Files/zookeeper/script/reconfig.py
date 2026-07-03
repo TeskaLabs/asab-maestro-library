@@ -1,13 +1,8 @@
 import os
 import sys
 import time
-import json
-import shutil
-import collections
-import urllib.request
 import logging
 
-import jinja2
 import kazoo
 import kazoo.client
 import kazoo.exceptions
@@ -63,6 +58,7 @@ if __name__ == "__main__":
 
 	zkconfig_new = None
 	for attempt in range(1, 6):  # Try up to 5 times
+		reconfig_error = None
 		try:
 			zkconfig_new = kazoo_client.reconfig(
 				joining=joining_server,
@@ -70,8 +66,43 @@ if __name__ == "__main__":
 				new_members=None
 			)
 			break
-		except Exception as e:
-			L.warning("Failed to reconfigure ZooKeeper (attempt {}/5): {}".format(attempt, e))
+		except kazoo.exceptions.ReconfigInProcessError as e:
+			reconfig_error = "Another reconfiguration is in progress: {}".format(e)
+		except kazoo.exceptions.NewConfigNoQuorumError as e:
+			reconfig_error = "No quorum of new config is connected and up-to-date: {}".format(e)
+		except kazoo.exceptions.BadVersionError as e:
+			reconfig_error = "Configuration version mismatch: {}".format(e)
+		except kazoo.exceptions.BadArgumentsError as e:
+			L.error("Invalid reconfiguration arguments: {}".format(e))
+			kazoo_client.stop()
+			sys.exit(21)
+		except kazoo.exceptions.UnimplementedError as e:
+			L.error("ZooKeeper reconfiguration is not supported: {}".format(e))
+			kazoo_client.stop()
+			sys.exit(21)
+		except kazoo.exceptions.ConnectionLoss as e:
+			reconfig_error = "Connection to ZooKeeper lost: {}".format(e)
+		except kazoo.exceptions.ConnectionClosedError as e:
+			reconfig_error = "ZooKeeper connection closed: {}".format(e)
+		except kazoo.exceptions.SessionExpiredError as e:
+			reconfig_error = "ZooKeeper session expired: {}".format(e)
+		except kazoo.exceptions.SessionMovedError as e:
+			reconfig_error = "ZooKeeper session moved: {}".format(e)
+		except kazoo.exceptions.OperationTimeoutError as e:
+			reconfig_error = "ZooKeeper operation timed out: {}".format(e)
+		except kazoo.exceptions.ZookeeperStoppedError as e:
+			reconfig_error = "Kazoo client stopped: {}".format(e)
+		except kazoo.exceptions.ConnectionDropped as e:
+			reconfig_error = "ZooKeeper connection dropped: {}".format(e)
+		except kazoo.exceptions.CancelledError as e:
+			reconfig_error = "ZooKeeper operation cancelled: {}".format(e)
+		except kazoo.exceptions.ZookeeperError as e:
+			reconfig_error = "ZooKeeper server error: {}".format(e)
+		except kazoo.exceptions.KazooException as e:
+			reconfig_error = "Kazoo client error: {}".format(e)
+
+		if reconfig_error is not None:
+			L.warning("Failed to reconfigure ZooKeeper (attempt {}/5): {}".format(attempt, reconfig_error))
 			if attempt < 5:
 				wait_time = min(2 ** attempt, 30)  # Exponential backoff, max 30 seconds
 				L.info("Retrying in {} seconds...".format(wait_time))
