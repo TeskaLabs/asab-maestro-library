@@ -45,7 +45,7 @@ sherpas:
     - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
     depends_on: ["{{INSTANCE_ID}}"]
     environment:
-      ZOOKEEPER_SERVERS: "{{ZOOKEEPER_SERVERS}}"
+      ZOOKEEPER_SERVERS: '{{ ZOOKEEPER_SERVERS | join(",") }}'
 
 files:
   - confro/
