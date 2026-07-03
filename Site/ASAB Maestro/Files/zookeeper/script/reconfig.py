@@ -24,8 +24,8 @@ L = logging.getLogger(__name__)
 if __name__ == "__main__":
 	joining_server = os.getenv('JOINING')
 	if joining_server is None:
-		L.error("JOINING environment variable is not set. Exiting...")
-		sys.exit(20)
+		L.info("JOINING environment variable is not set. Reconfiguration is not needed. Exiting...")
+		sys.exit(0)
 
 	L.info("Joining server: {}".format(joining_server))
 	L.info("Reconfiguring ZooKeeper...")
