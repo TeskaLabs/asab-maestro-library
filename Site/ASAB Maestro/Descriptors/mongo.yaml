@@ -37,10 +37,6 @@ files:
         maxIncomingConnections: 5000
       replication:
         replSetName: rs0
-      storage:
-        wiredTiger:
-          engineConfig:
-            cacheSizeGB: 0.75
 
   # Disable telemetry collection by MongoDB
   - "conf/mongosh.conf": |
