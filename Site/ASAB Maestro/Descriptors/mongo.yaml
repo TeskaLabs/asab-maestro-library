@@ -11,6 +11,9 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
 
   command: mongod --config /etc/mongo/mongod.conf --directoryperdb
+  mem_limit: 2g
+  memswap_limit: 2g
+  mem_swappiness: 0
 
 sherpas:
   # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
@@ -31,9 +34,13 @@ files:
       net:
         bindIp: "{{INTERNAL_NETWORK_IP}},127.0.0.1"
         port: 27017
-        maxIncomingConnections: 120000
+        maxIncomingConnections: 5000
       replication:
         replSetName: rs0
+      storage:
+        wiredTiger:
+          engineConfig:
+            cacheSizeGB: 0.75
 
   # Disable telemetry collection by MongoDB
   - "conf/mongosh.conf": |
