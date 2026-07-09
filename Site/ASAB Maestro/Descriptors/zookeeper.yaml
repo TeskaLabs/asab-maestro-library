@@ -10,8 +10,8 @@ descriptor:
 
   entrypoint: ["/bin/bash", "-e", "/confro/zkstart.sh"]
   command: ["zkServer.sh", "start-foreground"]
-  mem_limit: 2g
-  memswap_limit: 2g
+  mem_limit: 4g
+  memswap_limit: 4g
   mem_swappiness: 0
 
   volumes:
@@ -23,7 +23,7 @@ descriptor:
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    JVMFLAGS: "-Xms1g -Xmx1g -Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
+    JVMFLAGS: "-Xms2g -Xmx2g -Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
 
   healthcheck:
     test:
