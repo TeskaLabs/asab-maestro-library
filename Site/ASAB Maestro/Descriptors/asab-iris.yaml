@@ -21,6 +21,8 @@ asab:
     # [variables] must be filled from general confguration (user)
     email:
       markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
+    tenants:
+      tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
     variables:
       public_url: "{{PUBLIC_URL}}"
 
