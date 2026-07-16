@@ -2,7 +2,6 @@
 define:
   type: rc/descriptor
   name: Burrow
-  # just for testing
 
 descriptor:
   image: docker.teskalabs.com/burrow
