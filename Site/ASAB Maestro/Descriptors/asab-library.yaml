@@ -10,6 +10,8 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     # For persistency of fultext-search data
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/var/lib/asab-library"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
   # This is critical service
   restart: always
@@ -21,6 +23,8 @@ asab:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
       tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
+    library:
+      cache_dir: /library/cache
 
 nginx:
   api: 8893
