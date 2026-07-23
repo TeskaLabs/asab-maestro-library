@@ -17,7 +17,7 @@ asab:
 
       # Points to the internal NGINX
       internal_url: http://nginx:8890
-      url_white_list: "http://nginx:8890"
+      url_white_list: http://nginx:8890
 
 nginx:
   api: 8895
