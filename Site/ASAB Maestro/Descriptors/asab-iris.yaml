@@ -63,6 +63,66 @@ asab-config:
       file: {}
       if_not_exists: true
 
+  Mattermost:
+    __schema__:
+      file:
+        {
+          "title": "Mattermost",
+          "type": "object",
+          "properties": {
+            "mattermost": {
+              "title": "Mattermost",
+              "description": "Configure connection to a default Mattermost channel.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "title": "Server URL",
+                  "description": "Base URL of the Mattermost server.",
+                  "format": "uri",
+                  "minLength": 1
+                },
+                "token": {
+                  "type": "string",
+                  "title": "Bot Token",
+                  "description": "Access token of the Mattermost bot.",
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                    }
+                  }
+                },
+                "security_channel_id": {
+                  "type": "string",
+                  "title": "Default Channel ID",
+                  "description": "Channel used when a notification does not specify a destination.",
+                  "minLength": 1
+                },
+                "bot_username": {
+                  "type": "string",
+                  "title": "Bot Username",
+                  "description": "Mattermost bot username required for direct messages.",
+                  "minLength": 1
+                },
+                "timeout": {
+                  "type": "integer",
+                  "title": "Request Timeout",
+                  "description": "Mattermost API request timeout in seconds.",
+                  "minimum": 1,
+                  "default": 10
+                }
+              },
+              "if": { "minProperties": 1 },
+              "then": { "required": ["url", "token", "security_channel_id"] }
+            }
+          }
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
   Microsoft Teams:
     __schema__:
       file:
