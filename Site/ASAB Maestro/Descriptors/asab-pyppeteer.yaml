@@ -13,8 +13,10 @@ descriptor:
 asab:
   configname: conf/asab-pyppeteer.conf
   config:
+
     auth:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
+
     pyppeteer:
       ignore_certificate_errors: 1
 
