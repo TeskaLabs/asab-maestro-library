@@ -12,13 +12,17 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{SLOW_STORAGE}}/vault:/data/vault:ro"
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/internal:/var/run/internal"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
   # This is critical service
   restart: always
 
 asab:
   configname: conf/asab-remote-control.conf
-  config: {}  # specify default configuration of the service
+  config:
+    library:
+      cache_dir: /library/cache
 
 asab-config:
   Library:
