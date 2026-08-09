@@ -20,7 +20,7 @@ asab:
     auth:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
-      tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
+      zk_path: "asab/config/Tenants/"
 
 nginx:
   api: 8893
