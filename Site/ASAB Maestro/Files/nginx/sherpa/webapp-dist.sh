@@ -9,6 +9,46 @@ TMP_DIR=/tmp
 
 MAXSIZE=100M
 
+# args: url, name, archive_path
+# return 0: downloaded, 1: try next URL, 2: up-to-date
+try_download() {
+	url="$1"
+	name="$2"
+	archive="$3"
+
+	http_code=$(curl --silent --show-error --fail \
+		--etag-save "$CACHE_DIR/$name.etag-new" \
+		--etag-compare "$CACHE_DIR/$name.etag" \
+		--max-filesize ${MAXSIZE} \
+		--retry 3 \
+		--retry-delay 1 \
+		-w "%{http_code}" \
+		-o "$archive" \
+		"$url") || true
+
+	if [ ! -f "$archive" ]; then
+		if [ "$http_code" = "304" ] || [ "$http_code" = "200" ]; then
+			# ETag check indicates no change (304 or matching ETag)
+			return 2
+		fi
+	else
+		if [ "$http_code" = "200" ]; then
+			return 0
+		fi
+	fi
+
+	case "$http_code" in
+		404)
+			echo "Version not found (404): $url"
+			;;
+		*)
+			echo "Failed to download from $url (HTTP $http_code). Trying next source if available..."
+			;;
+	esac
+	rm -f "$archive" "$CACHE_DIR/$name.etag-new"
+	return 1
+}
+
 install_mfe() {
 	urls_str="$1"
 	name="$2"
@@ -23,33 +63,20 @@ install_mfe() {
 
 	downloaded=0
 	up_to_date=0
+	archive="$TMP_DIR/$name.tar.xz"
 
 	# Try each URL in order
+	# try_download must run inside 'if' — the sherpa invokes this script with 'sh -e'
 	for url in $urls_spaced; do
-		# By putting curl directly inside the 'if' statement, we prevent 
-		# 'sh -e' from immediately crashing the script if the download fails.
-		if curl --silent --show-error \
-			--etag-save "$CACHE_DIR/$name.etag-new" \
-			--etag-compare "$CACHE_DIR/$name.etag" \
-			--max-filesize ${MAXSIZE} \
-			--retry 3 \
-			--retry-delay 1 \
-			-o "$TMP_DIR/$name.tar.xz" \
-			"$url"; then
-			
-			if [ ! -f "$TMP_DIR/$name.tar.xz" ]; then
-				# ETag check indicates no change
-				up_to_date=1
-			else
-				# Successfully downloaded a new file
-				downloaded=1
-			fi
-			# Success - stop trying fallback URLs
+		if try_download "$url" "$name" "$archive"; then
+			downloaded=1
 			break
 		else
-			echo "Failed to download from $url. Trying next source if available..."
-			# Clean up any partial fragments before trying the next URL
-			rm -f "$TMP_DIR/$name.tar.xz" "$CACHE_DIR/$name.etag-new"
+			rc=$?
+			if [ $rc -eq 2 ]; then
+				up_to_date=1
+				break
+			fi
 		fi
 	done
 
@@ -66,10 +93,14 @@ install_mfe() {
 
 	# Install downloaded application
 	mkdir "$name.new"
-	xzcat "$TMP_DIR/$name.tar.xz" | tar x -C "./$name.new"
+	if ! xzcat "$archive" | tar x -C "./$name.new"; then
+		echo "Error: Downloaded file is not a valid archive for $name."
+		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
+		return
+	fi
 
 	# Clean up
-	rm -rf "./$name" "$TMP_DIR/$name.tar.xz"
+	rm -rf "./$name" "$archive"
 	mv -T "./$name.new" "./$name"
 	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
 	echo "$name installed."
@@ -89,26 +120,18 @@ install_spa() {
 
 	downloaded=0
 	up_to_date=0
+	archive="$TMP_DIR/$name.tar.lzma"
 
 	for url in $urls_spaced; do
-		if curl --silent --show-error \
-			--etag-save "$CACHE_DIR/$name.etag-new" \
-			--etag-compare "$CACHE_DIR/$name.etag" \
-			--max-filesize ${MAXSIZE} \
-			--retry 3 \
-			--retry-delay 1 \
-			-o "$TMP_DIR/$name.tar.lzma" \
-			"$url"; then
-			
-			if [ ! -f "$TMP_DIR/$name.tar.lzma" ]; then
-				up_to_date=1
-			else
-				downloaded=1
-			fi
+		if try_download "$url" "$name" "$archive"; then
+			downloaded=1
 			break
 		else
-			echo "Failed to download from $url. Trying next source if available..."
-			rm -f "$TMP_DIR/$name.tar.lzma" "$CACHE_DIR/$name.etag-new"
+			rc=$?
+			if [ $rc -eq 2 ]; then
+				up_to_date=1
+				break
+			fi
 		fi
 	done
 
@@ -125,10 +148,14 @@ install_spa() {
 
 	# Install downloaded application
 	mkdir "$name.new"
-	lzcat "$TMP_DIR/$name.tar.lzma" | tar x -C "./$name.new"
+	if ! lzcat "$archive" | tar x -C "./$name.new"; then
+		echo "Error: Downloaded file is not a valid archive for $name."
+		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
+		return
+	fi
 
 	# Clean up
-	rm -rf "./$name" "$TMP_DIR/$name.tar.lzma"
+	rm -rf "./$name" "$archive"
 	mv -T "./$name.new" "./$name"
 	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
 	echo "$name installed."
