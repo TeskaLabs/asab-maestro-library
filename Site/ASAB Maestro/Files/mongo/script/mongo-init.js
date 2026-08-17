@@ -12,35 +12,10 @@ const fs = require("fs")
  * 3) New core (data) node — rs.add when safe. If the live set is exactly one data member + ≥1 arbiter (PSA-style)
  *    and you add another electable data member, MongoDB rejects plain rs.add/rs.reconfig (NewReplicaSetConfigurationIncompatible);
  *    use rs.reconfigForPSASet(memberIndex, cfg) with the full merged config (see addMissingMembers).
- * 4) Node role change (arbiter ↔ data) — never flip arbiterOnly in place. Data→arbiter: script may rs.remove
- *    then you wipe dbPath and re-run so add-missing re-adds as arbiter. Arbiter→data: NOT automated — the script
- *    fails fast before any replica-set mutation (see assertArbiterToDataRequiresManual); you rs.remove, wipe
- *    dbPath, restart, then re-run init.
- *
- * Phase order in reconfigureReplicaSet(): (0) assert no arbiter→data pending (1) CWWC (2) decommission
- * (3) data→arbiter remove (4) add missing (5) rs.reconfig sync (6) sole-data-member PRIMARY election assist.
- *
- * --- Break-glass: mongod crash loop (OplogApplier / enableMajorityReadConcern invariant on MongoDB 7.x) ---
- * This script only runs while mongod stays up. A looping member has INVALID local data (typical: promoted
- * arbiter or role change without wiping dbPath). Logs show stale local repl config (e.g. setVersion 214988)
- * while primary is much newer, "No initial sync required" + immediate abort.
- *
- * Fix (operator, on the BROKEN host):
- *  A) On a HEALTHY primary (mongosh): rs.status() / rs.conf(). If the broken host is still listed,
- *     rs.remove("host:27017") so the cluster stops expecting that mongod.
- *  B) Stop the broken mongod container/service (so it does not restart-crash forever).
- *  C) Delete ALL files under that instance's dbPath (e.g. /data/db including WiredTiger*, local/, journal).
- *  D) Start mongod again with empty dbPath — it should NOT load old repl config; it may show as standalone
- *     or await rs.add.
- *  E) From primary: rs.add({ host: "...", ... }) or re-run this init against primary so the add-missing phase runs.
- *
- * Do not partially delete files; partial wipe keeps the crash.
+ * Unsupported flows:
+ * 1) Node role change (arbiter -> core)
  */
 
-/**
- * Cluster-wide default write concern (MongoDB 5.0+ gate before many reconfigs).
- * Optional: MONGO_INIT_DEFAULT_WRITE_CONCERN_W — "majority" (default), "1", "2", etc.
- */
 function defaultWriteConcernFromEnv() {
 	const w = process.env.MONGO_INIT_DEFAULT_WRITE_CONCERN_W
 	if (w == null || String(w).trim() === "" || String(w).trim() === "majority") {
@@ -53,10 +28,6 @@ function defaultWriteConcernFromEnv() {
 	return { w: String(w).trim(), wtimeout: 0 }
 }
 
-/**
- * Count reachable voting members (excluding arbiters) from rs.status().
- * Used to determine if "majority" write concern is achievable.
- */
 function reachableVotingMemberCount() {
 	let count = 0
 	try {
@@ -107,9 +78,6 @@ function normalizeMemberHost(host) {
 	return typeof host === "string" ? host.trim() : host
 }
 
-/**
- * rs.add / rs.addArb require the new member's mongod to already accept connections.
- */
 function peerWaitConfigFromEnv() {
 	const attempts = parseInt(process.env.MONGO_INIT_PEER_WAIT_ATTEMPTS || "60", 10)
 	const ms = parseInt(process.env.MONGO_INIT_PEER_WAIT_MS || "5000", 10)
@@ -289,9 +257,7 @@ function isMemberReachable(host) {
 				return st.members[i].health === 1
 			}
 		}
-	} catch (e) {
-		// Cannot read status — assume reachable (will try rs.remove first)
-	}
+	} catch (e) {}
 	return true
 }
 
@@ -395,9 +361,7 @@ function addMemberFromDesired(dm) {
 				if (t > 1) print("rs.add: " + h + " already in config, continuing")
 				return
 			}
-		} catch (_) {
-			/* conf unreadable; fall through to rs.add */
-		}
+		} catch (_) {}
 		try {
 			rs.add(doc)
 			return
@@ -413,7 +377,6 @@ function addMemberFromDesired(dm) {
 				}
 			}
 			const errText = String((err.message || "") + " " + (err.codeName || ""))
-			/* Concurrent init already added this member — treat as success, do not re-call rs.add */
 			if (/already exists|already in config/i.test(errText)) {
 				try {
 					if (currentMembersByHost(rs.conf())[h]) {
@@ -591,8 +554,6 @@ function buildReconfigDocument(desired, current) {
 	return newConfig
 }
 
-/* FIX-1: applyFullReconfig with retry on NewReplicaSetConfigurationIncompatible
-   (race: concurrent init may have just applied the same desired config) */
 function applyFullReconfig(desired) {
 	const maxRetries = parseInt(process.env.MONGO_INIT_RECONFIG_ATTEMPTS || "3", 10)
 	const retryMs = parseInt(process.env.MONGO_INIT_RECONFIG_DELAY_MS || "5000", 10)
@@ -656,7 +617,6 @@ function initiateReplicaSet() {
 }
 
 function isTransientConfigError(e) {
-	/* FIX-3: classify errors from concurrent-init races as retryable */
 	const msg = (e.message || "") + " " + (e.codeName || "")
 	return /MongoServerSelectionError|MongoNetworkError|ConfigurationInProgress|NewReplicaSetConfigurationIncompatible|already exists|already in config/i.test(msg)
 }
@@ -667,9 +627,6 @@ function main() {
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
 
-	/* FIX-4 (HIGH): Wait for ALL mongods before starting main loop.
-	   When all nodes restart simultaneously, waitForAllMongods is the
-	   first gate. Without it the main loop races an election in progress. */
 	const bootAttempts = parseInt(process.env.MONGO_INIT_BOOT_ATTEMPTS || "60", 10)
 	const bootMs = parseInt(process.env.MONGO_INIT_BOOT_MS || "3000", 10)
 	const maxBoot = isNaN(bootAttempts) ? 60 : Math.max(1, bootAttempts)
@@ -701,7 +658,6 @@ function main() {
 		print("[boot] WARNING: timed out; still down: " + Array.from(pending).join(", "))
 	}
 
-	/* FIX-5: Main loop — retry on concurrent-init errors instead of quitting */
 	const maxMain = parseInt(process.env.MONGO_INIT_MAIN_ATTEMPTS || "20", 10)
 	const maxMainSafe = isNaN(maxMain) ? 20 : Math.max(1, maxMain)
 
@@ -754,8 +710,6 @@ function main() {
 										print("SUCCESS!")
 										quit(0)
 									} catch (e) {
-										/* FIX-5b: if the reconfig failed due to a concurrent-init race,
-										   retry the outer loop instead of quitting */
 										if (isTransientConfigError(e)) {
 											print("[recovery] transient error (" + e.message + "), will retry.")
 											break
@@ -783,7 +737,6 @@ function main() {
 				print("SUCCESS!")
 				quit(0)
 			} catch (e) {
-				/* FIX-5a: on concurrent-init race, retry the outer loop */
 				if (isTransientConfigError(e)) {
 					print("[reconfig] transient error (" + e.message + "), will retry on next attempt.")
 					break
