@@ -391,6 +391,14 @@ function addMemberFromDesired(dm) {
 
 	for (let t = 1; t <= maxTry; t++) {
 		try {
+			if (currentMembersByHost(rs.conf())[h]) {
+				if (t > 1) print("rs.add: " + h + " already in config, continuing")
+				return
+			}
+		} catch (_) {
+			/* conf unreadable; fall through to rs.add */
+		}
+		try {
 			rs.add(doc)
 			return
 		} catch (e1) {
@@ -404,11 +412,19 @@ function addMemberFromDesired(dm) {
 					err = e2
 				}
 			}
-			/* FIX-2: also retry on "already exists" / "already in config" —
-			   another concurrent init may have just added this member */
+			const errText = String((err.message || "") + " " + (err.codeName || ""))
+			/* Concurrent init already added this member — treat as success, do not re-call rs.add */
+			if (/already exists|already in config/i.test(errText)) {
+				try {
+					if (currentMembersByHost(rs.conf())[h]) {
+						print("rs.add: " + h + " already in config, continuing")
+						return
+					}
+				} catch (_) {}
+			}
 			const retryable =
 				t < maxTry &&
-				/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout|ConfigurationInProgress|already exists|already in config/i.test(String((err.message || "") + " " + (err.codeName || "")))
+				/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout|ConfigurationInProgress/i.test(errText)
 			if (retryable) {
 				print("rs.add retry " + t + "/" + maxTry + ": " + err.message)
 				sleep(delay)
