@@ -75,6 +75,9 @@ files:
       access_log /dev/stdout ecs;
       access_log /var/log/nginx/access.log main;
 
+  - "conf.d/server_internal.d/01-listen.conf": |
+      listen {{INTERNAL_NETWORK_IP}}:8890;
+
 
 sherpas:
   webapp-dist:
