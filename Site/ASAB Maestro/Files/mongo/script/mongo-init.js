@@ -25,26 +25,21 @@ const fs = require("fs")
  * arbiter or role change without wiping dbPath). Logs show stale local repl config (e.g. setVersion 214988)
  * while primary is much newer, "No initial sync required" + immediate abort.
  *
- * Fix (operator, on the BROKEN host — e.g. mongo-2 / ples01-mongo-arb):
+ * Fix (operator, on the BROKEN host):
  *  A) On a HEALTHY primary (mongosh): rs.status() / rs.conf(). If the broken host is still listed,
  *     rs.remove("host:27017") so the cluster stops expecting that mongod.
  *  B) Stop the broken mongod container/service (so it does not restart-crash forever).
  *  C) Delete ALL files under that instance's dbPath (e.g. /data/db including WiredTiger*, local/, journal).
- *     Docker: stop container, docker run --rm -v that_volume:/data/db busybox rm -rf /data/db/*
  *  D) Start mongod again with empty dbPath — it should NOT load old repl config; it may show as standalone
  *     or await rs.add.
  *  E) From primary: rs.add({ host: "...", ... }) or re-run this init against primary so the add-missing phase runs.
  *
- * Do not partially delete files; partial wipe keeps the crash. Optional last resort to get a shell on bad
- * data (not a substitute for wipe): start mongod once with setParameter enableMajorityReadConcern=false
- * (see MongoDB manual), then still plan a full wipe + rejoin.
+ * Do not partially delete files; partial wipe keeps the crash.
  */
 
 /**
  * Cluster-wide default write concern (MongoDB 5.0+ gate before many reconfigs).
  * Optional: MONGO_INIT_DEFAULT_WRITE_CONCERN_W — "majority" (default), "1", "2", etc.
- * Use w=1 only when you accept weaker defaults (e.g. temporary 1 data + 1 arbiter).
- * @see https://www.mongodb.com/docs/manual/reference/command/setDefaultRWConcern/
  */
 function defaultWriteConcernFromEnv() {
 	const w = process.env.MONGO_INIT_DEFAULT_WRITE_CONCERN_W
@@ -68,8 +63,6 @@ function reachableVotingMemberCount() {
 		const st = rs.status()
 		for (let i = 0; i < st.members.length; i++) {
 			const m = st.members[i]
-			// Skip arbiters (they don't hold data, but they do vote)
-			// Only count members that are in a healthy state (PRIMARY=1, SECONDARY=2, STARTUP2=5, RECOVERING=3)
 			const isHealthy = [1, 2, 3, 5].includes(m.state)
 			if (isHealthy) {
 				const conf = rs.conf()
@@ -87,12 +80,9 @@ function reachableVotingMemberCount() {
 
 function ensureClusterWideDefaultWriteConcern() {
 	const dwc = defaultWriteConcernFromEnv()
-	// When dwc is "majority", check if we can actually achieve majority.
-	// If members are being decommissioned (unreachable), use a weaker write concern.
 	const reachableCount = reachableVotingMemberCount()
 	const wc = { w: "majority", wtimeout: 15000 }
 	if (dwc.w === "majority" && reachableCount > 0) {
-		// If majority requires more members than are reachable, use w=1 instead.
 		const current = rs.conf()
 		const totalVotingMembers = current.members.filter(m => m.votes > 0).length
 		const majority = Math.floor(totalVotingMembers / 2) + 1
@@ -119,8 +109,6 @@ function normalizeMemberHost(host) {
 
 /**
  * rs.add / rs.addArb require the new member's mongod to already accept connections.
- * Init often races the arbiter container: wait until ping succeeds.
- * Env: MONGO_INIT_PEER_WAIT_ATTEMPTS (default 60), MONGO_INIT_PEER_WAIT_MS (default 5000).
  */
 function peerWaitConfigFromEnv() {
 	const attempts = parseInt(process.env.MONGO_INIT_PEER_WAIT_ATTEMPTS || "60", 10)
@@ -157,9 +145,7 @@ function waitForMongodOnHost(hostPort) {
 	}
 	throw new Error(
 		"Timed out waiting for mongod at " +
-			hp +
-			". Ensure the member container starts before init runs rs.add (compose depends_on / order), or increase MONGO_INIT_PEER_WAIT_ATTEMPTS. Last error: " +
-			lastMsg
+			hp + ". Last error: " + lastMsg
 	)
 }
 
@@ -175,7 +161,6 @@ function desiredHostSet(desired) {
 	return new Set(desired.members.map((dm) => normalizeMemberHost(dm.host)))
 }
 
-/** Voting data members in desired config (excludes arbiters). */
 function desiredDataMemberCount(desired) {
 	let n = 0
 	for (const dm of desired.members) {
@@ -186,7 +171,6 @@ function desiredDataMemberCount(desired) {
 	return n
 }
 
-/** Non-arbiter members in a live rs.conf() (same notion as desiredDataMemberCount). */
 function dataMemberCountFromConf(conf) {
 	let n = 0
 	for (let i = 0; i < conf.members.length; i++) {
@@ -207,7 +191,6 @@ function arbiterMemberCountFromConf(conf) {
 	return n
 }
 
-/** Live set is one data-bearing member and at least one arbiter (PSA transition source topology). */
 function isOneDataPlusArbiterTopology(conf) {
 	return dataMemberCountFromConf(conf) === 1 && arbiterMemberCountFromConf(conf) >= 1
 }
@@ -246,11 +229,6 @@ function rsStatusHasPrimary(st) {
 	return false
 }
 
-/**
- * After decommission (e.g. mongo removed from the arbiter host), the survivor can remain SECONDARY with no
- * PRIMARY until an election completes — or never, until replSetStepUp. Only safe when rs.conf() has exactly
- * one data-bearing member and desired matches (one data member).
- */
 function ensurePrimaryWhenSoleDataMember(desired) {
 	const conf = rs.conf()
 	if (dataMemberCountFromConf(conf) !== 1 || desiredDataMemberCount(desired) !== 1) {
@@ -269,9 +247,7 @@ function ensurePrimaryWhenSoleDataMember(desired) {
 			return
 		}
 		if (k + 1 < maxPoll) {
-			print(
-				"[sole data member] no PRIMARY yet (" + (k + 1) + "/" + maxPoll + "); sleeping " + ms + "ms"
-			)
+			print("[sole data member] no PRIMARY yet (" + (k + 1) + "/" + maxPoll + "); sleeping " + ms + "ms")
 			sleep(ms)
 		}
 	}
@@ -291,7 +267,6 @@ function ensurePrimaryWhenSoleDataMember(desired) {
 	}
 }
 
-/** Host:port of the member this shell is connected as (primary when reconfigure runs). */
 function connectedMemberHost() {
 	try {
 		const st = rs.status()
@@ -306,14 +281,6 @@ function connectedMemberHost() {
 	return null
 }
 
-/**
- * Flow 2: mongo instance removed from cluster model — host no longer in replica-set.json.
- * Remaining desired config must still list at least one data member; cannot remove this primary's host.
- */
-/**
- * Check if a member is reachable from rs.status().
- * Returns true if healthy, false if unhealthy/unreachable, true if not found (assume reachable).
- */
 function isMemberReachable(host) {
 	try {
 		const st = rs.status()
@@ -328,11 +295,6 @@ function isMemberReachable(host) {
 	return true
 }
 
-/**
- * Force-reconfig to remove members from the replica set.
- * Used when members are unreachable and rs.remove() would hang indefinitely.
- * Builds a new config with only the surviving members and applies with {force: true}.
- */
 function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
 	const hostsToRemove = Array.from(toRemoveSet)
 	print("[force reconfig] Removing unreachable members via rs.reconfig({force:true}): " + hostsToRemove.join(", "))
@@ -343,7 +305,6 @@ function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
 	if (filtered.length === 0) {
 		throw new Error("Force reconfig would remove ALL members — refusing (need at least 1 data member)")
 	}
-	// Validate at least one data member remains
 	let hasData = false
 	for (let i = 0; i < filtered.length; i++) {
 		if (filtered[i].arbiterOnly !== true) {
@@ -367,10 +328,6 @@ function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
 	print("[force reconfig] ok=" + result.ok + " (new version=" + newConfig.version + ")")
 }
 
-/**
- * Flow 2: mongo instance removed from cluster model — host no longer in replica-set.json.
- * Remaining desired config must still list at least one data member; cannot remove this primary's host.
- */
 function removeMembersDroppedFromDesired(desired, current) {
 	if (desiredDataMemberCount(desired) < 1) {
 		throw new Error("replica-set.json must keep at least one data (non-arbiter) member")
@@ -384,8 +341,7 @@ function removeMembersDroppedFromDesired(desired, current) {
 		if (!wantHosts.has(h)) {
 			if (selfH !== null && h === selfH) {
 				throw new Error(
-					"Desired config omits the current primary host (" +
-						h +
+					"Desired config omits the current primary host (" + h +
 					"). Step down another primary first, or keep this member in replica-set.json until then."
 				)
 			}
@@ -396,7 +352,6 @@ function removeMembersDroppedFromDesired(desired, current) {
 			}
 		}
 	}
-	// Remove reachable members via rs.remove() (they respond quickly)
 	for (let i = 0; i < toRemoveReachable.length; i++) {
 		const h = toRemoveReachable[i]
 		print("[flow 2 decommission] Removing reachable member: " + h)
@@ -408,16 +363,12 @@ function removeMembersDroppedFromDesired(desired, current) {
 			toRemoveUnreachable.add(h)
 		}
 	}
-	// Remove unreachable members via force reconfig (avoids hanging on rs.remove)
 	if (toRemoveUnreachable.size > 0) {
 		current = rs.conf()
 		forceReconfigToRemoveMembers(desired, current, toRemoveUnreachable)
 	}
 }
 
-/**
- * Add one member from desired JSON (preserves _id when Mongo accepts it).
- */
 function addMemberFromDesired(dm) {
 	const h = normalizeMemberHost(dm.host)
 	const doc = { host: h }
@@ -453,9 +404,11 @@ function addMemberFromDesired(dm) {
 					err = e2
 				}
 			}
+			/* FIX-2: also retry on "already exists" / "already in config" —
+			   another concurrent init may have just added this member */
 			const retryable =
 				t < maxTry &&
-				/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout/i.test(String(err.message))
+				/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout|ConfigurationInProgress|already exists|already in config/i.test(String((err.message || "") + " " + (err.codeName || "")))
 			if (retryable) {
 				print("rs.add retry " + t + "/" + maxTry + ": " + err.message)
 				sleep(delay)
@@ -466,47 +419,30 @@ function addMemberFromDesired(dm) {
 	}
 }
 
-/**
- * Arbiter → data in one init pass is unsafe: rs.remove then rs.add while the peer still has arbiter-era
- * local/ on disk often produces MongoDB 7 crash loops until dbPath is fully wiped. We refuse before any
- * replica-set or CWWC mutation so the live set is unchanged.
- */
 function assertArbiterToDataRequiresManual(desired, current) {
 	const curMap = currentMembersByHost(current)
 	const offenders = []
 	for (const dm of desired.members) {
 		const h = normalizeMemberHost(dm.host)
 		const cm = curMap[h]
-		if (!cm) {
-			continue
-		}
+		if (!cm) continue
 		const wantArbiter = dm.arbiterOnly === true
 		const wantData = dm.arbiterOnly === false
 		const isArbiter = cm.arbiterOnly === true
-		// Only fail if operator EXPLICITLY wants arbiter->data (arbiterOnly: false in desired).
-		// If desired config omits arbiterOnly for an existing arbiter, preserve arbiter status.
 		if (isArbiter && wantData) {
 			offenders.push(h)
 		}
 	}
-	if (offenders.length === 0) {
-		return
-	}
+	if (offenders.length === 0) return
 	throw new Error(
 		"Refusing init: arbiter → data promotion is manual-only for: " +
 			offenders.join(", ") +
-			". Automated rs.remove + re-add in the same run leaves stale repl metadata on disk and can break that mongod until dbPath is fully deleted. " +
-			"Do this, then re-run init: (1) On PRIMARY: rs.remove(\"host:port\") for each host above. " +
+			". Do this, then re-run init: (1) On PRIMARY: rs.remove(\"host:port\") for each host above. " +
 			"(2) On each former arbiter host: stop mongod, delete ALL files under dbPath, start mongod empty. " +
-			"(3) Re-run init (rs.add happens in add-missing phase) or rs.add manually. " +
-			"This run applied no replica-set or default RW concern changes."
+			"(3) Re-run init."
 	)
 }
 
-/**
- * Data-bearing member cannot become arbiter in place: remove from set first.
- * Operator must wipe dbPath and restart mongod; a later init pass adds the arbiter.
- */
 function removeMembersForArbiterConversion(desired, current) {
 	const curMap = currentMembersByHost(current)
 	let removed = false
@@ -515,9 +451,7 @@ function removeMembersForArbiterConversion(desired, current) {
 		const cm = curMap[h]
 		if (cm && dm.arbiterOnly === true && cm.arbiterOnly !== true) {
 			print("[flow 4 data→arbiter] Removing data member for arbiter conversion: " + h)
-			print(
-				"ACTION: stop mongod, EMPTY the full dbPath, restart — partial wipe causes broken repl state."
-			)
+			print("ACTION: stop mongod, EMPTY the full dbPath, restart.")
 			try {
 				rs.remove(h)
 				removed = true
@@ -536,7 +470,6 @@ function addMissingMembers(desired, current) {
 	if (missingData0.length > 1 && isOneDataPlusArbiterTopology(live0)) {
 		throw new Error(
 			"Replica set has one data member and an arbiter; replica-set.json lists multiple new data members. " +
-				"MongoDB requires rs.reconfigForPSASet once per added secondary. " +
 				"Add at most one new data member per init pass, then re-run with the next host."
 		)
 	}
@@ -550,13 +483,9 @@ function addMissingMembers(desired, current) {
 				const live = rs.conf()
 				const missingData = missingDataMemberHostsFromMap(desired, curMap)
 				if (missingData.length === 1 && isOneDataPlusArbiterTopology(live)) {
-					print(
-						"[flow 3 PSA] one data + arbiter: rs.reconfigForPSASet (https://www.mongodb.com/docs/manual/reference/method/rs.reconfigForPSASet/)"
-					)
+					print("[flow 3 PSA] one data + arbiter: rs.reconfigForPSASet")
 					if (typeof rs.reconfigForPSASet !== "function") {
-						throw new Error(
-							"rs.reconfigForPSASet is not available in this shell. Use mongosh on MongoDB 5.0+ to add an electable secondary to a 1-data+arbiter set."
-						)
+						throw new Error("rs.reconfigForPSASet is not available in this shell.")
 					}
 					const newConfig = buildReconfigDocument(desired, live)
 					const idx = findMemberIndexByHost(newConfig.members, h)
@@ -577,76 +506,41 @@ function addMissingMembers(desired, current) {
 	return current
 }
 
-/**
- * Refuse full reconfig if any member would change arbiterOnly without having been removed first.
- */
 function assertNoIllegalArbiterTransition(desired, current) {
 	const curMap = currentMembersByHost(current)
 	for (const dm of desired.members) {
 		const h = normalizeMemberHost(dm.host)
 		const cm = curMap[h]
-		if (!cm) {
-			continue
-		}
-		// Only fail if operator EXPLICITLY wants to change arbiterOnly (true or false in desired).
-		// If desired config omits arbiterOnly for an existing member, preserve current role.
-		if (dm.arbiterOnly === undefined || dm.arbiterOnly === null) {
-			continue
-		}
+		if (!cm) continue
+		if (dm.arbiterOnly === undefined || dm.arbiterOnly === null) continue
 		const wantArbiter = dm.arbiterOnly === true
 		const isArbiter = cm.arbiterOnly === true
 		if (isArbiter !== wantArbiter) {
 			throw new Error(
-				"Refusing rs.reconfig: cannot change arbiterOnly in place for " +
-					h +
-					" (live arbiterOnly=" +
-					isArbiter +
-					", desired=" +
-					wantArbiter +
-					"). Remove member, wipe dbPath, restart mongod, then re-run init."
+				"Refusing rs.reconfig: cannot change arbiterOnly in place for " + h +
+				" (live arbiterOnly=" + isArbiter + ", desired=" + wantArbiter +
+				"). Remove member, wipe dbPath, restart mongod, then re-run init."
 			)
 		}
 	}
 }
 
-/**
- * Existing member: base document on live rs.conf() so votes/priority/buildIndexes/etc. are preserved.
- * replica-set.json is sparse (_id, host, arbiterOnly); rs.reconfigForPSASet rejects undefined votes.
- */
 function mergeLiveMemberWithDesired(dm, cm) {
-	const h = normalizeMemberHost(dm.host)
 	const out = Object.assign({}, cm)
-	out._id = cm._id
-	out.host = h
-	// Only change arbiterOnly if operator explicitly sets it (true or false).
-	// If desired config omits arbiterOnly for an existing member, preserve current role.
+	out.host = normalizeMemberHost(dm.host)
 	if (dm.arbiterOnly !== undefined && dm.arbiterOnly !== null) {
 		out.arbiterOnly = dm.arbiterOnly === true
 	}
-	if (dm.priority !== undefined) {
-		out.priority = dm.priority
-	}
-	if (dm.votes !== undefined) {
-		out.votes = dm.votes
-	}
-	if (dm.tags !== undefined) {
-		out.tags = dm.tags
-	}
-	if (dm.secondaryDelaySecs !== undefined) {
-		out.secondaryDelaySecs = dm.secondaryDelaySecs
-	}
-	if (out.votes === undefined || out.votes === null) {
-		out.votes = 1
-	}
-	// Fix: use out.arbiterOnly instead of undefined wantArbiter
+	if (dm.priority !== undefined) out.priority = dm.priority
+	if (dm.votes !== undefined) out.votes = dm.votes
+	if (dm.tags !== undefined) out.tags = dm.tags
+	if (dm.secondaryDelaySecs !== undefined) out.secondaryDelaySecs = dm.secondaryDelaySecs
+	if (out.votes === undefined || out.votes === null) out.votes = 1
 	const isArbiter = out.arbiterOnly === true
-	if (out.priority === undefined || out.priority === null) {
-		out.priority = isArbiter ? 0 : 1
-	}
+	if (out.priority === undefined || out.priority === null) out.priority = isArbiter ? 0 : 1
 	return out
 }
 
-/** New member not in the live set yet — explicit votes/priority required by mongosh PSA reconfig. */
 function newMemberDocFromDesired(dm) {
 	const h = normalizeMemberHost(dm.host)
 	const wantArbiter = dm.arbiterOnly === true
@@ -662,20 +556,13 @@ function newMemberDocFromDesired(dm) {
 	}
 }
 
-/**
- * Build the next replSet config document (does not apply it).
- * Preserves Mongo-assigned member _id for existing hosts so we never request an illegal _id change.
- */
 function buildReconfigDocument(desired, current) {
 	assertNoIllegalArbiterTransition(desired, current)
 	const curByHost = currentMembersByHost(current)
 	const mergedMembers = desired.members.map((dm) => {
 		const h = normalizeMemberHost(dm.host)
 		const cm = curByHost[h]
-		if (cm) {
-			return mergeLiveMemberWithDesired(dm, cm)
-		}
-		return newMemberDocFromDesired(dm)
+		return cm ? mergeLiveMemberWithDesired(dm, cm) : newMemberDocFromDesired(dm)
 	})
 	const newConfig = {
 		_id: desired._id,
@@ -688,18 +575,32 @@ function buildReconfigDocument(desired, current) {
 	return newConfig
 }
 
-/**
- * Apply full desired config after incremental steps.
- */
+/* FIX-1: applyFullReconfig with retry on NewReplicaSetConfigurationIncompatible
+   (race: concurrent init may have just applied the same desired config) */
 function applyFullReconfig(desired) {
-	const current = rs.conf()
-	const newConfig = buildReconfigDocument(desired, current)
-	rs.reconfig(newConfig, { force: false })
+	const maxRetries = parseInt(process.env.MONGO_INIT_RECONFIG_ATTEMPTS || "3", 10)
+	const retryMs = parseInt(process.env.MONGO_INIT_RECONFIG_DELAY_MS || "5000", 10)
+	const maxTry = isNaN(maxRetries) ? 3 : Math.max(1, maxRetries)
+	const delay = isNaN(retryMs) ? 5000 : Math.max(1000, retryMs)
+	for (let t = 1; t <= maxTry; t++) {
+		const current = rs.conf()
+		const newConfig = buildReconfigDocument(desired, current)
+		try {
+			rs.reconfig(newConfig, { force: false })
+			if (t > 1) print("[phase 5] succeeded on retry " + t)
+			return
+		} catch (e) {
+			const msg = (e.message || "") + " " + (e.codeName || "")
+			if (t < maxTry && /ConfigurationInProgress|NewReplicaSetConfigurationIncompatible/i.test(msg)) {
+				print("[phase 5] retry " + t + "/" + maxTry + ": " + e.message + " in " + delay + "ms")
+				sleep(delay)
+			} else {
+				throw e
+			}
+		}
+	}
 }
 
-/**
- * Reconcile desired replica-set.json with live config (see file header for flows 1–4).
- */
 function reconfigureReplicaSet() {
 	const desired = JSON.parse(fs.readFileSync("/script/replica-set.json", "utf8"))
 	if (!desired.members || !Array.isArray(desired.members)) {
@@ -738,14 +639,58 @@ function initiateReplicaSet() {
 	rs.initiate(newConfig)
 }
 
+function isTransientConfigError(e) {
+	/* FIX-3: classify errors from concurrent-init races as retryable */
+	const msg = (e.message || "") + " " + (e.codeName || "")
+	return /MongoServerSelectionError|MongoNetworkError|ConfigurationInProgress|NewReplicaSetConfigurationIncompatible|already exists|already in config/i.test(msg)
+}
+
 function main() {
-	print("mongo-init.js revision: asab-remote-control/remote_control/tech/mongo-init.js (2026-04-08c)")
+	print("mongo-init.js revision: asab-remote-control/remote_control/tech/mongo-init.js (2026-06-22d — concurrent-init race fixed)")
 	print("(Re)-initializing the Mongo cluster.")
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
 
-	for (let i = 0; i < 5; i++) {
-		print("Connection attempt", i + 1)
+	/* FIX-4 (HIGH): Wait for ALL mongods before starting main loop.
+	   When all nodes restart simultaneously, waitForAllMongods is the
+	   first gate. Without it the main loop races an election in progress. */
+	const bootAttempts = parseInt(process.env.MONGO_INIT_BOOT_ATTEMPTS || "60", 10)
+	const bootMs = parseInt(process.env.MONGO_INIT_BOOT_MS || "3000", 10)
+	const maxBoot = isNaN(bootAttempts) ? 60 : Math.max(1, bootAttempts)
+	const bootDelay = isNaN(bootMs) ? 3000 : Math.max(1000, bootMs)
+	const pending = new Set(mongoHostnames.map(h => normalizeMemberHost(h)))
+	for (let a = 1; a <= maxBoot; a++) {
+		for (const hn of Array.from(pending)) {
+			const hp = hn + ":27017"
+			try {
+				if (typeof Mongo !== "undefined") {
+					const conn = new Mongo(hp)
+					if (conn.getDB("admin").runCommand({ ping: 1 }).ok === 1) {
+						pending.delete(hn)
+						print("[boot] mongod reachable: " + hp)
+					}
+				}
+			} catch (_) {}
+		}
+		if (pending.size === 0) {
+			print("[boot] all mongods reachable after " + a + "/" + maxBoot + " attempts")
+			break
+		}
+		if (a < maxBoot) {
+			print("[boot] " + pending.size + "/" + mongoHostnames.length + " down (" + Array.from(pending).join(", ") + ") — " + a + "/" + maxBoot)
+			sleep(bootDelay)
+		}
+	}
+	if (pending.size > 0) {
+		print("[boot] WARNING: timed out; still down: " + Array.from(pending).join(", "))
+	}
+
+	/* FIX-5: Main loop — retry on concurrent-init errors instead of quitting */
+	const maxMain = parseInt(process.env.MONGO_INIT_MAIN_ATTEMPTS || "20", 10)
+	const maxMainSafe = isNaN(maxMain) ? 20 : Math.max(1, maxMain)
+
+	for (let i = 0; i < maxMainSafe; i++) {
+		print("Connection attempt " + (i + 1) + "/" + maxMainSafe)
 
 		for (let hostname of mongoHostnames) {
 			print("Connecting to ", `${hostname}:27017`)
@@ -778,10 +723,7 @@ function main() {
 						if (dataMemberCountFromConf(conf) === 1) {
 							const st = rs.status()
 							if (!rsStatusHasPrimary(st)) {
-								print(
-									"[recovery] one data member, no PRIMARY (e.g. arbiter decommissioned); replSetStepUp on " +
-										`${hostname}:27017`
-								)
+								print("[recovery] one data member, no PRIMARY; replSetStepUp on " + `${hostname}:27017`)
 								const up = db.adminCommand({ replSetStepUp: 1 })
 								if (up.ok !== 1) {
 									print("[recovery] replSetStepUp: " + JSON.stringify(up))
@@ -796,14 +738,13 @@ function main() {
 										print("SUCCESS!")
 										quit(0)
 									} catch (e) {
-										print(
-											"Reconfiguration failed with " +
-												e.name +
-												": " +
-												e.message +
-												" / " +
-												(e.codeName != null ? e.codeName : "")
-										)
+										/* FIX-5b: if the reconfig failed due to a concurrent-init race,
+										   retry the outer loop instead of quitting */
+										if (isTransientConfigError(e)) {
+											print("[recovery] transient error (" + e.message + "), will retry.")
+											break
+										}
+										print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + (e.codeName || ""))
 										print("Exiting due to failure.")
 										quit(1)
 									}
@@ -826,20 +767,21 @@ function main() {
 				print("SUCCESS!")
 				quit(0)
 			} catch (e) {
-				print(
-					"Reconfiguration failed with " +
-						e.name +
-						": " +
-						e.message +
-						" / " +
-						(e.codeName != null ? e.codeName : "")
-				)
+				/* FIX-5a: on concurrent-init race, retry the outer loop */
+				if (isTransientConfigError(e)) {
+					print("[reconfig] transient error (" + e.message + "), will retry on next attempt.")
+					break
+				}
+				print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + (e.codeName || ""))
 				print("Exiting due to failure.")
 				quit(1)
 			}
 		}
 		sleep(5000)
 	}
+
+	print("All connection attempts exhausted (" + maxMainSafe + " × 5s = " + (maxMainSafe * 5) + "s), no primary reachable.")
+	quit(1)
 }
 
 main()
