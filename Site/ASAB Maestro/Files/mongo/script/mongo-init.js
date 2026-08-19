@@ -16,6 +16,34 @@ const fs = require("fs")
  * 1) Node role change (arbiter -> core)
  */
 
+function envInt(name, fallback, min) {
+	const n = parseInt(process.env[name] || String(fallback), 10)
+	return Math.max(min, isNaN(n) ? fallback : n)
+}
+
+function errorText(e) {
+	return String((e && e.message) || "") + " " + String((e && e.codeName) || "")
+}
+
+function withRetries(opts, fn) {
+	const attempts = opts.attempts
+	const delayMs = opts.delayMs
+	const label = opts.label
+	const isRetryable = opts.isRetryable
+	for (let t = 1; t <= attempts; t++) {
+		try {
+			return fn(t)
+		} catch (e) {
+			if (t < attempts && isRetryable(e)) {
+				print(label + " " + t + "/" + attempts + ": " + e.message)
+				sleep(delayMs)
+				continue
+			}
+			throw e
+		}
+	}
+}
+
 function defaultWriteConcernFromEnv() {
 	const w = process.env.MONGO_INIT_DEFAULT_WRITE_CONCERN_W
 	if (w == null || String(w).trim() === "" || String(w).trim() === "majority") {
@@ -34,13 +62,11 @@ function reachableVotingMemberCount() {
 		const st = rs.status()
 		for (let i = 0; i < st.members.length; i++) {
 			const m = st.members[i]
-			const isHealthy = [1, 2, 3, 5].includes(m.state)
-			if (isHealthy) {
-				const conf = rs.conf()
-				const memberConf = conf.members.find(cm => cm.host === m.name)
-				if (memberConf && memberConf.arbiterOnly !== true) {
-					count++
-				}
+			if (![1, 2, 3, 5].includes(m.state)) continue
+			const conf = rs.conf()
+			const memberConf = conf.members.find(cm => cm.host === m.name)
+			if (memberConf && memberConf.arbiterOnly !== true) {
+				count++
 			}
 		}
 	} catch (e) {
@@ -78,31 +104,28 @@ function normalizeMemberHost(host) {
 	return typeof host === "string" ? host.trim() : host
 }
 
-function peerWaitConfigFromEnv() {
-	const attempts = parseInt(process.env.MONGO_INIT_PEER_WAIT_ATTEMPTS || "60", 10)
-	const ms = parseInt(process.env.MONGO_INIT_PEER_WAIT_MS || "5000", 10)
-	return {
-		attempts: isNaN(attempts) ? 60 : Math.max(1, attempts),
-		ms: isNaN(ms) ? 5000 : Math.max(200, ms),
+function pingMongod(hostPort) {
+	const hp = normalizeMemberHost(hostPort)
+	if (typeof Mongo === "undefined") {
+		throw new Error("Mongo constructor unavailable in this shell")
+	}
+	const conn = new Mongo(hp)
+	const ping = conn.getDB("admin").runCommand({ ping: 1 })
+	if (ping.ok !== 1) {
+		throw new Error("ping ok !== 1: " + JSON.stringify(ping))
 	}
 }
 
 function waitForMongodOnHost(hostPort) {
 	const hp = normalizeMemberHost(hostPort)
-	const { attempts, ms } = peerWaitConfigFromEnv()
+	const attempts = envInt("MONGO_INIT_PEER_WAIT_ATTEMPTS", 60, 1)
+	const ms = envInt("MONGO_INIT_PEER_WAIT_MS", 5000, 200)
 	let lastMsg = ""
 	for (let a = 1; a <= attempts; a++) {
 		try {
-			if (typeof Mongo === "undefined") {
-				throw new Error("Mongo constructor unavailable in this shell")
-			}
-			const conn = new Mongo(hp)
-			const ping = conn.getDB("admin").runCommand({ ping: 1 })
-			if (ping.ok === 1) {
-				print("mongod reachable at " + hp + " (attempt " + a + "/" + attempts + ")")
-				return
-			}
-			lastMsg = "ping ok !== 1: " + JSON.stringify(ping)
+			pingMongod(hp)
+			print("mongod reachable at " + hp + " (attempt " + a + "/" + attempts + ")")
+			return
 		} catch (e) {
 			lastMsg = e.message
 		}
@@ -111,10 +134,31 @@ function waitForMongodOnHost(hostPort) {
 			sleep(ms)
 		}
 	}
-	throw new Error(
-		"Timed out waiting for mongod at " +
-			hp + ". Last error: " + lastMsg
-	)
+	throw new Error("Timed out waiting for mongod at " + hp + ". Last error: " + lastMsg)
+}
+
+function waitForAllMongods(hostnames) {
+	const maxBoot = envInt("MONGO_INIT_BOOT_ATTEMPTS", 60, 1)
+	const bootDelay = envInt("MONGO_INIT_BOOT_MS", 3000, 1000)
+	const pending = new Set(hostnames.map(h => normalizeMemberHost(h)))
+	for (let a = 1; a <= maxBoot; a++) {
+		for (const hn of Array.from(pending)) {
+			try {
+				pingMongod(hn + ":27017")
+				pending.delete(hn)
+				print("[boot] mongod reachable: " + hn + ":27017")
+			} catch (_) {}
+		}
+		if (pending.size === 0) {
+			print("[boot] all mongods reachable after " + a + "/" + maxBoot + " attempts")
+			return
+		}
+		if (a < maxBoot) {
+			print("[boot] " + pending.size + "/" + hostnames.length + " down (" + Array.from(pending).join(", ") + ") — " + a + "/" + maxBoot)
+			sleep(bootDelay)
+		}
+	}
+	print("[boot] WARNING: timed out; still down: " + Array.from(pending).join(", "))
 }
 
 function currentMembersByHost(conf) {
@@ -125,6 +169,14 @@ function currentMembersByHost(conf) {
 	return map
 }
 
+function hostInConf(host) {
+	try {
+		return !!currentMembersByHost(rs.conf())[normalizeMemberHost(host)]
+	} catch (_) {
+		return false
+	}
+}
+
 function desiredHostSet(desired) {
 	return new Set(desired.members.map((dm) => normalizeMemberHost(dm.host)))
 }
@@ -132,9 +184,7 @@ function desiredHostSet(desired) {
 function desiredDataMemberCount(desired) {
 	let n = 0
 	for (const dm of desired.members) {
-		if (dm.arbiterOnly !== true) {
-			n++
-		}
+		if (dm.arbiterOnly !== true) n++
 	}
 	return n
 }
@@ -142,9 +192,7 @@ function desiredDataMemberCount(desired) {
 function dataMemberCountFromConf(conf) {
 	let n = 0
 	for (let i = 0; i < conf.members.length; i++) {
-		if (conf.members[i].arbiterOnly !== true) {
-			n++
-		}
+		if (conf.members[i].arbiterOnly !== true) n++
 	}
 	return n
 }
@@ -152,9 +200,7 @@ function dataMemberCountFromConf(conf) {
 function arbiterMemberCountFromConf(conf) {
 	let n = 0
 	for (let i = 0; i < conf.members.length; i++) {
-		if (conf.members[i].arbiterOnly === true) {
-			n++
-		}
+		if (conf.members[i].arbiterOnly === true) n++
 	}
 	return n
 }
@@ -167,13 +213,9 @@ function missingDataMemberHostsFromMap(desired, curMap) {
 	const out = []
 	for (let i = 0; i < desired.members.length; i++) {
 		const dm = desired.members[i]
-		if (dm.arbiterOnly === true) {
-			continue
-		}
+		if (dm.arbiterOnly === true) continue
 		const h = normalizeMemberHost(dm.host)
-		if (!curMap[h]) {
-			out.push(h)
-		}
+		if (!curMap[h]) out.push(h)
 	}
 	return out
 }
@@ -181,18 +223,14 @@ function missingDataMemberHostsFromMap(desired, curMap) {
 function findMemberIndexByHost(members, host) {
 	const h = normalizeMemberHost(host)
 	for (let i = 0; i < members.length; i++) {
-		if (normalizeMemberHost(members[i].host) === h) {
-			return i
-		}
+		if (normalizeMemberHost(members[i].host) === h) return i
 	}
 	return -1
 }
 
 function rsStatusHasPrimary(st) {
 	for (let i = 0; i < st.members.length; i++) {
-		if (st.members[i].stateStr === "PRIMARY") {
-			return true
-		}
+		if (st.members[i].stateStr === "PRIMARY") return true
 	}
 	return false
 }
@@ -202,16 +240,12 @@ function ensurePrimaryWhenSoleDataMember(desired) {
 	if (dataMemberCountFromConf(conf) !== 1 || desiredDataMemberCount(desired) !== 1) {
 		return
 	}
-	const pollAttempts = parseInt(process.env.MONGO_INIT_SOLE_PRIMARY_POLL_ATTEMPTS || "8", 10)
-	const pollMs = parseInt(process.env.MONGO_INIT_SOLE_PRIMARY_POLL_MS || "1500", 10)
-	const maxPoll = isNaN(pollAttempts) ? 8 : Math.max(1, pollAttempts)
-	const ms = isNaN(pollMs) ? 1500 : Math.max(200, pollMs)
+	const maxPoll = envInt("MONGO_INIT_SOLE_PRIMARY_POLL_ATTEMPTS", 8, 1)
+	const ms = envInt("MONGO_INIT_SOLE_PRIMARY_POLL_MS", 1500, 200)
 	for (let k = 0; k < maxPoll; k++) {
 		const st = rs.status()
 		if (rsStatusHasPrimary(st)) {
-			if (k > 0) {
-				print("[sole data member] PRIMARY appeared after wait")
-			}
+			if (k > 0) print("[sole data member] PRIMARY appeared after wait")
 			return
 		}
 		if (k + 1 < maxPoll) {
@@ -261,12 +295,11 @@ function isMemberReachable(host) {
 	return true
 }
 
-function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
+function forceReconfigToRemoveMembers(current, toRemoveSet) {
 	const hostsToRemove = Array.from(toRemoveSet)
 	print("[force reconfig] Removing unreachable members via rs.reconfig({force:true}): " + hostsToRemove.join(", "))
 	const filtered = current.members.filter(function(m) {
-		const h = normalizeMemberHost(m.host)
-		return !toRemoveSet.has(h)
+		return !toRemoveSet.has(normalizeMemberHost(m.host))
 	})
 	if (filtered.length === 0) {
 		throw new Error("Force reconfig would remove ALL members — refusing (need at least 1 data member)")
@@ -290,7 +323,7 @@ function forceReconfigToRemoveMembers(desired, current, toRemoveSet) {
 	if (current.settings !== undefined && current.settings !== null) {
 		newConfig.settings = Object.assign({}, current.settings)
 	}
-	const result = rs.reconfig(newConfig, {force: true})
+	const result = rs.reconfig(newConfig, { force: true })
 	print("[force reconfig] ok=" + result.ok + " (new version=" + newConfig.version + ")")
 }
 
@@ -304,18 +337,17 @@ function removeMembersDroppedFromDesired(desired, current) {
 	const toRemoveUnreachable = new Set()
 	for (const cm of current.members) {
 		const h = normalizeMemberHost(cm.host)
-		if (!wantHosts.has(h)) {
-			if (selfH !== null && h === selfH) {
-				throw new Error(
-					"Desired config omits the current primary host (" + h +
-					"). Step down another primary first, or keep this member in replica-set.json until then."
-				)
-			}
-			if (isMemberReachable(h)) {
-				toRemoveReachable.push(h)
-			} else {
-				toRemoveUnreachable.add(h)
-			}
+		if (wantHosts.has(h)) continue
+		if (selfH !== null && h === selfH) {
+			throw new Error(
+				"Desired config omits the current primary host (" + h +
+				"). Step down another primary first, or keep this member in replica-set.json until then."
+			)
+		}
+		if (isMemberReachable(h)) {
+			toRemoveReachable.push(h)
+		} else {
+			toRemoveUnreachable.add(h)
 		}
 	}
 	for (let i = 0; i < toRemoveReachable.length; i++) {
@@ -323,45 +355,35 @@ function removeMembersDroppedFromDesired(desired, current) {
 		print("[flow 2 decommission] Removing reachable member: " + h)
 		try {
 			rs.remove(h)
-			current = rs.conf()
 		} catch (e) {
 			print("rs.remove failed (will handle via force reconfig): " + e.message)
 			toRemoveUnreachable.add(h)
 		}
 	}
 	if (toRemoveUnreachable.size > 0) {
-		current = rs.conf()
-		forceReconfigToRemoveMembers(desired, current, toRemoveUnreachable)
+		forceReconfigToRemoveMembers(rs.conf(), toRemoveUnreachable)
 	}
 }
 
 function addMemberFromDesired(dm) {
 	const h = normalizeMemberHost(dm.host)
 	const doc = { host: h }
-	if (dm._id !== undefined && dm._id !== null) {
-		doc._id = dm._id
-	}
-	if (dm.arbiterOnly === true) {
-		doc.arbiterOnly = true
-	}
-	if (dm.priority !== undefined) {
-		doc.priority = dm.priority
-	}
-	if (dm.votes !== undefined) {
-		doc.votes = dm.votes
-	}
-	const addRetries = parseInt(process.env.MONGO_INIT_RS_ADD_ATTEMPTS || "5", 10)
-	const addDelayMs = parseInt(process.env.MONGO_INIT_RS_ADD_MS || "10000", 10)
-	const maxTry = isNaN(addRetries) ? 5 : Math.max(1, addRetries)
-	const delay = isNaN(addDelayMs) ? 10000 : Math.max(1000, addDelayMs)
+	if (dm._id !== undefined && dm._id !== null) doc._id = dm._id
+	if (dm.arbiterOnly === true) doc.arbiterOnly = true
+	if (dm.priority !== undefined) doc.priority = dm.priority
+	if (dm.votes !== undefined) doc.votes = dm.votes
 
-	for (let t = 1; t <= maxTry; t++) {
-		try {
-			if (currentMembersByHost(rs.conf())[h]) {
-				if (t > 1) print("rs.add: " + h + " already in config, continuing")
-				return
-			}
-		} catch (_) {}
+	withRetries({
+		label: "rs.add retry",
+		attempts: envInt("MONGO_INIT_RS_ADD_ATTEMPTS", 5, 1),
+		delayMs: envInt("MONGO_INIT_RS_ADD_MS", 10000, 1000),
+		isRetryable: (e) =>
+			/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout|ConfigurationInProgress/i.test(errorText(e)),
+	}, function(t) {
+		if (hostInConf(h)) {
+			if (t > 1) print("rs.add: " + h + " already in config, continuing")
+			return
+		}
 		try {
 			rs.add(doc)
 			return
@@ -376,46 +398,38 @@ function addMemberFromDesired(dm) {
 					err = e2
 				}
 			}
-			const errText = String((err.message || "") + " " + (err.codeName || ""))
-			if (/already exists|already in config/i.test(errText)) {
-				try {
-					if (currentMembersByHost(rs.conf())[h]) {
-						print("rs.add: " + h + " already in config, continuing")
-						return
-					}
-				} catch (_) {}
-			}
-			const retryable =
-				t < maxTry &&
-				/Quorum check failed|Connection refused|NodeNotFound|timed out|Timeout|ConfigurationInProgress/i.test(errText)
-			if (retryable) {
-				print("rs.add retry " + t + "/" + maxTry + ": " + err.message)
-				sleep(delay)
-				continue
+			if (/already exists|already in config/i.test(errorText(err)) && hostInConf(h)) {
+				print("rs.add: " + h + " already in config, continuing")
+				return
 			}
 			throw err
 		}
-	}
+	})
 }
 
-function assertArbiterToDataRequiresManual(desired, current) {
+function arbiterRoleDiffs(desired, current) {
 	const curMap = currentMembersByHost(current)
-	const offenders = []
+	const arbiterToData = []
+	const dataToArbiter = []
 	for (const dm of desired.members) {
 		const h = normalizeMemberHost(dm.host)
 		const cm = curMap[h]
 		if (!cm) continue
+		if (dm.arbiterOnly === undefined || dm.arbiterOnly === null) continue
 		const wantArbiter = dm.arbiterOnly === true
-		const wantData = dm.arbiterOnly === false
 		const isArbiter = cm.arbiterOnly === true
-		if (isArbiter && wantData) {
-			offenders.push(h)
-		}
+		if (isArbiter && !wantArbiter) arbiterToData.push(h)
+		if (!isArbiter && wantArbiter) dataToArbiter.push(h)
 	}
-	if (offenders.length === 0) return
+	return { arbiterToData, dataToArbiter }
+}
+
+function assertArbiterToDataRequiresManual(desired, current) {
+	const { arbiterToData } = arbiterRoleDiffs(desired, current)
+	if (arbiterToData.length === 0) return
 	throw new Error(
 		"Refusing init: arbiter → data promotion is manual-only for: " +
-			offenders.join(", ") +
+			arbiterToData.join(", ") +
 			". Do this, then re-run init: (1) On PRIMARY: rs.remove(\"host:port\") for each host above. " +
 			"(2) On each former arbiter host: stop mongod, delete ALL files under dbPath, start mongod empty. " +
 			"(3) Re-run init."
@@ -423,20 +437,17 @@ function assertArbiterToDataRequiresManual(desired, current) {
 }
 
 function removeMembersForArbiterConversion(desired, current) {
-	const curMap = currentMembersByHost(current)
+	const { dataToArbiter } = arbiterRoleDiffs(desired, current)
 	let removed = false
-	for (const dm of desired.members) {
-		const h = normalizeMemberHost(dm.host)
-		const cm = curMap[h]
-		if (cm && dm.arbiterOnly === true && cm.arbiterOnly !== true) {
-			print("[flow 4 data→arbiter] Removing data member for arbiter conversion: " + h)
-			print("ACTION: stop mongod, EMPTY the full dbPath, restart.")
-			try {
-				rs.remove(h)
-				removed = true
-			} catch (e) {
-				print("rs.remove failed (member may already be absent): " + e.message)
-			}
+	for (let i = 0; i < dataToArbiter.length; i++) {
+		const h = dataToArbiter[i]
+		print("[flow 4 data→arbiter] Removing data member for arbiter conversion: " + h)
+		print("ACTION: stop mongod, EMPTY the full dbPath, restart.")
+		try {
+			rs.remove(h)
+			removed = true
+		} catch (e) {
+			print("rs.remove failed (member may already be absent): " + e.message)
 		}
 	}
 	return removed
@@ -454,54 +465,53 @@ function addMissingMembers(desired, current) {
 	}
 	for (const dm of desired.members) {
 		const h = normalizeMemberHost(dm.host)
-		if (!curMap[h]) {
-			const flowTag = dm.arbiterOnly === true ? "[flow 1 new arbiter/peripheral]" : "[flow 3 new core data]"
-			print(flowTag + " Adding replica set member: " + JSON.stringify(dm))
-			waitForMongodOnHost(h)
-			if (dm.arbiterOnly !== true) {
-				const live = rs.conf()
-				const missingData = missingDataMemberHostsFromMap(desired, curMap)
-				if (missingData.length === 1 && isOneDataPlusArbiterTopology(live)) {
-					print("[flow 3 PSA] one data + arbiter: rs.reconfigForPSASet")
-					if (typeof rs.reconfigForPSASet !== "function") {
-						throw new Error("rs.reconfigForPSASet is not available in this shell.")
-					}
-					const newConfig = buildReconfigDocument(desired, live)
-					const idx = findMemberIndexByHost(newConfig.members, h)
-					if (idx < 0) {
-						throw new Error("PSA reconfig: member index not found for host " + h)
-					}
-					rs.reconfigForPSASet(idx, newConfig)
-				} else {
-					addMemberFromDesired(dm)
-				}
-			} else {
-				addMemberFromDesired(dm)
+		if (curMap[h]) continue
+
+		const flowTag = dm.arbiterOnly === true ? "[flow 1 new arbiter/peripheral]" : "[flow 3 new core data]"
+		print(flowTag + " Adding replica set member: " + JSON.stringify(dm))
+		waitForMongodOnHost(h)
+
+		const live = rs.conf()
+		const missingData = missingDataMemberHostsFromMap(desired, curMap)
+		const usePsa =
+			dm.arbiterOnly !== true &&
+			missingData.length === 1 &&
+			isOneDataPlusArbiterTopology(live)
+
+		if (usePsa) {
+			print("[flow 3 PSA] one data + arbiter: rs.reconfigForPSASet")
+			if (typeof rs.reconfigForPSASet !== "function") {
+				throw new Error("rs.reconfigForPSASet is not available in this shell.")
 			}
-			current = rs.conf()
-			Object.assign(curMap, currentMembersByHost(current))
+			const newConfig = buildReconfigDocument(desired, live)
+			const idx = findMemberIndexByHost(newConfig.members, h)
+			if (idx < 0) {
+				throw new Error("PSA reconfig: member index not found for host " + h)
+			}
+			rs.reconfigForPSASet(idx, newConfig)
+		} else {
+			addMemberFromDesired(dm)
 		}
+
+		current = rs.conf()
+		Object.assign(curMap, currentMembersByHost(current))
 	}
 	return current
 }
 
 function assertNoIllegalArbiterTransition(desired, current) {
+	const { arbiterToData, dataToArbiter } = arbiterRoleDiffs(desired, current)
+	const offenders = arbiterToData.concat(dataToArbiter)
+	if (offenders.length === 0) return
 	const curMap = currentMembersByHost(current)
-	for (const dm of desired.members) {
-		const h = normalizeMemberHost(dm.host)
-		const cm = curMap[h]
-		if (!cm) continue
-		if (dm.arbiterOnly === undefined || dm.arbiterOnly === null) continue
-		const wantArbiter = dm.arbiterOnly === true
-		const isArbiter = cm.arbiterOnly === true
-		if (isArbiter !== wantArbiter) {
-			throw new Error(
-				"Refusing rs.reconfig: cannot change arbiterOnly in place for " + h +
-				" (live arbiterOnly=" + isArbiter + ", desired=" + wantArbiter +
-				"). Remove member, wipe dbPath, restart mongod, then re-run init."
-			)
-		}
-	}
+	const h = offenders[0]
+	const isArbiter = curMap[h].arbiterOnly === true
+	const wantArbiter = dataToArbiter.indexOf(h) >= 0
+	throw new Error(
+		"Refusing rs.reconfig: cannot change arbiterOnly in place for " + h +
+		" (live arbiterOnly=" + isArbiter + ", desired=" + wantArbiter +
+		"). Remove member, wipe dbPath, restart mongod, then re-run init."
+	)
 }
 
 function mergeLiveMemberWithDesired(dm, cm) {
@@ -555,27 +565,17 @@ function buildReconfigDocument(desired, current) {
 }
 
 function applyFullReconfig(desired) {
-	const maxRetries = parseInt(process.env.MONGO_INIT_RECONFIG_ATTEMPTS || "3", 10)
-	const retryMs = parseInt(process.env.MONGO_INIT_RECONFIG_DELAY_MS || "5000", 10)
-	const maxTry = isNaN(maxRetries) ? 3 : Math.max(1, maxRetries)
-	const delay = isNaN(retryMs) ? 5000 : Math.max(1000, retryMs)
-	for (let t = 1; t <= maxTry; t++) {
-		const current = rs.conf()
-		const newConfig = buildReconfigDocument(desired, current)
-		try {
-			rs.reconfig(newConfig, { force: false })
-			if (t > 1) print("[phase 5] succeeded on retry " + t)
-			return
-		} catch (e) {
-			const msg = (e.message || "") + " " + (e.codeName || "")
-			if (t < maxTry && /ConfigurationInProgress|NewReplicaSetConfigurationIncompatible/i.test(msg)) {
-				print("[phase 5] retry " + t + "/" + maxTry + ": " + e.message + " in " + delay + "ms")
-				sleep(delay)
-			} else {
-				throw e
-			}
-		}
-	}
+	withRetries({
+		label: "[phase 5] retry",
+		attempts: envInt("MONGO_INIT_RECONFIG_ATTEMPTS", 3, 1),
+		delayMs: envInt("MONGO_INIT_RECONFIG_DELAY_MS", 5000, 1000),
+		isRetryable: (e) =>
+			/ConfigurationInProgress|NewReplicaSetConfigurationIncompatible/i.test(errorText(e)),
+	}, function(t) {
+		const newConfig = buildReconfigDocument(desired, rs.conf())
+		rs.reconfig(newConfig, { force: false })
+		if (t > 1) print("[phase 5] succeeded on retry " + t)
+	})
 }
 
 function reconfigureReplicaSet() {
@@ -617,49 +617,50 @@ function initiateReplicaSet() {
 }
 
 function isTransientConfigError(e) {
-	const msg = (e.message || "") + " " + (e.codeName || "")
-	return /MongoServerSelectionError|MongoNetworkError|ConfigurationInProgress|NewReplicaSetConfigurationIncompatible|already exists|already in config/i.test(msg)
+	return /MongoServerSelectionError|MongoNetworkError|ConfigurationInProgress|NewReplicaSetConfigurationIncompatible|already exists|already in config/i.test(errorText(e))
+}
+
+function finishReconfigureSuccess() {
+	print("Successfully reconfigured replicaset.")
+	print("SUCCESS!")
+	quit(0)
+}
+
+// Deliberate safety refusals — the sherpa refuses to take the requested action and no
+// automatic re-run can change the outcome. These MUST keep a non-zero exit (and the dead
+// container stays for logs). Every other failure is treated as recoverable → exit 0.
+function isPermanentFailure(e) {
+	const t = errorText(e)
+	return /omits the current primary host|arbiter → data promotion is manual-only|cannot change arbiterOnly in place|would remove ALL members|would remove all data-bearing members|must keep at least one data/i.test(t)
+}
+
+function handleReconfigureFailure(e, retryLabel) {
+	if (isTransientConfigError(e)) {
+		print(retryLabel + " transient error (" + e.message + "), will retry.")
+		return true
+	}
+	print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + (e.codeName || ""))
+	if (isPermanentFailure(e)) {
+		print("Exiting due to unrecoverable failure (requires manual attention).")
+		quit(1)
+	}
+	print("Recoverable failure; exiting 0 so the sherpa is cleaned up (retried on next reconcile).")
+	quit(0)
 }
 
 function main() {
 	print("mongo-init.js revision: asab-remote-control/remote_control/tech/mongo-init.js (2026-06-22d — concurrent-init race fixed)")
 	print("(Re)-initializing the Mongo cluster.")
 
-	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
-
-	const bootAttempts = parseInt(process.env.MONGO_INIT_BOOT_ATTEMPTS || "60", 10)
-	const bootMs = parseInt(process.env.MONGO_INIT_BOOT_MS || "3000", 10)
-	const maxBoot = isNaN(bootAttempts) ? 60 : Math.max(1, bootAttempts)
-	const bootDelay = isNaN(bootMs) ? 3000 : Math.max(1000, bootMs)
-	const pending = new Set(mongoHostnames.map(h => normalizeMemberHost(h)))
-	for (let a = 1; a <= maxBoot; a++) {
-		for (const hn of Array.from(pending)) {
-			const hp = hn + ":27017"
-			try {
-				if (typeof Mongo !== "undefined") {
-					const conn = new Mongo(hp)
-					if (conn.getDB("admin").runCommand({ ping: 1 }).ok === 1) {
-						pending.delete(hn)
-						print("[boot] mongod reachable: " + hp)
-					}
-				}
-			} catch (_) {}
-		}
-		if (pending.size === 0) {
-			print("[boot] all mongods reachable after " + a + "/" + maxBoot + " attempts")
-			break
-		}
-		if (a < maxBoot) {
-			print("[boot] " + pending.size + "/" + mongoHostnames.length + " down (" + Array.from(pending).join(", ") + ") — " + a + "/" + maxBoot)
-			sleep(bootDelay)
-		}
+	const mongoHostnamesRaw = process.env.MONGO_HOSTNAMES
+	if (mongoHostnamesRaw == null || String(mongoHostnamesRaw).trim() === "") {
+		print("FATAL: MONGO_HOSTNAMES is not set; cannot reconcile replica set. Check the deployment/compose env.")
+		quit(1)
 	}
-	if (pending.size > 0) {
-		print("[boot] WARNING: timed out; still down: " + Array.from(pending).join(", "))
-	}
+	const mongoHostnames = mongoHostnamesRaw.split(",")
+	waitForAllMongods(mongoHostnames)
 
-	const maxMain = parseInt(process.env.MONGO_INIT_MAIN_ATTEMPTS || "20", 10)
-	const maxMainSafe = isNaN(maxMain) ? 20 : Math.max(1, maxMain)
+	const maxMainSafe = envInt("MONGO_INIT_MAIN_ATTEMPTS", 20, 1)
 
 	for (let i = 0; i < maxMainSafe; i++) {
 		print("Connection attempt " + (i + 1) + "/" + maxMainSafe)
@@ -683,8 +684,8 @@ function main() {
 					quit(0)
 				} catch (e) {
 					print("Initialization of replicaset failed.")
-					print("Exiting due to failure.")
-					quit(1)
+					print("Recoverable failure; exiting 0 so the sherpa is cleaned up (retried on next reconcile).")
+					quit(0)
 				}
 			}
 
@@ -706,17 +707,9 @@ function main() {
 									print("[recovery] became primary; running replica set reconcile")
 									try {
 										reconfigureReplicaSet()
-										print("Successfully reconfigured replicaset.")
-										print("SUCCESS!")
-										quit(0)
+										finishReconfigureSuccess()
 									} catch (e) {
-										if (isTransientConfigError(e)) {
-											print("[recovery] transient error (" + e.message + "), will retry.")
-											break
-										}
-										print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + (e.codeName || ""))
-										print("Exiting due to failure.")
-										quit(1)
+										if (handleReconfigureFailure(e, "[recovery]")) break
 									}
 								}
 							}
@@ -733,24 +726,16 @@ function main() {
 
 			try {
 				reconfigureReplicaSet()
-				print("Successfully reconfigured replicaset.")
-				print("SUCCESS!")
-				quit(0)
+				finishReconfigureSuccess()
 			} catch (e) {
-				if (isTransientConfigError(e)) {
-					print("[reconfig] transient error (" + e.message + "), will retry on next attempt.")
-					break
-				}
-				print("Reconfiguration failed with " + e.name + ": " + e.message + " / " + (e.codeName || ""))
-				print("Exiting due to failure.")
-				quit(1)
+				if (handleReconfigureFailure(e, "[reconfig]")) break
 			}
 		}
 		sleep(5000)
 	}
 
-	print("All connection attempts exhausted (" + maxMainSafe + " × 5s = " + (maxMainSafe * 5) + "s), no primary reachable.")
-	quit(1)
+	print("All connection attempts exhausted (" + maxMainSafe + " × 5s = " + (maxMainSafe * 5) + "s), no primary reachable; exiting 0 (recoverable, cleaned up).")
+	quit(0)
 }
 
 main()
