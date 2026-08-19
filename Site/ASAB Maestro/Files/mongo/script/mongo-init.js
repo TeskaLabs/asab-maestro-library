@@ -60,11 +60,11 @@ function reachableVotingMemberCount() {
 	let count = 0
 	try {
 		const st = rs.status()
+		const conf = rs.conf()
 		for (let i = 0; i < st.members.length; i++) {
 			const m = st.members[i]
 			if (![1, 2, 3, 5].includes(m.state)) continue
-			const conf = rs.conf()
-			const memberConf = conf.members.find(cm => cm.host === m.name)
+			const memberConf = conf.members.find(cm => normalizeMemberHost(cm.host) === normalizeMemberHost(m.name))
 			if (memberConf && memberConf.arbiterOnly !== true) {
 				count++
 			}
@@ -459,7 +459,7 @@ function addMissingMembers(desired, current) {
 	const missingData0 = missingDataMemberHostsFromMap(desired, curMap)
 	if (missingData0.length > 1 && isOneDataPlusArbiterTopology(live0)) {
 		throw new Error(
-			"Replica set has one data member and an arbiter; replica-set.json lists multiple new data members. " +
+			"FATAL: replica-set.json lists multiple new data members in a one-data+arbiter topology. " +
 				"Add at most one new data member per init pass, then re-run with the next host."
 		)
 	}
@@ -534,7 +534,7 @@ function newMemberDocFromDesired(dm) {
 	const h = normalizeMemberHost(dm.host)
 	const wantArbiter = dm.arbiterOnly === true
 	if (dm._id === undefined || dm._id === null) {
-		throw new Error("replica-set.json member missing _id for host " + h)
+		throw new Error("FATAL: replica-set.json member missing _id for host " + h)
 	}
 	return {
 		_id: dm._id,
@@ -581,7 +581,7 @@ function applyFullReconfig(desired) {
 function reconfigureReplicaSet() {
 	const desired = JSON.parse(fs.readFileSync("/script/replica-set.json", "utf8"))
 	if (!desired.members || !Array.isArray(desired.members)) {
-		throw new Error("replica-set.json must contain a members array")
+		throw new Error("FATAL: replica-set.json must contain a members array")
 	}
 
 	let current = rs.conf()
@@ -657,7 +657,7 @@ function main() {
 		print("FATAL: MONGO_HOSTNAMES is not set; cannot reconcile replica set. Check the deployment/compose env.")
 		quit(1)
 	}
-	const mongoHostnames = mongoHostnamesRaw.split(",")
+	const mongoHostnames = mongoHostnamesRaw.split(",").map(h => normalizeMemberHost(h)).filter(Boolean)
 	waitForAllMongods(mongoHostnames)
 
 	const maxMainSafe = envInt("MONGO_INIT_MAIN_ATTEMPTS", 20, 1)
