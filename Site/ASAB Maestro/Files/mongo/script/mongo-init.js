@@ -658,6 +658,10 @@ function main() {
 		quit(1)
 	}
 	const mongoHostnames = mongoHostnamesRaw.split(",").map(h => normalizeMemberHost(h)).filter(Boolean)
+	if (mongoHostnames.length === 0) {
+		print("FATAL: MONGO_HOSTNAMES produced no hostnames; cannot reconcile replica set. Check the deployment/compose env.")
+		quit(1)
+	}
 	waitForAllMongods(mongoHostnames)
 
 	const maxMainSafe = envInt("MONGO_INIT_MAIN_ATTEMPTS", 20, 1)
