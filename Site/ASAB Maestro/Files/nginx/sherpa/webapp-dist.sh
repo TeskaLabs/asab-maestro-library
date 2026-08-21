@@ -49,116 +49,59 @@ try_download() {
 	return 1
 }
 
-install_mfe() {
+# args: urls_str, name, kind (mfe|spa), archive_ext (tar.xz|tar.lzma), decompress (xzcat|lzcat)
+install_webapp() {
 	urls_str="$1"
 	name="$2"
-	echo "Installing $name (mfe) ..."
-	
+	kind="$3"
+	archive_ext="$4"
+	decompress="$5"
+
+	echo "Installing $name ($kind) ..."
+
 	cd "$WEBROOT_DIR" || return
 
 	rm -rf "$name.new" "$CACHE_DIR/$name.etag-new"
-	
-	# Replace commas with spaces so standard 'sh' can loop through them
-	urls_spaced=$(echo "$urls_str" | tr ',' ' ')
 
-	downloaded=0
-	up_to_date=0
-	archive="$TMP_DIR/$name.tar.xz"
+	archive="$TMP_DIR/$name.$archive_ext"
 
-	# Try each URL in order
 	# try_download must run inside 'if' — the sherpa invokes this script with 'sh -e'
-	for url in $urls_spaced; do
+	for url in $(echo "$urls_str" | tr ',' ' '); do
 		if try_download "$url" "$name" "$archive"; then
-			downloaded=1
 			break
-		else
-			rc=$?
-			if [ $rc -eq 2 ]; then
-				up_to_date=1
-				break
-			fi
+		fi
+		rc=$?
+		if [ $rc -eq 2 ]; then
+			echo "$name already installed and up-to-date."
+			rm -f "$CACHE_DIR/$name.etag-new"
+			return
 		fi
 	done
 
-	if [ $up_to_date -eq 1 ]; then
-		echo "$name already installed and up-to-date."
-		rm -f "$CACHE_DIR/$name.etag-new"
-		return
-	fi
-
-	if [ $downloaded -eq 0 ]; then
+	if [ ! -f "$archive" ]; then
 		echo "Error: Failed to download $name from all available sources."
 		return
 	fi
 
-	# Install downloaded application
 	mkdir "$name.new"
-	if ! xzcat "$archive" | tar x -C "./$name.new"; then
+	if ! $decompress "$archive" | tar x -C "./$name.new"; then
 		echo "Error: Downloaded file is not a valid archive for $name."
 		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
 		return
 	fi
 
-	# Clean up
 	rm -rf "./$name" "$archive"
 	mv -T "./$name.new" "./$name"
 	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
 	echo "$name installed."
 }
 
+install_mfe() {
+	install_webapp "$1" "$2" mfe tar.xz xzcat
+}
 
 install_spa() {
-	urls_str="$1"
-	name="$2"
-	echo "Installing $name (spa) ..."
-	
-	cd "$WEBROOT_DIR" || return
-
-	rm -rf "$name.new" "$CACHE_DIR/$name.etag-new"
-	
-	urls_spaced=$(echo "$urls_str" | tr ',' ' ')
-
-	downloaded=0
-	up_to_date=0
-	archive="$TMP_DIR/$name.tar.lzma"
-
-	for url in $urls_spaced; do
-		if try_download "$url" "$name" "$archive"; then
-			downloaded=1
-			break
-		else
-			rc=$?
-			if [ $rc -eq 2 ]; then
-				up_to_date=1
-				break
-			fi
-		fi
-	done
-
-	if [ $up_to_date -eq 1 ]; then
-		echo "$name already installed and up-to-date."
-		rm -f "$CACHE_DIR/$name.etag-new"
-		return
-	fi
-
-	if [ $downloaded -eq 0 ]; then
-		echo "Error: Failed to download $name from all available sources."
-		return
-	fi
-
-	# Install downloaded application
-	mkdir "$name.new"
-	if ! lzcat "$archive" | tar x -C "./$name.new"; then
-		echo "Error: Downloaded file is not a valid archive for $name."
-		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
-		return
-	fi
-
-	# Clean up
-	rm -rf "./$name" "$archive"
-	mv -T "./$name.new" "./$name"
-	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
-	echo "$name installed."
+	install_webapp "$1" "$2" spa tar.lzma lzcat
 }
 
 
