@@ -69,12 +69,13 @@ install_webapp() {
 	for url in $(echo "$urls_str" | tr ',' ' '); do
 		if try_download "$url" "$name" "$archive"; then
 			break
-		fi
-		rc=$?
-		if [ $rc -eq 2 ]; then
-			echo "$name already installed and up-to-date."
-			rm -f "$CACHE_DIR/$name.etag-new"
-			return
+		else
+			rc=$?
+			if [ $rc -eq 2 ]; then
+				echo "$name already installed and up-to-date."
+				rm -f "$CACHE_DIR/$name.etag-new"
+				return
+			fi
 		fi
 	done
 
