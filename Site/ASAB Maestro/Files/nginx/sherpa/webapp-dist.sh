@@ -96,15 +96,6 @@ install_webapp() {
 	echo "$name installed."
 }
 
-install_mfe() {
-	install_webapp "$1" "$2" mfe tar.xz xzcat
-}
-
-install_spa() {
-	install_webapp "$1" "$2" spa tar.lzma lzcat
-}
-
-
 mkdir -p "$TMP_DIR"
 
 if [ -f "/sherpa/webapps.dist" ]; then
@@ -121,15 +112,13 @@ if [ -f "/sherpa/webapps.dist" ]; then
 		# Switch based on the command
 		case "$cmd" in
 			mfe)
-				# Call the mfe function and pass all arguments
-				install_mfe $args
+			# call install_webapp with the arguments for mfe
+				install_webapp $args mfe tar.xz xzcat
 				;;
-
 			spa)
-				# Call the spa function and pass all arguments
-				install_spa $args
+				# call install_webapp with the arguments for spa
+				install_webapp $args spa tar.lzma lzcat
 				;;
-
 			*)
 				echo "Unknown distribution method: $cmd"
 				;;
