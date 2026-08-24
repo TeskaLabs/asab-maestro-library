@@ -49,6 +49,30 @@ try_download() {
 	return 1
 }
 
+# args: urls_str (comma-separated)
+# returns space-separated URLs in random order
+shuffle_urls() {
+	urls_str="$1"
+	seed=$(od -An -N4 -tu4 /dev/urandom 2>/dev/null | tr -d ' ')
+	[ -z "$seed" ] && seed=$(date +%s)
+
+	echo "$urls_str" | tr ',' '\n' | awk -v seed="$seed" '
+		BEGIN { srand(seed) }
+		{ a[NR] = $0 }
+		END {
+			n = NR
+			while (n > 0) {
+				i = int(rand() * n) + 1
+				print a[i]
+				for (j = i; j < n; j++) {
+					a[j] = a[j + 1]
+				}
+				n--
+			}
+		}
+	' | tr '\n' ' '
+}
+
 # args: urls_str, name, kind (mfe|spa), archive_ext (tar.xz|tar.lzma), decompress (xzcat|lzcat)
 install_webapp() {
 	urls_str="$1"
@@ -66,8 +90,10 @@ install_webapp() {
 	archive="$TMP_DIR/$name.$archive_ext"
 
 	# try_download must run inside 'if' — the sherpa invokes this script with 'sh -e'
-	for url in $(echo "$urls_str" | tr ',' ' '); do
+	source_url=""
+	for url in $(shuffle_urls "$urls_str"); do
 		if try_download "$url" "$name" "$archive"; then
+			source_url="$url"
 			break
 		else
 			rc=$?
@@ -94,7 +120,7 @@ install_webapp() {
 	rm -rf "./$name" "$archive"
 	mv -T "./$name.new" "./$name"
 	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
-	echo "$name installed."
+	echo "$name installed from $source_url."
 }
 
 mkdir -p "$TMP_DIR"
