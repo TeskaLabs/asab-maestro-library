@@ -26,18 +26,16 @@ try_download() {
 		-o "$archive" \
 		"$url") || true
 
-	if [ ! -f "$archive" ]; then
-		if [ "$http_code" = "304" ] || [ "$http_code" = "200" ]; then
-			# ETag check indicates no change (304 or matching ETag)
-			return 2
-		fi
-	else
-		if [ "$http_code" = "200" ]; then
-			return 0
-		fi
-	fi
-
 	case "$http_code" in
+		200)
+			if [ -f "$archive" ]; then
+				return 0
+			fi
+			return 2
+			;;
+		304)
+			return 2
+			;;
 		404)
 			echo "Version not found (404): $url"
 			;;
@@ -52,34 +50,16 @@ try_download() {
 # args: urls_str (comma-separated)
 # returns space-separated URLs in random order
 shuffle_urls() {
-	urls_str="$1"
-	seed=$(od -An -N4 -tu4 /dev/urandom 2>/dev/null | tr -d ' ')
-	[ -z "$seed" ] && seed=$(date +%s)
-
-	echo "$urls_str" | tr ',' '\n' | awk -v seed="$seed" '
-		BEGIN { srand(seed) }
-		{ a[NR] = $0 }
-		END {
-			n = NR
-			while (n > 0) {
-				i = int(rand() * n) + 1
-				print a[i]
-				for (j = i; j < n; j++) {
-					a[j] = a[j + 1]
-				}
-				n--
-			}
-		}
-	' | tr '\n' ' '
+	echo "$1" | tr ',' '\n' | shuf | tr '\n' ' '
 }
 
-# args: urls_str, name, kind (mfe|spa), archive_ext (tar.xz|tar.lzma), decompress (xzcat|lzcat)
+# args: urls_str, name, kind (mfe|spa), archive_ext (tar.xz|tar.lzma), decompress_cmd (xzcat|lzcat)
 install_webapp() {
 	urls_str="$1"
 	name="$2"
 	kind="$3"
 	archive_ext="$4"
-	decompress="$5"
+	decompress_cmd="$5"
 
 	echo "Installing $name ($kind) ..."
 
@@ -89,20 +69,25 @@ install_webapp() {
 
 	archive="$TMP_DIR/$name.$archive_ext"
 
-	# try_download must run inside 'if' — the sherpa invokes this script with 'sh -e'
+	# try_download return code captured with '|| rc=$?' — the sherpa invokes this script with 'sh -e'
 	source_url=""
 	for url in $(shuffle_urls "$urls_str"); do
-		if try_download "$url" "$name" "$archive"; then
-			source_url="$url"
-			break
-		else
-			rc=$?
-			if [ $rc -eq 2 ]; then
+		rc=0
+		try_download "$url" "$name" "$archive" || rc=$?
+		case $rc in
+			0)
+				source_url="$url"
+				break
+				;;
+			1)
+				# Download failed — try next URL
+				;;
+			2)
 				echo "$name already installed and up-to-date."
 				rm -f "$CACHE_DIR/$name.etag-new"
 				return
-			fi
-		fi
+				;;
+		esac
 	done
 
 	if [ ! -f "$archive" ]; then
@@ -111,7 +96,7 @@ install_webapp() {
 	fi
 
 	mkdir "$name.new"
-	if ! $decompress "$archive" | tar x -C "./$name.new"; then
+	if ! $decompress_cmd "$archive" | tar x -C "./$name.new"; then
 		echo "Error: Downloaded file is not a valid archive for $name."
 		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
 		return
