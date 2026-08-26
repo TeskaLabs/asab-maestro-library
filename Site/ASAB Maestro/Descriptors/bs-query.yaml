@@ -11,12 +11,16 @@ descriptor:
   volumes:
   - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
   - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/data/bsquery"
+  # Read-only cache of remote library providers
+  - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
   # TODO: add jupyter - /data/hdd/jupyter:/data/jupyter
 
 asab:
   configname: conf/bs-query.conf
 
   config:
+    library:
+      cache_dir: /library/cache
     storage:
     # TODO: remove after bs-query has the right folder /data 
       path: /data/bsquery
