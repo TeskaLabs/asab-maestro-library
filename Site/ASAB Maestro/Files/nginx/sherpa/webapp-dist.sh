@@ -47,21 +47,12 @@ try_download() {
 	return 1
 }
 
-# args: urls_str (comma-separated)
-# returns space-separated URLs in random order
-shuffle_urls() {
-	echo "$1" | tr ',' '\n' | shuf | tr '\n' ' '
-}
-
-# args: urls_str, name, kind (mfe|spa), archive_ext (tar.xz|tar.lzma), decompress_cmd (xzcat|lzcat)
+# args: urls_str, name, archive_ext (tar.xz|tar.lzma), decompress_cmd (xzcat|lzcat)
 install_webapp() {
 	urls_str="$1"
 	name="$2"
-	kind="$3"
-	archive_ext="$4"
-	decompress_cmd="$5"
-
-	echo "Installing $name ($kind) ..."
+	archive_ext="$3"
+	decompress_cmd="$4"
 
 	cd "$WEBROOT_DIR" || return
 
@@ -71,7 +62,7 @@ install_webapp() {
 
 	# try_download return code captured with '|| rc=$?' — the sherpa invokes this script with 'sh -e'
 	source_url=""
-	for url in $(shuffle_urls "$urls_str"); do
+	for url in $(echo "$urls_str" | tr ',' '\n' | shuf); do
 		rc=0
 		try_download "$url" "$name" "$archive" || rc=$?
 		case $rc in
@@ -120,16 +111,19 @@ if [ -f "/sherpa/webapps.dist" ]; then
 
 		# Get the arguments by excluding the first 'word'
 		args=$(echo "$line" | cut -d " " -f 2-)
+		
+		# Get the last argument (name)
+		name=$(echo "$args" | cut -d " " -f 2)
 
 		# Switch based on the command
 		case "$cmd" in
 			mfe)
-			# call install_webapp with the arguments for mfe
-				install_webapp $args mfe tar.xz xzcat
+				echo "Installing $name (mfe) ..."
+				install_webapp $args tar.xz xzcat
 				;;
 			spa)
-				# call install_webapp with the arguments for spa
-				install_webapp $args spa tar.lzma lzcat
+				echo "Installing $name (spa) ..."
+				install_webapp $args tar.lzma lzcat
 				;;
 			*)
 				echo "Unknown distribution method: $cmd"
