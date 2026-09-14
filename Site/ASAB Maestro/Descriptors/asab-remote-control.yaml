@@ -28,13 +28,6 @@ asab-config:
   Library:
     __schema__:
       file: asab-config/Library/__schema__.json
-    config.json:
-      file: {
-        "library": {
-          "providers": ["git+https://github.com/TeskaLabs/asab-maestro-library.git#production"]
-        }
-      }
-      if_not_exists: true
   SMTP:
     __schema__:
       file: asab-config/SMTP/__schema__.json
