@@ -90,6 +90,22 @@ function peerWaitConfigFromEnv() {
 	}
 }
 
+/**
+ * Number of attempts and delay for the main init loop that connects to the
+ * mongod instances and initializes the replica set. MongoDB may take a while
+ * to start listening (compose depends_on only waits for container start), so
+ * keep the default high enough for a fresh install.
+ * Env: MONGO_INIT_CONNECT_ATTEMPTS (default 60), MONGO_INIT_CONNECT_MS (default 5000).
+ */
+function initConnectConfigFromEnv() {
+	const attempts = parseInt(process.env.MONGO_INIT_CONNECT_ATTEMPTS || "60", 10)
+	const ms = parseInt(process.env.MONGO_INIT_CONNECT_MS || "5000", 10)
+	return {
+		attempts: isNaN(attempts) ? 60 : Math.max(1, attempts),
+		ms: isNaN(ms) ? 5000 : Math.max(200, ms),
+	}
+}
+
 function waitForMongodOnHost(hostPort) {
 	const hp = normalizeMemberHost(hostPort)
 	const { attempts, ms } = peerWaitConfigFromEnv()
@@ -615,9 +631,10 @@ function main() {
 	print("(Re)-initializing the Mongo cluster.")
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
+	const { attempts: connectAttempts, ms: connectMs } = initConnectConfigFromEnv()
 
-	for (let i = 0; i < 5; i++) {
-		print("Connection attempt", i + 1)
+	for (let i = 0; i < connectAttempts; i++) {
+		print("Connection attempt", i + 1 + "/" + connectAttempts)
 
 		for (let hostname of mongoHostnames) {
 			print("Connecting to ", `${hostname}:27017`)
@@ -710,7 +727,7 @@ function main() {
 				quit(1)
 			}
 		}
-		sleep(5000)
+		sleep(connectMs)
 	}
 }
 
