@@ -2,6 +2,9 @@ define:
   type: rc/descriptor
   name: ASAB Library
 
+secrets:
+  EXPORT_SIGNATURE_SECRET: {}
+
 descriptor:
   image: docker.teskalabs.com/asab/asab-library
 
@@ -25,7 +28,12 @@ asab:
       tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
     library:
       cache_dir: /library/cache
+      export_signature_secret: "{{EXPORT_SIGNATURE_SECRET}}"
 
 nginx:
   api: 8893
-
+  https:
+    # Direct browser downloads use short-lived signatures instead of OAuth headers.
+    location /api/asab-library/library/export/:
+      - rewrite /api/asab-library/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8893
