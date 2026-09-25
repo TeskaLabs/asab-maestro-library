@@ -5,8 +5,11 @@ define:
 
 descriptor:
   image: pcr.teskalabs.com/kibana/kibana
+
+  user: "10004:10004"
   volumes:
     - "{{SITE}}/{{INSTANCE_ID}}/config:/usr/share/kibana/config"
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/usr/share/kibana/data"
 
 
 files:
