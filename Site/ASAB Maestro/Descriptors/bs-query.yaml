@@ -19,6 +19,8 @@ asab:
   configname: conf/bs-query.conf
 
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8790"
     library:
       cache_dir: /library/cache
     storage:

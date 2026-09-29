@@ -11,6 +11,8 @@ descriptor:
 asab:
   configname: conf/asab-lighthouse.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8899"
     auth:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
