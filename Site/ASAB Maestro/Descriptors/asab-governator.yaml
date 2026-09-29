@@ -44,4 +44,4 @@ asab:
   configname: conf/asab-governator.conf
   config:
     web:
-      listen: *apiport
+      listen: "{{INTERNAL_NETWORK_IP}} 8892"

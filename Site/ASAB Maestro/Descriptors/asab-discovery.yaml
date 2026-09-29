@@ -14,7 +14,9 @@ descriptor:
 
 asab:
   configname: conf/asab-discovery.conf
-  config: {}
+  config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8897"
 
 nginx:
   api: 8897

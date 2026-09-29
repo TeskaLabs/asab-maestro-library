@@ -21,6 +21,8 @@ descriptor:
 asab:
   configname: conf/asab-remote-control.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8891"
     library:
       cache_dir: /library/cache
 
