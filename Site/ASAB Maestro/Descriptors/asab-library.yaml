@@ -19,6 +19,8 @@ descriptor:
 asab:
   configname: conf/asab-library.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8893"
     auth:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
