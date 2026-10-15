@@ -6,7 +6,7 @@ define:
 descriptor:
   image: amazon/aws-cli
   volumes:
-    - "{{SITE}}/{{INSTANCE_ID}}/conf/.aws:/root/.aws:ro"  # Optional configuration file for AWS CLI
+    - "{{SITE}}/{{INSTANCE_ID}}/conf/.aws:/root/.aws"  # Optional configuration file for AWS CLI
     - "{{SLOW_STORAGE}}:/data/hdd:ro"  # Read only mount of slow storage
 
   entrypoint: ["/bin/sh", "-c"]
