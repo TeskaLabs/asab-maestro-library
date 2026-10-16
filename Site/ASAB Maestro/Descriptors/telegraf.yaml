@@ -17,6 +17,8 @@ descriptor:
   pid: "host"
   cap_add:
     - SYS_PTRACE
+  group_add:
+    - 987  # Allow access to the docker.socket
 
   volumes:
     # For a persistency of the configuration
