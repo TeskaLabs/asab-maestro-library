@@ -117,8 +117,25 @@ function upsertSeaCatAuthCollections(data, db) {
 
 
 /**
+ * Number of attempts and delay for the main connect loop that connects to the
+ * mongod instances and waits for a writable primary. MongoDB may take a while
+ * to become primary (compose depends_on only waits for container start), so
+ * keep the default high enough for a fresh install.
+ * Env: MONGO_INIT_CONNECT_ATTEMPTS (default 60), MONGO_INIT_CONNECT_MS (default 5000).
+ */
+function initConnectConfigFromEnv() {
+	const attempts = parseInt(process.env.MONGO_INIT_CONNECT_ATTEMPTS || "60", 10)
+	const ms = parseInt(process.env.MONGO_INIT_CONNECT_MS || "5000", 10)
+	return {
+		attempts: isNaN(attempts) ? 60 : Math.max(1, attempts),
+		ms: isNaN(ms) ? 5000 : Math.max(200, ms),
+	}
+}
+
+/**
  * The main function reads JSON files from a directory, connects to multiple MongoDB instances,
- * reconfigures the replica set, and inserts data into collections, with a maximum of 5 attempts.
+ * waits for a writable primary, and inserts data into collections. The number of connection
+ * attempts is configurable via MONGO_INIT_CONNECT_ATTEMPTS / MONGO_INIT_CONNECT_MS.
  */
 function main() {
 
@@ -126,12 +143,13 @@ function main() {
 	let db
 
 	const mongoHostnames = process.env.MONGO_HOSTNAMES.split(",")
+	const { attempts: connectAttempts, ms: connectMs } = initConnectConfigFromEnv()
 
-
-	// there are 5 attempts to reconfigure replica sets.
-	// It can be done only on the primary node.
-	// When replica set is (re)configured, upsert seacat auth data.
-	for (let i = 0; i < 5; i++) {
+	// Connect until we find a writable primary and upsert the seacat auth data.
+	// This can only be done on the primary node, which may take a while to be
+	// elected on a fresh install, so keep trying connectAttempts times.
+	for (let i = 0; i < connectAttempts; i++) {
+		print("Connection attempt", i + 1 + "/" + connectAttempts)
 
 		for (let hostname of mongoHostnames) {
 			try {
@@ -165,9 +183,11 @@ function main() {
 			print("SUCCESS!")
 			quit(0)  // SUCCESS!
 		};
-		sleep(5000)
+		sleep(connectMs)
 	}
 
+	print("ERROR: Could not connect to a writable primary on any of:", mongoHostnames)
+	print("Giving up after", connectAttempts, "attempts.")
 	quit(1)
 };
 
