@@ -12,8 +12,8 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     # For unified access to the host docker
     - "{{SITE}}/docker/conf:/root/.docker/"
-    # For a communication with a docker
-    - /var/run/docker.sock:/var/run/docker.sock
+    # For a communication with the Docker or Podman socket
+    - "{{DOCKER_SOCKET}}:/var/run/docker.sock"
     # For a manipulation with the site directory (/opt/site:/opt/site)
     - "{{SITE}}:/opt/site"
     # To change ownership of data structures if needed
