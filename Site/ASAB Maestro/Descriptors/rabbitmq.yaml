@@ -1,0 +1,11 @@
+---
+define:
+  type: rc/descriptor
+  name: RabbitMQ
+  url: https://www.rabbitmq.com/
+
+descriptor:
+  image: rabbitmq
+
+  volumes:
+    - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/var/lib/rabbitmq"
