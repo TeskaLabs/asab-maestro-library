@@ -13,6 +13,7 @@
 
 ### Features
 
+- New AWS CLI descriptor (`amazon/aws-cli` sleep container with optional `~/.aws` config and read-only slow storage mount). ([#308](https://github.com/TeskaLabs/asab-maestro-library/pull/308))
 - New descriptor for ASAB Lighthouse (internal web UI, tenant-aware auth). ([#290](https://github.com/TeskaLabs/asab-maestro-library/pull/290))
 - ASAB Governator: mount the host container socket from model parameter `{{DOCKER_SOCKET}}` (Docker or Podman) instead of a hard-coded `/var/run/docker.sock`. ([#319](https://github.com/TeskaLabs/asab-maestro-library/pull/319))
 - ASAB Governator: per-instance NGINX locations for `/api/{{INSTANCE_ID}}/export-download` (public and internal). ([#287](https://github.com/TeskaLabs/asab-maestro-library/pull/287), [#292](https://github.com/TeskaLabs/asab-maestro-library/pull/292))
