@@ -16,6 +16,8 @@ Changes on `main` that are not on `release/v26.37` yet.
 
 - AWS CLI descriptor: removed read-only conf volume that blocked optional AWS configuration files. ([#316](https://github.com/TeskaLabs/asab-maestro-library/pull/316))
 
+---
+
 ## v26.37
 
 Tag [`v26.37.01`](https://github.com/TeskaLabs/asab-maestro-library/releases/tag/v26.37.01) points at `release/v26.37`.
