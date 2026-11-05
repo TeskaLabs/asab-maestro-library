@@ -2,6 +2,9 @@ define:
   type: rc/descriptor
   name: ASAB Library
 
+secrets:
+  ASAB_LIBRARY_DOWNLOAD_SECRET_KEY: {}
+
 descriptor:
   image: docker.teskalabs.com/asab/asab-library
 
@@ -10,6 +13,8 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     # For persistency of fultext-search data
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}:/var/lib/asab-library"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
   # This is critical service
   restart: always
@@ -17,11 +22,20 @@ descriptor:
 asab:
   configname: conf/asab-library.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8893"
     auth:
       public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
       tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
+    library:
+      cache_dir: /library/cache
+      export_signature_secret: "{{ASAB_LIBRARY_DOWNLOAD_SECRET_KEY}}"
 
 nginx:
   api: 8893
-
+  https:
+    # Direct browser downloads use short-lived signatures instead of OAuth headers.
+    location /api/asab-library/library/export/:
+      - rewrite /api/asab-library/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8893

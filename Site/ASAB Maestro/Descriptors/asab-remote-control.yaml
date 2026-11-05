@@ -12,25 +12,24 @@ descriptor:
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
     - "{{SLOW_STORAGE}}/vault:/data/vault:ro"
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/internal:/var/run/internal"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
   # This is critical service
   restart: always
 
 asab:
   configname: conf/asab-remote-control.conf
-  config: {}  # specify default configuration of the service
+  config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8891"
+    library:
+      cache_dir: /library/cache
 
 asab-config:
   Library:
     __schema__:
       file: asab-config/Library/__schema__.json
-    config.json:
-      file: {
-        "library": {
-          "providers": ["git+https://github.com/TeskaLabs/asab-maestro-library.git#production"]
-        }
-      }
-      if_not_exists: true
   SMTP:
     __schema__:
       file: asab-config/SMTP/__schema__.json

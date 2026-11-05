@@ -12,11 +12,19 @@ descriptor:
 asab:
   configname: conf/asab-pyppeteer.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8895"
+
+    auth:
+      public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
+
     pyppeteer:
       ignore_certificate_errors: 1
 
       # Points to the internal NGINX
       internal_url: http://nginx:8890
+
+      # url_white_list is a multiline list
       url_white_list: http://nginx:8890
 
 nginx:

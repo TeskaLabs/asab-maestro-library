@@ -9,90 +9,95 @@ TMP_DIR=/tmp
 
 MAXSIZE=100M
 
+# args: url, name, archive_path
+# return 0: downloaded, 1: try next URL, 2: up-to-date
+try_download() {
+	url="$1"
+	name="$2"
+	archive="$3"
 
-install_mfe() {  # args: URL: $1, Name: $2
-	echo "Installing $2 (mfe) ..."
-	
-	cd "$WEBROOT_DIR"
-
-	rm -rf "$2.new" "$CACHE_DIR/$2.etag-new"
-	
-	# Download the web application from the provided URL
-	curl --silent --show-error \
-		--etag-save "$CACHE_DIR/$2.etag-new" \
-		--etag-compare "$CACHE_DIR/$2.etag" \
+	http_code=$(curl --silent --show-error --fail \
+		--etag-save "$CACHE_DIR/$name.etag-new" \
+		--etag-compare "$CACHE_DIR/$name.etag" \
 		--max-filesize ${MAXSIZE} \
-		--retry 10 \
-		--retry-delay 0 \
-		-o "$TMP_DIR/$2.tar.xz" \
-		"$1"
+		--retry 3 \
+		--retry-delay 1 \
+		-w "%{http_code}" \
+		-o "$archive" \
+		"$url") || true
 
-	if [ $? -ne 0 ]
-	then
-		echo "Failed to download $1"
-		return
-	fi
-
-	if [ ! -f "$TMP_DIR/$2.tar.xz" ]; then
-		# This happens then ETag check indicates no change in of the previously downloaded distribution
-		echo "$2 already installed and up-to-date."
-		rm "$CACHE_DIR/$2.etag-new"
-		return
-	fi
-
-	# Install downloaded application
-	mkdir "$2.new"
-	xzcat "$TMP_DIR/$2.tar.xz" | tar x -C "./$2.new"
-
-	# Clean um
-	rm -rf "./$2" "$TMP_DIR/$2.tar.xz"
-	mv -T "./$2.new" "./$2"
-	mv "$CACHE_DIR/$2.etag-new" "$CACHE_DIR/$2.etag"
-	echo "$2 installed."
+	case "$http_code" in
+		200)
+			if [ -f "$archive" ]; then
+				return 0
+			fi
+			return 2
+			;;
+		304)
+			return 2
+			;;
+		404)
+			echo "Version not found (404): $url"
+			;;
+		*)
+			echo "Failed to download from $url (HTTP $http_code). Trying next source if available..."
+			;;
+	esac
+	rm -f "$archive" "$CACHE_DIR/$name.etag-new"
+	return 1
 }
 
+# args: urls_str, name, archive_ext (tar.xz|tar.lzma), decompress_cmd (xzcat|lzcat)
+install_webapp() {
+	urls_str="$1"
+	name="$2"
+	archive_ext="$3"
+	decompress_cmd="$4"
 
-install_spa() {  # args: URL: $1, Name: $2
-	echo "Installing $2 (spa) ..."
-	
-	cd "$WEBROOT_DIR"
+	cd "$WEBROOT_DIR" || return
 
-	rm -rf "$2.new" "$CACHE_DIR/$2.etag-new"
-	
-	# Download the web application from the provided URL
-	curl --silent --show-error \
-		--etag-save "$CACHE_DIR/$2.etag-new" \
-		--etag-compare "$CACHE_DIR/$2.etag" \
-		--max-filesize ${MAXSIZE} \
-		--retry 10 \
-		--retry-delay 0 \
-		-o "$TMP_DIR/$2.tar.lzma" \
-		"$1"
+	rm -rf "$name.new" "$CACHE_DIR/$name.etag-new"
 
-	if [ $? -ne 0 ]
-	then
-		echo "Failed to download $1"
+	archive="$TMP_DIR/$name.$archive_ext"
+
+	# try_download return code captured with '|| rc=$?' — the sherpa invokes this script with 'sh -e'
+	source_url=""
+	for url in $(echo "$urls_str" | tr ',' '\n' | shuf); do
+		rc=0
+		try_download "$url" "$name" "$archive" || rc=$?
+		case $rc in
+			0)
+				source_url="$url"
+				break
+				;;
+			1)
+				# Download failed — try next URL
+				;;
+			2)
+				echo "$name already installed and up-to-date."
+				rm -f "$CACHE_DIR/$name.etag-new"
+				return
+				;;
+		esac
+	done
+
+	if [ ! -f "$archive" ]; then
+		echo "Error: Failed to download $name from all available sources."
 		return
 	fi
 
-	if [ ! -f "$TMP_DIR/$2.tar.lzma" ]; then
-		# This happens then ETag check indicates no change in of the previously downloaded distribution
-		echo "$2 already installed and up-to-date."
-		rm "$CACHE_DIR/$2.etag-new"
+	mkdir "$name.new"
+	if ! $decompress_cmd "$archive" | tar x -C "./$name.new"; then
+		echo "Error: Downloaded file is not a valid archive for $name."
+		rm -rf "./$name.new" "$archive" "$CACHE_DIR/$name.etag-new"
 		return
 	fi
 
-	# Install downloaded application
-	mkdir "$2.new"
-	lzcat "$TMP_DIR/$2.tar.lzma" | tar x -C "./$2.new"
-
-	# Clean um
-	rm -rf "./$2" "$TMP_DIR/$2.tar.lzma"
-	mv -T "./$2.new" "./$2"
-	mv "$CACHE_DIR/$2.etag-new" "$CACHE_DIR/$2.etag"
-	echo "$2 installed."
+	rm -rf "./$name" "$archive"
+	mv -T "./$name.new" "./$name"
+	mv "$CACHE_DIR/$name.etag-new" "$CACHE_DIR/$name.etag"
+	echo "$name installed from $source_url."
 }
-
 
 mkdir -p "$TMP_DIR"
 
@@ -106,19 +111,20 @@ if [ -f "/sherpa/webapps.dist" ]; then
 
 		# Get the arguments by excluding the first 'word'
 		args=$(echo "$line" | cut -d " " -f 2-)
+		
+		# Get the last argument (name)
+		name=$(echo "$args" | cut -d " " -f 2)
 
 		# Switch based on the command
 		case "$cmd" in
 			mfe)
-				# Call the mfe function and pass all arguments
-				install_mfe $args
+				echo "Installing $name (mfe) ..."
+				install_webapp $args tar.xz xzcat
 				;;
-
 			spa)
-				# Call the spa function and pass all arguments
-				install_spa $args
+				echo "Installing $name (spa) ..."
+				install_webapp $args tar.lzma lzcat
 				;;
-
 			*)
 				echo "Unknown distribution method: $cmd"
 				;;

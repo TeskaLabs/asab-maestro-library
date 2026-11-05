@@ -10,6 +10,9 @@ descriptor:
 
   entrypoint: ["/bin/bash", "-e", "/confro/zkstart.sh"]
   command: ["zkServer.sh", "start-foreground"]
+  mem_limit: 4g
+  memswap_limit: 4g
+  mem_swappiness: 0
 
   volumes:
       - "{{SITE}}/{{INSTANCE_ID}}/confro:/confro:ro"  # Read-only (ro) configuration from the site directory
@@ -20,8 +23,7 @@ descriptor:
 
   environment:
     ZOO_MY_ID: null  # This will be injected by cluster service
-    ZK_SERVER_HEAP: '2000'
-    JVMFLAGS: "-Xms2000m -Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
+    JVMFLAGS: "-Xms2g -Xmx2g -Dzookeeper.multiAddress.enabled=true -Dlogback.configurationFile=/confro/logback.xml"
 
   healthcheck:
     test:
@@ -33,6 +35,20 @@ descriptor:
     retries: 5
     start_period: 30s
 
+
+sherpas:
+  # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
+  # provide a name to your sherpa and a descriptor for its very own container.
+  reconfig:
+    image: pcr.teskalabs.com/asab/asab-governator:{{ VERSIONS["asab-governator"] }}
+    entrypoint: ["python3", "/script/reconfig.py"]
+    command: ["echo", "DONE"]
+    volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/script:/script:ro"
+    depends_on: ["{{INSTANCE_ID}}"]
+    environment:
+      ZOOKEEPER_SERVERS: '{{ ZOOKEEPER_SERVERS | join(",") }}'
+
 files:
   - confro/
 
@@ -40,6 +56,7 @@ files:
   # More at https://zookeeper.apache.org/doc/r3.8.1/zookeeperOracleQuorums.html
   - confro/oracle.txt: 0
 
+  - script/
 
 telegraf: |
   [[inputs.zookeeper]]

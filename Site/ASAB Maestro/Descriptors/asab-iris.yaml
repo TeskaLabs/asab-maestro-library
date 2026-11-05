@@ -9,18 +9,26 @@ descriptor:
   volumes:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+    # Read-only cache of remote library providers
+    - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
 
 asab:
   configname: conf/asab-iris.conf
   config: 
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8896"
     kafka:
       topic: notifications
       group_id: asab-iris
+    library:
+      cache_dir: /library/cache
     # [smtp] must be filled from general confguration (user)
     # [slack] must be filled from general confguration (user)
     # [variables] must be filled from general confguration (user)
     email:
       markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
+    tenants:
+      tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
     variables:
       public_url: "{{PUBLIC_URL}}"
 
@@ -56,6 +64,66 @@ asab-config:
               },
               "if": { "minProperties": 1 },
               "then": { "required": ["token", "channel"] }
+            }
+          }
+        }
+    config:
+      file: {}
+      if_not_exists: true
+
+  Mattermost:
+    __schema__:
+      file:
+        {
+          "title": "Mattermost",
+          "type": "object",
+          "properties": {
+            "mattermost": {
+              "title": "Mattermost",
+              "description": "Configure connection to a default Mattermost channel.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "title": "Server URL",
+                  "description": "Base URL of the Mattermost server.",
+                  "format": "uri",
+                  "minLength": 1
+                },
+                "token": {
+                  "type": "string",
+                  "title": "Bot Token",
+                  "description": "Access token of the Mattermost bot.",
+                  "minLength": 1,
+                  "$defs": {
+                    "password": {
+                      "type": "password"
+                    }
+                  }
+                },
+                "security_channel_id": {
+                  "type": "string",
+                  "title": "Default Channel ID",
+                  "description": "Channel used when a notification does not specify a destination.",
+                  "minLength": 1
+                },
+                "bot_username": {
+                  "type": "string",
+                  "title": "Bot Username",
+                  "description": "Mattermost bot username required for direct messages.",
+                  "minLength": 1
+                },
+                "timeout": {
+                  "type": "integer",
+                  "title": "Request Timeout",
+                  "description": "Mattermost API request timeout in seconds.",
+                  "minimum": 1,
+                  "default": 10
+                }
+              },
+              "if": { "minProperties": 1 },
+              "then": { "required": ["url", "token", "security_channel_id"] }
             }
           }
         }
