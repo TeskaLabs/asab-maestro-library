@@ -8,6 +8,10 @@ Changes on `main` that are not on `release/v26.37` yet.
 
 - ASAB services bind HTTP APIs on `{{INTERNAL_NETWORK_IP}}` only (Governator, Remote Control, Library, Iris, Config, Discovery, Lighthouse, Pyppeteer, BS Query; SeaCat Auth `web` and `web:public`). ([#315](https://github.com/TeskaLabs/asab-maestro-library/pull/315))
 
+### Refactor
+
+- Update `asab-discovery` descriptor with secret for signed download
+
 ---
 
 ## v26.37
