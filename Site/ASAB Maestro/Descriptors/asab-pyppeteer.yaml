@@ -9,7 +9,6 @@ descriptor:
     # For a persistency of the configuration
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
 
-
 asab:
   configname: conf/asab-pyppeteer.conf
   config:
@@ -21,6 +20,9 @@ asab:
 
     pyppeteer:
       ignore_certificate_errors: 1
+
+      # Points to the internal NGINX
+      internal_url: http://nginx:8890
 
       # url_white_list is a multiline list
       url_white_list: http://nginx:8890
