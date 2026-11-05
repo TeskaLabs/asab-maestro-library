@@ -20,3 +20,8 @@ asab:
 
 nginx:
   api: 8897
+  https:
+    # Signed baseline/counters CSV download; skip oauth2 introspect on this path
+    location ~ ^/api/asab-discovery/~/.*\/export\/[0-9a-fA-F]+\/[0-9a-fA-F]+$:
+      - rewrite /api/asab-discovery/(.*) /$1 break
+      - proxy_pass http://{{NODE_ID}}:8897
