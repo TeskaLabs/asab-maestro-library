@@ -1,0 +1,7 @@
+define:
+  type: rc/descriptor
+  name: frp Fast Reverse Proxy Client
+  url: https://github.com/fatedier/frp
+
+descriptor:
+  image: pcr.teskalabs.com/snowdreamtech/frpc
