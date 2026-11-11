@@ -6,6 +6,8 @@ define:
 descriptor:
   image: pcr.teskalabs.com/telegraf
 
+  user: "10005:10005"
+
   environment:
     HOST_MOUNT_PREFIX: /hostfs
     HOST_PROC: /hostfs/proc
