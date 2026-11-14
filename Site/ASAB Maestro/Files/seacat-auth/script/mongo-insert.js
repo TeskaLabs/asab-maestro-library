@@ -73,10 +73,24 @@ function upsertSeaCatAuthCollections(data, db) {
 			return doc._id;
 		}));
 
-		// upsert new records
+		// Insert or upsert records. Collection "c" (credentials) is insert-only so
+		// an existing user is not overwritten (e.g. password is not reset).
 		newRecords.forEach(record => {
-			print(`Upserting ${record["_id"]} to collection ${collectionName}`)
-			collection.updateOne({ _id: record["_id"] }, { $set: record }, { upsert: true })
+			if (collectionName === "c") {
+				try {
+					print(`Inserting ${record["_id"]} to collection ${collectionName}`)
+					collection.insertOne(record)
+				} catch (err) {
+					if (err.code === 11000) {
+						print(`Skipping existing ${record["_id"]} in collection ${collectionName}`)
+					} else {
+						throw err
+					}
+				}
+			} else {
+				print(`Upserting ${record["_id"]} to collection ${collectionName}`)
+				collection.updateOne({ _id: record["_id"] }, { $set: record }, { upsert: true })
+			}
 		});
 	});
 
