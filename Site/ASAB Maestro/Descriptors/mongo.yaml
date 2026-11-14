@@ -14,6 +14,9 @@ descriptor:
   mem_limit: 2g
   memswap_limit: 2g
   mem_swappiness: 0
+  # fd number limits number of open client connections, 2^15 - 1 = 32767
+  ulimits:
+    nofile: 32767
 
 sherpas:
   # Sherpas containers: akin to their namesake mountain guides, these containers provide essential support and guidance throughout the application's lifecycle.
