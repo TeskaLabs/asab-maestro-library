@@ -1,6 +1,6 @@
 [{
 	"_id": "58acb7acccce58ffa8b953b1",
-	"email": "admin@mock.com",
+	"email": "admin@example.com",
 	"username": "admin",
 	"__password": "$2b$12$J93UKfocw3tmOq3BHjX5NOiN6LLKFhHZWHQYjvvn2Cxsnyyi3nK86",
 	"enforce_factors": []
