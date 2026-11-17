@@ -27,6 +27,8 @@ asab:
     # [variables] must be filled from general confguration (user)
     email:
       markdown_wrapper: /Templates/Wrapper/Markdown Wrapper.html
+    auth:
+      public_keys_url: http://seacat-auth:8900/.well-known/jwks.json
     tenants:
       tenant_url: "{{SEACAT_AUTH_PUBLIC}}/tenant"
     variables:
