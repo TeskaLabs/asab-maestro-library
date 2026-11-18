@@ -6,6 +6,8 @@ define:
 descriptor:
   image: pcr.teskalabs.com/library/mongo
 
+  user: "10002:10002"
+
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/data:/data/db"
     - "{{SITE}}/{{INSTANCE_ID}}/conf:/etc/mongo:ro"
