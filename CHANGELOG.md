@@ -2,6 +2,10 @@
 
 ## v26.37
 
+### v26.37.04
+- Add ASAB Library Socket service configuration.
+- Fix mongo sherpa of Seacat Auth to insert credentials and never update.
+
 ### Breaking changes
 
 - Web applications are served from the internal NGINX listener on `{{INTERNAL_NETWORK_IP}}:8890`; `LogMan.io WebUI.yaml` and `SeaCat Auth WebUI.yaml` were removed from `Site/ASAB Maestro/WebApps/`. LogMan.io WebUI is distributed via LMIO. ([#289](https://github.com/TeskaLabs/asab-maestro-library/pull/289), [#297](https://github.com/TeskaLabs/asab-maestro-library/pull/297), [#298](https://github.com/TeskaLabs/asab-maestro-library/pull/298))
