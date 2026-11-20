@@ -16,7 +16,24 @@ Changes on `main` that are not on `release/v26.37` yet.
 
 ## v26.37
 
-Tag [`v26.37.01`](https://github.com/TeskaLabs/asab-maestro-library/releases/tag/v26.37.01) points at `release/v26.37`.
+Initial release tag [`v26.37.01`](https://github.com/TeskaLabs/asab-maestro-library/releases/tag/v26.37.01). Patch releases are tagged on `release/v26.37` (latest: [`v26.37.05`](https://github.com/TeskaLabs/asab-maestro-library/releases/tag/v26.37.05)).
+
+### v26.37.05
+
+- Fix ASAB Library descriptor: missing closing quote on the `library/com` volume mount (on `release/v26.37`; on `main` since commit `2261664`).
+
+### v26.37.04
+
+- Add ASAB Library Socket service configuration ([#331](https://github.com/TeskaLabs/asab-maestro-library/pull/331); on `release/v26.37` via [#333](https://github.com/TeskaLabs/asab-maestro-library/pull/333)).
+- Fix mongo sherpa of Seacat Auth to insert credentials and never update ([#330](https://github.com/TeskaLabs/asab-maestro-library/pull/330)).
+
+### v26.37.03
+
+- Finetune FRP client and server descriptors ([#329](https://github.com/TeskaLabs/asab-maestro-library/pull/329) on `main`; direct commit on `release/v26.37`).
+
+### v26.37.02
+
+- GitLab CI/CD: exclude `CHANGELOG.md` from distribution tar archives ([#327](https://github.com/TeskaLabs/asab-maestro-library/pull/327)).
 
 ### Breaking changes
 
