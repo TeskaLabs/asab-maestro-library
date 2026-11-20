@@ -2,9 +2,22 @@
 
 ## v26.37
 
+### v26.37.05
+
+- Fix ASAB Library descriptor: missing closing quote on the `library/com` volume mount.
+
 ### v26.37.04
-- Add ASAB Library Socket service configuration.
-- Fix mongo sherpa of Seacat Auth to insert credentials and never update.
+
+- Add ASAB Library Socket service configuration ([#331](https://github.com/TeskaLabs/asab-maestro-library/pull/331)).
+- Fix mongo sherpa of Seacat Auth to insert credentials and never update ([#330](https://github.com/TeskaLabs/asab-maestro-library/pull/330), [#333](https://github.com/TeskaLabs/asab-maestro-library/pull/333)).
+
+### v26.37.03
+
+- Finetune FRP client and server descriptors (`frpc.yaml`, `frps.yaml`).
+
+### v26.37.02
+
+- GitLab CI/CD: exclude `CHANGELOG.md` from distribution tar archives ([#327](https://github.com/TeskaLabs/asab-maestro-library/pull/327)).
 
 ### Breaking changes
 
