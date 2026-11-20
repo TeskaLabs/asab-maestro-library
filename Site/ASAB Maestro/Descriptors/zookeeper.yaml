@@ -6,7 +6,7 @@ define:
 descriptor:
   # The client port is tcp/2181
 
-  image: library/zookeeper
+  image: pcr.teskalabs.com/library/zookeeper
 
   entrypoint: ["/bin/bash", "-e", "/confro/zkstart.sh"]
   command: ["zkServer.sh", "start-foreground"]

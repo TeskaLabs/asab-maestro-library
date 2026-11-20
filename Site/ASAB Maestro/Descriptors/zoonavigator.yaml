@@ -4,7 +4,7 @@ define:
   url: https://zoonavigator.elkozmon.com/
 
 descriptor:
-  image: elkozmon/zoonavigator
+  image: pcr.teskalabs.com/elkozmon/zoonavigator
 
   volumes:
     - "{{SLOW_STORAGE}}/{{INSTANCE_ID}}/logs:/app/logs"

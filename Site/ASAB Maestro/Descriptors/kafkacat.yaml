@@ -4,4 +4,4 @@ define:
   url: https://github.com/edenhill/kcat
 
 descriptor:
-  image: confluentinc/cp-kafkacat
+  image: pcr.teskalabs.com/confluentinc/cp-kafkacat

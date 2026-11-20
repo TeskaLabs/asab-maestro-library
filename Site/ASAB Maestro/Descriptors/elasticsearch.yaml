@@ -5,7 +5,7 @@ define:
 
 descriptor:
 
-  image: library/elasticsearch
+  image: pcr.teskalabs.com/library/elasticsearch
 
   # Elasticsearch changes owner to 1000 by default. ASAB Governator creates folders to be mounted as volumes and chowns them to 1000 as well.
   # TODO: There is a collision with user 1000 - ubuntu user, zookeeper

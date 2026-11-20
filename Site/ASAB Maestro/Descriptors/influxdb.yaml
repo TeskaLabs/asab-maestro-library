@@ -17,7 +17,7 @@ params:
   INFLUXDB_BUCKET: metrics
 
 descriptor:
-  image: influxdb
+  image: pcr.teskalabs.com/influxdb
 
   user: "10003:10003"
 
