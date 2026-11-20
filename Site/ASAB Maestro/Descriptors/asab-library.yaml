@@ -16,7 +16,7 @@ descriptor:
     # Read-only cache of remote library providers
     - "{{SLOW_STORAGE}}/library/cache:/library/cache:ro"
     # A communication place - ie for UNIX socket /library/com/asab-library.sock
-    - "{{SLOW_STORAGE}}/library/com:/library/com
+    - "{{SLOW_STORAGE}}/library/com:/library/com"
 
   # This is critical service
   restart: always
