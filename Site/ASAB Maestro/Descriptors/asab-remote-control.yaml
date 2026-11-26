@@ -23,6 +23,8 @@ asab:
   config:
     web:
       listen: "{{INTERNAL_NETWORK_IP}} 8891"
+    "web:local":
+      listen: "{{INTERNAL_NETWORK_IP}} 7891"
     library:
       cache_dir: /library/cache
 
