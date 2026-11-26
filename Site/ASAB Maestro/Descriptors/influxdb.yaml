@@ -38,6 +38,7 @@ descriptor:
 
     # This is to prevent write timout at slower systems.
     INFLUXD_HTTP_WRITE_TIMEOUT: 20s
+    INFLUXD_HTTP_BIND_ADDRESS: "{{INTERNAL_NETWORK_IP}}:8086"
 
 nginx:
   upstreams:
