@@ -1,0 +1,15 @@
+define:
+  type: rc/descriptor
+  name: ASAB Socat
+
+descriptor:
+  image: docker.teskalabs.com/asab/asab-socat
+
+  volumes:
+    - "{{SITE}}/{{INSTANCE_ID}}/conf:/conf:ro"
+
+asab:
+  configname: conf/asab-socat.conf
+  config:
+    socat:
+      internal_ip: "{{INTERNAL_NETWORK_IP}}"
