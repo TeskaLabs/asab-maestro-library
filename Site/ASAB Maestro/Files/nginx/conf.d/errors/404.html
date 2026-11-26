@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30;url=/">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Page not found</title>
+  <style>
+    :root {
+      --deep-space-blue: #0E1426;
+      --polar-mist: #F3F4FA;
+      --text-dark: #1a1f2e;
+      --text-light: #ffffff;
+      --muted-dark: #6b7280;
+      --muted-light: #a9b2c8;
+      --medium-blue: #3C5CDB;
+      --soft-sky-blue: #7A9CFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 1.5rem; text-align: center;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: var(--deep-space-blue); color: var(--text-light); }
+      .brand { color: var(--soft-sky-blue); }
+      .muted { color: var(--muted-light); }
+      a { color: var(--soft-sky-blue); }
+    }
+    @media (prefers-color-scheme: light) {
+      body { background: var(--polar-mist); color: var(--text-dark); }
+      .brand { color: var(--medium-blue); }
+      .muted { color: var(--muted-dark); }
+      a { color: var(--medium-blue); }
+    }
+    .brand {
+      font-size: 1.1rem; font-weight: 650; letter-spacing: .01em;
+      margin-bottom: 1.4rem;
+    }
+    h1 { font-size: 1.35rem; font-weight: 650; margin-bottom: .5rem; }
+    p { font-size: .95rem; line-height: 1.45; max-width: 28rem; margin: 0 auto .75rem; }
+    .muted { font-size: .85rem; }
+    a { text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="brand">Page not found</p>
+    <h1>This page isn&rsquo;t available</h1>
+    <p>We couldn&rsquo;t find what you were looking for.</p>
+    <p class="muted">Taking you to the home page in <span id="s">30</span> seconds.
+      <a href="/">Go now</a></p>
+  </main>
+  <script>
+    (function () {
+      var n = 30, el = document.getElementById("s");
+      var t = setInterval(function () {
+        n -= 1;
+        if (el) el.textContent = String(Math.max(0, n));
+        if (n <= 0) { clearInterval(t); location.replace("/"); }
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
