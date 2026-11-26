@@ -32,6 +32,8 @@ files:
 asab:
   configname: conf/asab-config.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8894"
     download:
       secret_key: "{{DOWNLOAD_SECRET_KEY}}"
 

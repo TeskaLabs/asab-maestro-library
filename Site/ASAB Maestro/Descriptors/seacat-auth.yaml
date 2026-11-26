@@ -35,6 +35,10 @@ sherpas:
 asab:
   configname: conf/seacatauth.conf
   config:
+    web:
+      listen: "{{INTERNAL_NETWORK_IP}} 8900"
+    "web:public":
+      listen: "{{INTERNAL_NETWORK_IP}} 3081"
     general:
       public_url: "{{PUBLIC_URL}}"
 
